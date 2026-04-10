@@ -4069,13 +4069,13 @@ class _DashboardMotoristaViaVanMWidgetState
                                                                                                       child: Text(
                                                                                                         '${valueOrDefault<String>(
                                                                                                           dateTimeFormat(
-                                                                                                            "d/M/y",
+                                                                                                            "dd/MM/y",
                                                                                                             listViewCorComunicadoRow.dtComunicado,
                                                                                                             locale: FFLocalizations.of(context).languageCode,
                                                                                                           ),
                                                                                                           '-',
                                                                                                         )} - ${dateTimeFormat(
-                                                                                                          "Hm",
+                                                                                                          "HH:mm",
                                                                                                           listViewCorComunicadoRow.horaComunicado?.time,
                                                                                                           locale: FFLocalizations.of(context).languageCode,
                                                                                                         )}',

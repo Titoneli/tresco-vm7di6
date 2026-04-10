@@ -2660,7 +2660,7 @@ class _DashboardAssociadoMWidgetState extends State<DashboardAssociadoMWidget>
                                                                                                           padding: EdgeInsetsDirectional.fromSTEB(16.0, 0.0, 0.0, 0.0),
                                                                                                           child: Text(
                                                                                                             '${dateTimeFormat(
-                                                                                                              "d/M/y H:mm",
+                                                                                                              "dd/MM/y HH:mm",
                                                                                                               listViewFinfechconfirmadoRow.dtsitpagamento,
                                                                                                               locale: FFLocalizations.of(context).languageCode,
                                                                                                             )}',
@@ -3911,13 +3911,13 @@ class _DashboardAssociadoMWidgetState extends State<DashboardAssociadoMWidget>
                                                                                                               '-',
                                                                                                             )} - ${valueOrDefault<String>(
                                                                                                               dateTimeFormat(
-                                                                                                                "d/M/y",
+                                                                                                                "dd/MM/y",
                                                                                                                 listViewCorComunicadoRow.dtComunicado,
                                                                                                                 locale: FFLocalizations.of(context).languageCode,
                                                                                                               ),
                                                                                                               '-',
                                                                                                             )} - ${dateTimeFormat(
-                                                                                                              "Hm",
+                                                                                                              "HH:mm",
                                                                                                               listViewCorComunicadoRow.horaComunicado?.time,
                                                                                                               locale: FFLocalizations.of(context).languageCode,
                                                                                                             )}',

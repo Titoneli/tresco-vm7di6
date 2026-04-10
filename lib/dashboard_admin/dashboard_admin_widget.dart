@@ -4487,7 +4487,7 @@ class _DashboardAdminWidgetState extends State<DashboardAdminWidget>
                                                                               Text(
                                                                             valueOrDefault<String>(
                                                                               dateTimeFormat(
-                                                                                "d/M/y",
+                                                                                "dd/MM/y",
                                                                                 lstGestaoPagtoFinfechconfirmadoRow.dtconfusuario,
                                                                                 locale: FFLocalizations.of(context).languageCode,
                                                                               ),

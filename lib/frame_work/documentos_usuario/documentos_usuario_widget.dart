@@ -1,10 +1,13 @@
 import 'dart:math';
+import 'dart:typed_data';
 
 import 'package:ff_theme/flutter_flow/flutter_flow_theme.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -80,7 +83,7 @@ class _DocumentosUsuarioWidgetState extends State<DocumentosUsuarioWidget> {
     try {
       final rows = await DocumentoTable().queryRows(
         queryFn: (q) => q
-            .eqOrNull('categoria', 'USUARIO')
+            .eqOrNull('categoria', 'TRANSPORTADOR')
             .eqOrNull('idusuario', widget.idUsuario)
             .eqOrNull('ativo', true)
             .order('tipo_documento')
@@ -108,26 +111,101 @@ class _DocumentosUsuarioWidgetState extends State<DocumentosUsuarioWidget> {
 
   // ---------- UPLOAD ----------
 
+  /// Exibe bottom sheet para escolher a origem: Câmera, Galeria ou Arquivo
   Future<void> _handleUpload(String tipoDocumento) async {
     if (widget.idUsuario == null) return;
 
-    // Pick file
-    final result = await FilePicker.platform.pickFiles(
-      type: FileType.custom,
-      allowedExtensions: ['pdf', 'jpg', 'jpeg', 'png'],
-      withData: true,
+    final theme = FlutterFlowTheme.of(context);
+
+    final fonte = await showModalBottomSheet<String>(
+      context: context,
+      backgroundColor: theme.primaryBackground,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (ctx) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 12),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: Text(
+                    'Escolha a origem',
+                    style: theme.titleSmall.override(
+                      font: GoogleFonts.interTight(fontWeight: FontWeight.w600),
+                      letterSpacing: 0,
+                    ),
+                  ),
+                ),
+                if (!kIsWeb)
+                  ListTile(
+                    leading: Icon(Icons.camera_alt, color: theme.primary),
+                    title: Text('Câmera', style: theme.bodyMedium),
+                    onTap: () => Navigator.pop(ctx, 'camera'),
+                  ),
+                ListTile(
+                  leading: Icon(Icons.photo_library, color: theme.primary),
+                  title: Text('Galeria de fotos', style: theme.bodyMedium),
+                  onTap: () => Navigator.pop(ctx, 'galeria'),
+                ),
+                ListTile(
+                  leading: Icon(Icons.attach_file, color: theme.primary),
+                  title: Text('Arquivo (PDF, JPG, PNG)', style: theme.bodyMedium),
+                  onTap: () => Navigator.pop(ctx, 'arquivo'),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
 
-    if (result == null || result.files.isEmpty) return;
-    final file = result.files.first;
+    if (fonte == null) return;
 
-    if (file.bytes == null) {
-      _showSnack('Erro ao ler arquivo');
-      return;
+    String? fileName;
+    Uint8List? fileBytes;
+    String ext;
+    String mimeType;
+
+    if (fonte == 'camera' || fonte == 'galeria') {
+      // Usar ImagePicker para câmera ou galeria
+      final picker = ImagePicker();
+      final XFile? image = await picker.pickImage(
+        source: fonte == 'camera' ? ImageSource.camera : ImageSource.gallery,
+        imageQuality: 85,
+        maxWidth: 1920,
+      );
+      if (image == null) return;
+
+      fileBytes = await image.readAsBytes();
+      fileName = image.name;
+      final imgExt = image.path.split('.').last.toLowerCase();
+      ext = (imgExt == 'jpg' || imgExt == 'jpeg' || imgExt == 'png') ? imgExt : 'jpg';
+      mimeType = 'image/$ext';
+    } else {
+      // FilePicker para PDF / JPG / PNG
+      final result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['pdf', 'jpg', 'jpeg', 'png'],
+        withData: true,
+      );
+      if (result == null || result.files.isEmpty) return;
+      final file = result.files.first;
+      if (file.bytes == null) {
+        _showSnack('Erro ao ler arquivo');
+        return;
+      }
+      fileBytes = file.bytes!;
+      fileName = file.name;
+      ext = file.extension?.toLowerCase() ?? 'pdf';
+      mimeType = ext == 'pdf' ? 'application/pdf' : 'image/$ext';
     }
 
-    // Validate size
-    if (file.size > _maxFileSize) {
+    // Validar tamanho
+    if (fileBytes.length > _maxFileSize) {
       _showSnack('Arquivo muito grande. Máximo: 10MB');
       return;
     }
@@ -137,28 +215,23 @@ class _DocumentosUsuarioWidgetState extends State<DocumentosUsuarioWidget> {
     });
 
     try {
-      final ext = file.extension?.toLowerCase() ?? 'pdf';
       final uuid =
           '${DateTime.now().millisecondsSinceEpoch}-${Random().nextInt(999999)}';
       final caminhoStorage =
-          'usuario/${widget.idUsuario}/$tipoDocumento/$uuid.$ext';
+          'transportador/${widget.idUsuario}/$tipoDocumento/$uuid.$ext';
 
       // 1) Upload to Supabase Storage
       await SupaFlow.client.storage.from(_bucketName).uploadBinary(
             caminhoStorage,
-            file.bytes!,
-            fileOptions: FileOptions(
-              contentType: file.extension == 'pdf'
-                  ? 'application/pdf'
-                  : 'image/${file.extension}',
-            ),
+            fileBytes,
+            fileOptions: FileOptions(contentType: mimeType),
           );
 
       // 2) Deactivate previous documents of the same type
       await SupaFlow.client
           .from('documento')
           .update({'ativo': false, 'dtatualizacao': DateTime.now().toIso8601String()})
-          .eq('categoria', 'USUARIO')
+          .eq('categoria', 'TRANSPORTADOR')
           .eq('idusuario', widget.idUsuario!)
           .eq('tipo_documento', tipoDocumento)
           .eq('ativo', true);
@@ -166,13 +239,11 @@ class _DocumentosUsuarioWidgetState extends State<DocumentosUsuarioWidget> {
       // 3) Insert new document row
       await SupaFlow.client.from('documento').insert({
         'idusuario': widget.idUsuario,
-        'categoria': 'USUARIO',
+        'categoria': 'TRANSPORTADOR',
         'tipo_documento': tipoDocumento,
-        'nome_arquivo': file.name,
-        'tamanho_bytes': file.size,
-        'mime_type': file.extension == 'pdf'
-            ? 'application/pdf'
-            : 'image/${file.extension}',
+        'nome_arquivo': fileName,
+        'tamanho_bytes': fileBytes.length,
+        'mime_type': mimeType,
         'bucket': _bucketName,
         'caminho_storage': caminhoStorage,
         'ativo': true,

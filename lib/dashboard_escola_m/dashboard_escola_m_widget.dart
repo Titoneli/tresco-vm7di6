@@ -240,7 +240,7 @@ class _DashboardEscolaMWidgetState extends State<DashboardEscolaMWidget> {
                                                                             8.0),
                                                                         child:
                                                                             Text(
-                                                                          '${FFAppState().nomeUsuario}',
+                                                                          FFAppState().nomeUsuario.toUpperCase(),
                                                                           style: FlutterFlowTheme.of(context)
                                                                               .labelMedium
                                                                               .override(
@@ -1896,7 +1896,7 @@ class _DashboardEscolaMWidgetState extends State<DashboardEscolaMWidget> {
                                                                                                                           valueOrDefault<String>(
                                                                                                                             wrapViewRetdadosalunosRow.nomeAluno,
                                                                                                                             '-',
-                                                                                                                          ),
+                                                                                                                          ).toUpperCase(),
                                                                                                                           style: FlutterFlowTheme.of(context).bodyMedium.override(
                                                                                                                                 font: GoogleFonts.inter(
                                                                                                                                   fontWeight: FontWeight.bold,
@@ -2744,7 +2744,7 @@ class _DashboardEscolaMWidgetState extends State<DashboardEscolaMWidget> {
                                                                                   valueOrDefault<String>(
                                                                                     wrapUsuarioRow?.nomeUsuario,
                                                                                     '-',
-                                                                                  ),
+                                                                                  ).toUpperCase(),
                                                                                   style: FlutterFlowTheme.of(context).headlineSmall.override(
                                                                                         font: GoogleFonts.interTight(
                                                                                           fontWeight: FlutterFlowTheme.of(context).headlineSmall.fontWeight,

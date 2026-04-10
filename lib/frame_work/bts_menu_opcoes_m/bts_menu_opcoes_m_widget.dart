@@ -366,7 +366,7 @@ class _BtsMenuOpcoesMWidgetState extends State<BtsMenuOpcoesMWidget> {
                                                               wrapUsuarioRow
                                                                   ?.nomeUsuario,
                                                               '-',
-                                                            ),
+                                                            ).toUpperCase(),
                                                             style: FlutterFlowTheme
                                                                     .of(context)
                                                                 .headlineSmall

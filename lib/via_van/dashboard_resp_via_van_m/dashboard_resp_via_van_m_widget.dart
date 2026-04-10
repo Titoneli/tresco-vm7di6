@@ -2501,7 +2501,7 @@ class _DashboardRespViaVanMWidgetState
                                                                                                                         valueOrDefault<String>(
                                                                                                                           wrapViewRetdadosalunosRow.nomeAluno,
                                                                                                                           '-',
-                                                                                                                        ),
+                                                                                                                        ).toUpperCase(),
                                                                                                                         style: FlutterFlowTheme.of(context).bodyMedium.override(
                                                                                                                               font: GoogleFonts.inter(
                                                                                                                                 fontWeight: FontWeight.bold,

@@ -603,7 +603,7 @@ class _BtsAlunoBuscaMotoristaWidgetState
                                                           getJsonField(
                                                             alunosListaWrapItem,
                                                             r'''$.nomeAluno''',
-                                                          ).toString(),
+                                                          ).toString().toUpperCase(),
                                                           textAlign:
                                                               TextAlign.center,
                                                           minFontSize: 8.0,

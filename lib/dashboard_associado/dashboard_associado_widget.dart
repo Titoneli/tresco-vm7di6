@@ -334,7 +334,7 @@ class _DashboardAssociadoWidgetState extends State<DashboardAssociadoWidget>
                                             valueOrDefault<String>(
                                               textUsuarioRow?.nomeUsuario,
                                               'Olá Motorista!',
-                                            ),
+                                            ).toUpperCase(),
                                             style: FlutterFlowTheme.of(context)
                                                 .bodyMedium
                                                 .override(
@@ -1885,7 +1885,7 @@ class _DashboardAssociadoWidgetState extends State<DashboardAssociadoWidget>
                                                                                     getJsonField(
                                                                                       alunosListaWrapItem,
                                                                                       r'''$.nomeAluno''',
-                                                                                    ).toString(),
+                                                                                    ).toString().toUpperCase(),
                                                                                     textAlign: TextAlign.start,
                                                                                     minFontSize: 8.0,
                                                                                     style: FlutterFlowTheme.of(context).bodyMedium.override(

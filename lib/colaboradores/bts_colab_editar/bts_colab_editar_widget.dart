@@ -168,7 +168,7 @@ class _BtsColabEditarWidgetState extends State<BtsColabEditarWidget>
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Editar Pessoa :: ${containerUsuarioRow?.nomeUsuario}',
+                                'Editar Pessoa :: ${containerUsuarioRow?.nomeUsuario?.toUpperCase() ?? ''}',
                                 style: FlutterFlowTheme.of(context)
                                     .titleLarge
                                     .override(

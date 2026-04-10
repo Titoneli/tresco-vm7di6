@@ -159,7 +159,7 @@ class _DashboardAssociadoMWidgetState extends State<DashboardAssociadoMWidget>
                                                   CrossAxisAlignment.start,
                                               children: [
                                                 Text(
-                                                  '${FFAppState().nomeUsuario}',
+                                                  FFAppState().nomeUsuario.toUpperCase(),
                                                   style: FlutterFlowTheme.of(
                                                           context)
                                                       .headlineMedium
@@ -3453,7 +3453,7 @@ class _DashboardAssociadoMWidgetState extends State<DashboardAssociadoMWidget>
                                                                                                                               valueOrDefault<String>(
                                                                                                                                 wrapViewAppAlunosConferenciaRow.nomeAluno,
                                                                                                                                 '-',
-                                                                                                                              ),
+                                                                                                                              ).toUpperCase(),
                                                                                                                               style: FlutterFlowTheme.of(context).bodyMedium.override(
                                                                                                                                     font: GoogleFonts.inter(
                                                                                                                                       fontWeight: FontWeight.bold,

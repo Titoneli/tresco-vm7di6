@@ -201,7 +201,7 @@ class _BtsAlunoEditarWidgetState extends State<BtsAlunoEditarWidget>
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    'Aluno:  ${containerAlunoRow?.nomeAluno}',
+                                    'Aluno:  ${containerAlunoRow?.nomeAluno?.toUpperCase() ?? ''}',
                                     style: FlutterFlowTheme.of(context)
                                         .titleLarge
                                         .override(

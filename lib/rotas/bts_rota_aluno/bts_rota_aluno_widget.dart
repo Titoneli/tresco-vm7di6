@@ -617,7 +617,8 @@ class _BtsRotaAlunoWidgetState extends State<BtsRotaAlunoWidget>
                                                                     .elementAtOrNull(
                                                                         FFAppState()
                                                                             .indexAluno)!
-                                                                    .nomeAluno!,
+                                                                    .nomeAluno!
+                                                                    .toUpperCase(),
                                                                 style:
                                                                     TextStyle(
                                                                   color: FlutterFlowTheme.of(
@@ -1003,7 +1004,7 @@ class _BtsRotaAlunoWidgetState extends State<BtsRotaAlunoWidget>
                                                                               valueOrDefault<String>(
                                                                                 listViewAlunoRow.nomeAluno,
                                                                                 '-',
-                                                                              ),
+                                                                              ).toUpperCase(),
                                                                               textAlign: TextAlign.start,
                                                                               style: FlutterFlowTheme.of(context).bodyMedium.override(
                                                                                     font: GoogleFonts.inter(

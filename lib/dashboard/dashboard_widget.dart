@@ -4487,7 +4487,7 @@ class _DashboardWidgetState extends State<DashboardWidget>
                                                                                                       getJsonField(
                                                                                                         motoristaListaItem,
                                                                                                         r'''$.nomeUsuario''',
-                                                                                                      ).toString(),
+                                                                                                      ).toString().toUpperCase(),
                                                                                                       style: FlutterFlowTheme.of(context).bodyMedium.override(
                                                                                                             font: GoogleFonts.inter(
                                                                                                               fontWeight: FontWeight.w300,

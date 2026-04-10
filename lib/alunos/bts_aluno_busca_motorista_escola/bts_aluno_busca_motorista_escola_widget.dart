@@ -865,7 +865,7 @@ class _BtsAlunoBuscaMotoristaEscolaWidgetState
                                                           getJsonField(
                                                             alunosListaItem,
                                                             r'''$.nomeAluno''',
-                                                          ).toString(),
+                                                          ).toString().toUpperCase(),
                                                           style: FlutterFlowTheme
                                                                   .of(context)
                                                               .bodyMedium

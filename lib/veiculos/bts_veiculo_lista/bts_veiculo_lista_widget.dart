@@ -870,7 +870,7 @@ class _BtsVeiculoListaWidgetState extends State<BtsVeiculoListaWidget>
                                                                       textUsuarioRow
                                                                           ?.nomeUsuario,
                                                                       '-',
-                                                                    ),
+                                                                    ).toUpperCase(),
                                                                     style: FlutterFlowTheme.of(
                                                                             context)
                                                                         .bodyMedium

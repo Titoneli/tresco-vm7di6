@@ -767,7 +767,7 @@ class _BtsColabListaWidgetState extends State<BtsColabListaWidget>
                                                                     getJsonField(
                                                                       usuariosListaItem,
                                                                       r'''$.nomeUsuario''',
-                                                                    ).toString(),
+                                                                    ).toString().toUpperCase(),
                                                                     style: FlutterFlowTheme.of(
                                                                             context)
                                                                         .bodyMedium

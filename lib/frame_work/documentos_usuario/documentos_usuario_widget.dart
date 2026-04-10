@@ -371,7 +371,7 @@ class _DocumentosUsuarioWidgetState extends State<DocumentosUsuarioWidget> {
                       ),
                       if (widget.nomeUsuario != null)
                         Text(
-                          widget.nomeUsuario!,
+                          widget.nomeUsuario!.toUpperCase(),
                           style: theme.labelSmall.override(
                             font: GoogleFonts.inter(),
                             color: theme.secondaryText,

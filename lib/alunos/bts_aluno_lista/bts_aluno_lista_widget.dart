@@ -867,7 +867,7 @@ class _BtsAlunoListaWidgetState extends State<BtsAlunoListaWidget>
                                                                 getJsonField(
                                                                   alunosListaItem,
                                                                   r'''$.nomeAluno''',
-                                                                ).toString(),
+                                                                ).toString().toUpperCase(),
                                                                 style: FlutterFlowTheme.of(
                                                                         context)
                                                                     .bodyMedium

@@ -2126,7 +2126,7 @@ class _DashboardAdminWidgetState extends State<DashboardAdminWidget>
                                                                                                                                           getJsonField(
                                                                                                                                             motoristaListaItem,
                                                                                                                                             r'''$.nomeUsuario''',
-                                                                                                                                          ).toString(),
+                                                                                                                                          ).toString().toUpperCase(),
                                                                                                                                           style: FlutterFlowTheme.of(context).bodyMedium.override(
                                                                                                                                                 font: GoogleFonts.inter(
                                                                                                                                                   fontWeight: FontWeight.w500,
@@ -2710,7 +2710,7 @@ class _DashboardAdminWidgetState extends State<DashboardAdminWidget>
                                                                                                                                                                 getJsonField(
                                                                                                                                                                   alunosListaWrapItem,
                                                                                                                                                                   r'''$.nomeAluno''',
-                                                                                                                                                                ).toString(),
+                                                                                                                                                                ).toString().toUpperCase(),
                                                                                                                                                                 textAlign: TextAlign.start,
                                                                                                                                                                 minFontSize: 8.0,
                                                                                                                                                                 style: FlutterFlowTheme.of(context).bodyMedium.override(
@@ -4392,7 +4392,7 @@ class _DashboardAdminWidgetState extends State<DashboardAdminWidget>
                                                                             valueOrDefault<String>(
                                                                               lstGestaoPagtoFinfechconfirmadoRow.nomeusuario,
                                                                               '-',
-                                                                            ),
+                                                                            ).toUpperCase(),
                                                                             style: FlutterFlowTheme.of(context).bodyMedium.override(
                                                                                   font: GoogleFonts.inter(
                                                                                     fontWeight: FlutterFlowTheme.of(context).bodyMedium.fontWeight,
@@ -5819,7 +5819,7 @@ class _DashboardAdminWidgetState extends State<DashboardAdminWidget>
                                                                         listViewFinfechamentoRow
                                                                             .nomeUsuario,
                                                                         '-',
-                                                                      ),
+                                                                      ).toUpperCase(),
                                                                       style: FlutterFlowTheme.of(
                                                                               context)
                                                                           .bodyMedium

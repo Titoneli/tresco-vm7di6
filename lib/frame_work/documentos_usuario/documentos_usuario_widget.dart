@@ -30,14 +30,10 @@ class TipoDocumento {
 /// Tipos de documentos para USUARIO / TRANSPORTADOR
 const List<TipoDocumento> tiposDocumentosUsuario = [
   TipoDocumento(tipo: 'CNH', label: 'CNH', obrigatorio: true),
-  TipoDocumento(tipo: 'RG', label: 'RG'),
-  TipoDocumento(tipo: 'FOTO', label: 'Foto 3x4'),
+  TipoDocumento(tipo: 'FOTO', label: 'Selfie'),
   TipoDocumento(tipo: 'CRLV', label: 'CRLV do Veículo'),
   TipoDocumento(
       tipo: 'AUTORIZACAO_TRANSPORTE', label: 'Autorização de Transporte'),
-  TipoDocumento(
-      tipo: 'PERMISSAO_TRANSPORTE',
-      label: 'Permissão para Transporte Escolar'),
   TipoDocumento(tipo: 'EXAME_TOXICOLOGICO', label: 'Exame Toxicológico'),
   TipoDocumento(tipo: 'OUTROS', label: 'Outros'),
 ];

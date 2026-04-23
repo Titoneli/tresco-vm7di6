@@ -286,7 +286,7 @@ class _PresencaMWidgetState extends State<PresencaMWidget>
                                 ),
                                 SizedBox(width: 12.0),
                                 Expanded(
-                                  child: Text(nome,
+                                  child: Text(nome ?? '',
                                     style: FlutterFlowTheme.of(context).bodyLarge.override(
                                       font: GoogleFonts.inter(fontWeight: FontWeight.w500), letterSpacing: 0.0,
                                     ),
@@ -438,12 +438,12 @@ class _PresencaMWidgetState extends State<PresencaMWidget>
                                   size: 20.0,
                                 ),
                                 SizedBox(width: 12.0),
-                                Expanded(child: Text(nome,
+                                Expanded(child: Text(nome ?? '',
                                   style: FlutterFlowTheme.of(context).bodyMedium.override(
                                     font: GoogleFonts.inter(fontWeight: FontWeight.w500), letterSpacing: 0.0,
                                   ),
                                 )),
-                                Text(data,
+                                Text(data ?? '',
                                   style: FlutterFlowTheme.of(context).bodySmall.override(
                                     font: GoogleFonts.inter(fontWeight: FontWeight.normal),
                                     color: FlutterFlowTheme.of(context).secondaryText, letterSpacing: 0.0,

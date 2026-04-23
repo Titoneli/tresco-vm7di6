@@ -26,6 +26,7 @@ class _FinanceiroMWidgetState extends State<FinanceiroMWidget>
     with SingleTickerProviderStateMixin {
   late FinanceiroMModel _model;
   final scaffoldKey = GlobalKey<ScaffoldState>();
+  final TextEditingController valorController = TextEditingController();
 
   @override
   void initState() {
@@ -48,6 +49,7 @@ class _FinanceiroMWidgetState extends State<FinanceiroMWidget>
 
   @override
   void dispose() {
+    valorController.dispose();
     _model.dispose();
     super.dispose();
   }
@@ -167,7 +169,7 @@ class _FinanceiroMWidgetState extends State<FinanceiroMWidget>
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Text(m.nomePassageiro,
+                                    Text(m.nomePassageiro ?? '',
                                       style: FlutterFlowTheme.of(context).bodyLarge.override(
                                         font: GoogleFonts.inter(fontWeight: FontWeight.w600), letterSpacing: 0.0,
                                       ),

@@ -217,7 +217,7 @@ class _ContratosListaMWidgetState extends State<ContratosListaMWidget> {
                                               children: [
                                                 Expanded(
                                                   child: Text(
-                                                    contrato.nomePassageiro,
+                                                    contrato.nomePassageiro ?? '',
                                                     style: FlutterFlowTheme.of(
                                                             context)
                                                         .bodyLarge

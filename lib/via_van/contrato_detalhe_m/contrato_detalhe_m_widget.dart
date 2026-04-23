@@ -332,12 +332,12 @@ class _ContratoDetalheMWidgetState extends State<ContratoDetalheMWidget> {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(h.tipoAlteracao,
+                                    Text(h.tipoAlteracao ?? '',
                                       style: FlutterFlowTheme.of(context).bodyMedium.override(
                                         font: GoogleFonts.inter(fontWeight: FontWeight.w500), letterSpacing: 0.0,
                                       ),
                                     ),
-                                    Text(h.dtAlteracao,
+                                    Text(h.dtAlteracao ?? '',
                                       style: FlutterFlowTheme.of(context).bodySmall.override(
                                         font: GoogleFonts.inter(fontWeight: FontWeight.normal),
                                         color: FlutterFlowTheme.of(context).secondaryText, letterSpacing: 0.0,

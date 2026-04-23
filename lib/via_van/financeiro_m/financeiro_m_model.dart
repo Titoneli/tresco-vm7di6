@@ -1,27 +1,22 @@
-import '/backend/api_requests/api_calls.dart';
 import '/flutter_flow/flutter_flow_util.dart';
+import '/vivan/vivan.dart';
 import 'financeiro_m_widget.dart' show FinanceiroMWidget;
 import 'package:flutter/material.dart';
-import 'package:ff_commons/api_requests/api_manager.dart' show ApiCallResponse;
 
 class FinanceiroMModel extends FlutterFlowModel<FinanceiroMWidget> {
   int tabIndex = 0;
 
   // Mensalidades
   bool isLoadingMensalidades = true;
-  ApiCallResponse? mensalidadesResponse;
-  List<dynamic> get mensalidades =>
-      VivanMensalidadesListCall.mensalidades(mensalidadesResponse?.jsonBody) ?? [];
+  List<VivanMensalidade> mensalidades = [];
   double get totalMensalidades =>
-      VivanMensalidadesListCall.totalValor(mensalidadesResponse?.jsonBody) ?? 0.0;
+      mensalidades.fold(0.0, (sum, m) => sum + m.valorLiquido);
 
   // Despesas
   bool isLoadingDespesas = true;
-  ApiCallResponse? despesasResponse;
-  List<dynamic> get despesas =>
-      VivanDespesasListCall.despesas(despesasResponse?.jsonBody) ?? [];
+  List<VivanDespesa> despesas = [];
   double get totalDespesas =>
-      VivanDespesasListCall.totalValor(despesasResponse?.jsonBody) ?? 0.0;
+      despesas.fold(0.0, (sum, d) => sum + d.valor);
 
   // Tab controller
   TabController? tabBarController;
@@ -36,17 +31,64 @@ class FinanceiroMModel extends FlutterFlowModel<FinanceiroMWidget> {
 
   Future<void> fetchMensalidades(int motoristaId, {String? mes, String? status}) async {
     isLoadingMensalidades = true;
-    mensalidadesResponse = await VivanMensalidadesListCall.call(
-      motoristaId: motoristaId, mes: mes, status: status,
-    );
+    try {
+      final result = await VivanLocator.service.getMensalidades(
+        motorista: motoristaId,
+        mesReferencia: mes,
+        status: status,
+      );
+      mensalidades = result.data;
+    } catch (e) {
+      debugPrint('Erro ao buscar mensalidades: $e');
+      mensalidades = [];
+    }
     isLoadingMensalidades = false;
   }
 
   Future<void> fetchDespesas(int motoristaId, {String? mes}) async {
     isLoadingDespesas = true;
-    despesasResponse = await VivanDespesasListCall.call(
-      motoristaId: motoristaId, mes: mes,
-    );
+    try {
+      final result = await VivanLocator.service.getDespesas(
+        motorista: motoristaId,
+        mesReferencia: mes,
+      );
+      despesas = result.data;
+    } catch (e) {
+      debugPrint('Erro ao buscar despesas: $e');
+      despesas = [];
+    }
     isLoadingDespesas = false;
+  }
+
+  Future<bool> pagarManual(int mensalidadeId, double valor, String forma) async {
+    try {
+      await VivanLocator.service.pagamentoManual(
+        mensalidadeId,
+        valorPago: valor,
+        formaPagamento: forma,
+      );
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  Future<bool> abonar(int mensalidadeId, String motivo) async {
+    try {
+      await VivanLocator.service.abonarMensalidade(mensalidadeId, motivo);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  Future<bool> deleteDespesa(int despesaId) async {
+    try {
+      await VivanLocator.service.deleteDespesa(despesaId);
+      despesas.removeWhere((d) => d.idDespesa == despesaId);
+      return true;
+    } catch (e) {
+      return false;
+    }
   }
 }

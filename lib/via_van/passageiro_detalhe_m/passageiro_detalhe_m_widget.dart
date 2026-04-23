@@ -1,4 +1,4 @@
-import '/backend/api_requests/api_calls.dart';
+import '/vivan/vivan.dart';
 import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
@@ -281,9 +281,7 @@ class _PassageiroDetalheMWidgetState extends State<PassageiroDetalheMWidget> {
                                             CrossAxisAlignment.start,
                                         children: [
                                           Text(
-                                            getJsonField(resp, r'''$.nome''')
-                                                    ?.toString() ??
-                                                '',
+                                            resp.nomeResponsavel,
                                             style: FlutterFlowTheme.of(context)
                                                 .bodyLarge
                                                 .override(
@@ -294,7 +292,7 @@ class _PassageiroDetalheMWidgetState extends State<PassageiroDetalheMWidget> {
                                                 ),
                                           ),
                                           Text(
-                                            '${getJsonField(resp, r'''$.parentesco''')?.toString() ?? ''} • ${getJsonField(resp, r'''$.telefone''')?.toString() ?? ''}',
+                                            '${resp.parentesco} • ${resp.whatsAppResponsavel}',
                                             style: FlutterFlowTheme.of(context)
                                                 .bodySmall
                                                 .override(
@@ -316,10 +314,8 @@ class _PassageiroDetalheMWidgetState extends State<PassageiroDetalheMWidget> {
                                           await _showResponsavelForm(context,
                                               responsavel: resp);
                                         } else if (value == 'excluir') {
-                                          await VivanResponsavelDeleteCall.call(
-                                            responsavelId: getJsonField(
-                                                resp, r'''$.id'''),
-                                          );
+                                          await _model.deleteResponsavel(
+                                              widget.passageiroId!, resp.idResponsavel!);
                                           await _model.fetchPassageiro(
                                               widget.passageiroId!);
                                           safeSetState(() {});
@@ -366,9 +362,7 @@ class _PassageiroDetalheMWidgetState extends State<PassageiroDetalheMWidget> {
                               ),
                             );
                             if (confirm == true) {
-                              await VivanPassageiroDeleteCall.call(
-                                passageiroId: widget.passageiroId,
-                              );
+                              await VivanLocator.service.deletePassageiro(widget.passageiroId!);
                               context.safePop();
                             }
                           },
@@ -449,19 +443,17 @@ class _PassageiroDetalheMWidgetState extends State<PassageiroDetalheMWidget> {
       {dynamic responsavel}) async {
     final nomeController = TextEditingController(
         text: responsavel != null
-            ? getJsonField(responsavel, r'''$.nome''')?.toString()
+            ? responsavel.nomeResponsavel
             : '');
     final cpfController = TextEditingController(
-        text: responsavel != null
-            ? getJsonField(responsavel, r'''$.cpf''')?.toString()
-            : '');
+        text: '');
     final telefoneController = TextEditingController(
         text: responsavel != null
-            ? getJsonField(responsavel, r'''$.telefone''')?.toString()
+            ? responsavel.whatsAppResponsavel
             : '');
     final parentescoController = TextEditingController(
         text: responsavel != null
-            ? getJsonField(responsavel, r'''$.parentesco''')?.toString()
+            ? responsavel.parentesco
             : '');
 
     await showModalBottomSheet(
@@ -516,21 +508,22 @@ class _PassageiroDetalheMWidgetState extends State<PassageiroDetalheMWidget> {
                 SizedBox(height: 24.0),
                 FFButtonWidget(
                   onPressed: () async {
+                    final r = VivanResponsavel(
+                      idResponsavel: responsavel?.idResponsavel,
+                      idPassageiro: widget.passageiroId,
+                      nomeResponsavel: nomeController.text,
+                      cpfResponsavel: cpfController.text,
+                      parentesco: parentescoController.text,
+                      whatsAppResponsavel: telefoneController.text,
+                      emailResponsavel: '',
+                    );
                     if (responsavel != null) {
-                      await VivanResponsavelUpdateCall.call(
-                        responsavelId: getJsonField(responsavel, r'''$.id'''),
-                        nome: nomeController.text,
-                        cpf: cpfController.text,
-                        telefone: telefoneController.text,
-                        parentesco: parentescoController.text,
+                      await VivanLocator.service.updateResponsavel(
+                        widget.passageiroId!, responsavel!.idResponsavel!, r,
                       );
                     } else {
-                      await VivanResponsavelCreateCall.call(
-                        passageiroId: widget.passageiroId,
-                        nome: nomeController.text,
-                        cpf: cpfController.text,
-                        telefone: telefoneController.text,
-                        parentesco: parentescoController.text,
+                      await VivanLocator.service.createResponsavel(
+                        widget.passageiroId!, r,
                       );
                     }
                     Navigator.of(bottomSheetContext).pop();

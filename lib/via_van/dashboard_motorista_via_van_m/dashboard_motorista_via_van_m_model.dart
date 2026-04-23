@@ -1,6 +1,6 @@
 import '/alunos/bts_aluno_adicionar/bts_aluno_adicionar_widget.dart';
 import '/backend/supabase/supabase.dart';
-import '/backend/api_requests/api_calls.dart';
+import '/vivan/vivan.dart';
 import '/escolas/bts_turmas/bts_turmas_widget.dart';
 import '/flutter_flow/flutter_flow_drop_down.dart';
 import '/flutter_flow/flutter_flow_icon_button.dart';
@@ -31,22 +31,39 @@ class DashboardMotoristaViaVanMModel
   int? paginaAtiva;
 
   // ViVan API response data
-  ApiCallResponse? dashboardResumoResponse;
-  ApiCallResponse? dashboardCapacidadeResponse;
+  VivanDashboardResumo? dashboardResumo;
+  VivanCapacidade? dashboardCapacidade;
   bool isLoadingDashboard = true;
 
   // Computed fields from API
-  int get totalPassageiros => VivanDashboardResumoCall.totalPassageiros(dashboardResumoResponse?.jsonBody) ?? 0;
-  int get totalAtivos => VivanDashboardResumoCall.totalAtivos(dashboardResumoResponse?.jsonBody) ?? 0;
-  int get totalContratos => VivanDashboardResumoCall.totalContratos(dashboardResumoResponse?.jsonBody) ?? 0;
-  double get receitaMensal => VivanDashboardResumoCall.receitaMensal(dashboardResumoResponse?.jsonBody) ?? 0.0;
-  double get despesaMensal => VivanDashboardResumoCall.despesaMensal(dashboardResumoResponse?.jsonBody) ?? 0.0;
-  double get saldoMensal => VivanDashboardResumoCall.saldoMensal(dashboardResumoResponse?.jsonBody) ?? 0.0;
-  int get mensalidadesPendentes => VivanDashboardResumoCall.mensalidadesPendentes(dashboardResumoResponse?.jsonBody) ?? 0;
-  int get presencasHoje => VivanDashboardResumoCall.presencasHoje(dashboardResumoResponse?.jsonBody) ?? 0;
-  List<dynamic> get escolasCapacidade => VivanDashboardCapacidadeCall.escolas(dashboardCapacidadeResponse?.jsonBody) ?? [];
-  int get capacidadeTotal => VivanDashboardCapacidadeCall.capacidadeTotal(dashboardCapacidadeResponse?.jsonBody) ?? 0;
-  int get ocupacaoTotal => VivanDashboardCapacidadeCall.ocupacaoTotal(dashboardCapacidadeResponse?.jsonBody) ?? 0;
+  int get totalPassageiros => dashboardResumo?.totalPassageiros ?? 0;
+  int get totalAtivos => dashboardResumo?.passageirosAtivos ?? 0;
+  int get totalContratos => dashboardResumo?.totalContratos ?? 0;
+  double get receitaMensal => dashboardResumo?.totalRecebido ?? 0.0;
+  double get despesaMensal => dashboardResumo?.totalDespesas ?? 0.0;
+  double get saldoMensal => dashboardResumo?.saldoMes ?? 0.0;
+  int get mensalidadesPendentes => dashboardResumo?.mensalidadesPendentes ?? 0;
+  int get mensalidadesAtrasadas => dashboardResumo?.mensalidadesAtrasadas ?? 0;
+  int get capacidadeTotal => dashboardCapacidade?.capacidadeVeiculo ?? 0;
+  String get placaVeiculo => dashboardCapacidade?.placaVeiculo ?? '';
+  Map<String, int> get ocupacaoPorTurno => dashboardCapacidade?.ocupacao ?? {};
+
+  /// Fetch dashboard data from API
+  Future<void> fetchDashboardData(int motoristaId) async {
+    isLoadingDashboard = true;
+    final mesRef = DateFormat('MM/yyyy').format(DateTime.now());
+    try {
+      final results = await Future.wait([
+        VivanLocator.service.getDashboardResumo(motoristaId, mesRef),
+        VivanLocator.service.getCapacidade(motoristaId),
+      ]);
+      dashboardResumo = results[0] as VivanDashboardResumo;
+      dashboardCapacidade = results[1] as VivanCapacidade;
+    } catch (e) {
+      debugPrint('Erro ao buscar dashboard: $e');
+    }
+    isLoadingDashboard = false;
+  }
 
   ///  State fields for stateful widgets in this page.
 

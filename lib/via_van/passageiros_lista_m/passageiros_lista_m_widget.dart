@@ -1,4 +1,4 @@
-import '/backend/api_requests/api_calls.dart';
+import '/vivan/vivan.dart';
 import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
@@ -249,7 +249,7 @@ class _PassageirosListaMWidgetState extends State<PassageirosListaMWidget> {
                                         'passageiroDetalheM',
                                         queryParameters: {
                                           'passageiroId': serializeParam(
-                                            getJsonField(passageiro, r'''$.id'''),
+                                            passageiro.idPassageiro,
                                             ParamType.int,
                                           ),
                                         }.withoutNulls,
@@ -281,12 +281,7 @@ class _PassageirosListaMWidgetState extends State<PassageirosListaMWidget> {
                                               ),
                                               child: Center(
                                                 child: Text(
-                                                  (getJsonField(passageiro,
-                                                              r'''$.nome''')
-                                                          ?.toString() ??
-                                                      'P')
-                                                      .substring(0, 1)
-                                                      .toUpperCase(),
+                                                  passageiro.inicial,
                                                   style: FlutterFlowTheme.of(
                                                           context)
                                                       .titleMedium
@@ -312,10 +307,7 @@ class _PassageirosListaMWidgetState extends State<PassageirosListaMWidget> {
                                                     CrossAxisAlignment.start,
                                                 children: [
                                                   Text(
-                                                    getJsonField(passageiro,
-                                                                r'''$.nome''')
-                                                            ?.toString() ??
-                                                        '',
+                                                    passageiro.nomePassageiro,
                                                     style: FlutterFlowTheme.of(
                                                             context)
                                                         .bodyLarge
@@ -330,10 +322,7 @@ class _PassageirosListaMWidgetState extends State<PassageirosListaMWidget> {
                                                   ),
                                                   SizedBox(height: 4.0),
                                                   Text(
-                                                    getJsonField(passageiro,
-                                                                r'''$.escola''')
-                                                            ?.toString() ??
-                                                        'Sem escola',
+                                                    passageiro.nomeEscola ?? 'Sem escola',
                                                     style: FlutterFlowTheme.of(
                                                             context)
                                                         .bodySmall
@@ -358,11 +347,7 @@ class _PassageirosListaMWidgetState extends State<PassageirosListaMWidget> {
                                                   horizontal: 8.0,
                                                   vertical: 4.0),
                                               decoration: BoxDecoration(
-                                                color: (getJsonField(
-                                                                passageiro,
-                                                                r'''$.status''')
-                                                            ?.toString() ==
-                                                        'ATIVO')
+                                                color: passageiro.ativo
                                                     ? Color(0xFF39D2C0)
                                                         .withOpacity(0.2)
                                                     : FlutterFlowTheme.of(
@@ -373,10 +358,7 @@ class _PassageirosListaMWidgetState extends State<PassageirosListaMWidget> {
                                                     BorderRadius.circular(8.0),
                                               ),
                                               child: Text(
-                                                getJsonField(passageiro,
-                                                            r'''$.status''')
-                                                        ?.toString() ??
-                                                    '',
+                                                passageiro.ativo ? 'ATIVO' : 'INATIVO',
                                                 style: FlutterFlowTheme.of(
                                                         context)
                                                     .bodySmall
@@ -385,11 +367,7 @@ class _PassageirosListaMWidgetState extends State<PassageirosListaMWidget> {
                                                         fontWeight:
                                                             FontWeight.w600,
                                                       ),
-                                                      color: (getJsonField(
-                                                                      passageiro,
-                                                                      r'''$.status''')
-                                                                  ?.toString() ==
-                                                              'ATIVO')
+                                                      color: passageiro.ativo
                                                           ? Color(0xFF39D2C0)
                                                           : FlutterFlowTheme.of(
                                                                   context)

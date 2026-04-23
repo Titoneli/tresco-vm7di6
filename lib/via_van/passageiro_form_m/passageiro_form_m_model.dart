@@ -1,14 +1,14 @@
-import '/backend/api_requests/api_calls.dart';
 import '/flutter_flow/flutter_flow_util.dart';
+import '/vivan/vivan.dart';
 import 'passageiro_form_m_widget.dart' show PassageiroFormMWidget;
 import 'package:flutter/material.dart';
-import 'package:ff_commons/api_requests/api_manager.dart' show ApiCallResponse;
 
 class PassageiroFormMModel extends FlutterFlowModel<PassageiroFormMWidget> {
   ///  Local state fields for this page.
 
   bool isLoading = false;
   bool isSaving = false;
+  String? errorMessage;
 
   ///  State fields for stateful widgets in this page.
 
@@ -40,45 +40,41 @@ class PassageiroFormMModel extends FlutterFlowModel<PassageiroFormMWidget> {
 
   Future<void> loadPassageiro(int passageiroId) async {
     isLoading = true;
-    final response = await VivanPassageiroGetCall.call(
-      passageiroId: passageiroId,
-    );
-    if (response.succeeded) {
-      nomeTextController?.text =
-          VivanPassageiroGetCall.nome(response.jsonBody) ?? '';
-      cpfTextController?.text =
-          VivanPassageiroGetCall.cpf(response.jsonBody) ?? '';
-      escolaTextController?.text =
-          VivanPassageiroGetCall.escola(response.jsonBody) ?? '';
-      enderecoTextController?.text =
-          VivanPassageiroGetCall.endereco(response.jsonBody) ?? '';
-      fotoUrl = VivanPassageiroGetCall.foto(response.jsonBody);
+    try {
+      final p = await VivanLocator.service.getPassageiro(passageiroId);
+      nomeTextController?.text = p.nomePassageiro;
+      cpfTextController?.text = p.cpfPassageiro ?? '';
+      escolaTextController?.text = p.nomeEscola ?? '';
+      enderecoTextController?.text = p.enderecoCompleto;
+      fotoUrl = p.urlFoto;
+    } catch (e) {
+      debugPrint('Erro ao carregar passageiro: $e');
     }
     isLoading = false;
   }
 
-  Future<ApiCallResponse> savePassageiro(
-      int motoristaId, int? passageiroId) async {
+  Future<bool> savePassageiro(int motoristaId, int? passageiroId) async {
     isSaving = true;
-    ApiCallResponse response;
-    if (passageiroId != null) {
-      response = await VivanPassageiroUpdateCall.call(
-        passageiroId: passageiroId,
-        nome: nomeTextController?.text,
-        cpf: cpfTextController?.text,
-        endereco: enderecoTextController?.text,
-        foto: fotoUrl,
+    errorMessage = null;
+    try {
+      final p = VivanPassageiro(
+        idMotorista: motoristaId,
+        nomePassageiro: nomeTextController?.text ?? '',
+        cpfPassageiro: cpfTextController?.text,
+        endPassageiro: enderecoTextController?.text ?? '',
+        urlFoto: fotoUrl,
       );
-    } else {
-      response = await VivanPassageiroCreateCall.call(
-        motoristaId: motoristaId,
-        nome: nomeTextController?.text,
-        cpf: cpfTextController?.text,
-        endereco: enderecoTextController?.text,
-        foto: fotoUrl,
-      );
+      if (passageiroId != null) {
+        await VivanLocator.service.updatePassageiro(passageiroId, p);
+      } else {
+        await VivanLocator.service.createPassageiro(p);
+      }
+      isSaving = false;
+      return true;
+    } catch (e) {
+      errorMessage = e.toString();
+      isSaving = false;
+      return false;
     }
-    isSaving = false;
-    return response;
   }
 }

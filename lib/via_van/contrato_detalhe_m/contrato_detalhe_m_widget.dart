@@ -1,4 +1,4 @@
-import '/backend/api_requests/api_calls.dart';
+import '/vivan/vivan.dart';
 import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
@@ -132,17 +132,18 @@ class _ContratoDetalheMWidgetState extends State<ContratoDetalheMWidget> {
             SizedBox(height: 32.0),
             FFButtonWidget(
               onPressed: () async {
-                final response = await VivanContratoCreateCall.call(
-                  motoristaId: FFAppState().idUsuario,
-                  passageiroId: _model.selectedPassageiroId,
-                  valorMensal: double.tryParse(_model.valorTextController!.text),
-                  dataInicio: _model.dataInicioTextController!.text,
-                  dataFim: _model.dataFimTextController!.text,
-                  condicoes: _model.condicoesTextController!.text,
-                );
-                if (response.succeeded) {
+                try {
+                  final c = VivanContrato(
+                    idMotorista: FFAppState().idUsuario,
+                    idPassageiro: _model.selectedPassageiroId,
+                    valMensal: double.tryParse(_model.valorTextController!.text),
+                    dtInicio: _model.dataInicioTextController!.text,
+                    dtTermino: _model.dataFimTextController!.text,
+                    observacoes: _model.condicoesTextController!.text,
+                  );
+                  await VivanLocator.service.createContrato(c);
                   context.safePop();
-                } else {
+                } catch (e) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text('Erro ao criar contrato')),
                   );
@@ -331,12 +332,12 @@ class _ContratoDetalheMWidgetState extends State<ContratoDetalheMWidget> {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(getJsonField(h, r'''$.acao''')?.toString() ?? '',
+                                    Text(h.tipoAlteracao,
                                       style: FlutterFlowTheme.of(context).bodyMedium.override(
                                         font: GoogleFonts.inter(fontWeight: FontWeight.w500), letterSpacing: 0.0,
                                       ),
                                     ),
-                                    Text(getJsonField(h, r'''$.data''')?.toString() ?? '',
+                                    Text(h.dtAlteracao,
                                       style: FlutterFlowTheme.of(context).bodySmall.override(
                                         font: GoogleFonts.inter(fontWeight: FontWeight.normal),
                                         color: FlutterFlowTheme.of(context).secondaryText, letterSpacing: 0.0,

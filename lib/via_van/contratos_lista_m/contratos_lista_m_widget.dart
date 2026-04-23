@@ -1,4 +1,4 @@
-import '/backend/api_requests/api_calls.dart';
+import '/vivan/vivan.dart';
 import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
@@ -171,9 +171,7 @@ class _ContratosListaMWidgetState extends State<ContratosListaMWidget> {
                               itemCount: _model.contratos.length,
                               itemBuilder: (context, index) {
                                 final contrato = _model.contratos[index];
-                                final status = getJsonField(
-                                        contrato, r'''$.status''')
-                                    ?.toString();
+                                final status = contrato.status;
                                 final statusColor = _statusColor(status);
 
                                 return Padding(
@@ -186,8 +184,7 @@ class _ContratosListaMWidgetState extends State<ContratosListaMWidget> {
                                         'contratoDetalheM',
                                         queryParameters: {
                                           'contratoId': serializeParam(
-                                            getJsonField(
-                                                contrato, r'''$.id'''),
+                                            contrato.idContrato,
                                             ParamType.int,
                                           ),
                                         }.withoutNulls,
@@ -220,10 +217,7 @@ class _ContratosListaMWidgetState extends State<ContratosListaMWidget> {
                                               children: [
                                                 Expanded(
                                                   child: Text(
-                                                    getJsonField(contrato,
-                                                                r'''$.passageiro_nome''')
-                                                            ?.toString() ??
-                                                        'Passageiro',
+                                                    contrato.nomePassageiro,
                                                     style: FlutterFlowTheme.of(
                                                             context)
                                                         .bodyLarge
@@ -273,7 +267,7 @@ class _ContratosListaMWidgetState extends State<ContratosListaMWidget> {
                                                       .spaceBetween,
                                               children: [
                                                 Text(
-                                                  'R\$ ${getJsonField(contrato, r'''$.valor_mensal''')?.toString() ?? '0,00'}/mês',
+                                                  'R\$ ${contrato.valMensal}/mês',
                                                   style: FlutterFlowTheme.of(
                                                           context)
                                                       .titleMedium
@@ -298,7 +292,7 @@ class _ContratosListaMWidgetState extends State<ContratosListaMWidget> {
                                             ),
                                             SizedBox(height: 4.0),
                                             Text(
-                                              '${getJsonField(contrato, r'''$.data_inicio''')?.toString() ?? ''} - ${getJsonField(contrato, r'''$.data_fim''')?.toString() ?? ''}',
+                                              '${contrato.dtInicio} - ${contrato.dtTermino}',
                                               style: FlutterFlowTheme.of(
                                                       context)
                                                   .bodySmall

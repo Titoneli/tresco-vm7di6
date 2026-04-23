@@ -1,31 +1,23 @@
-import '/backend/api_requests/api_calls.dart';
 import '/flutter_flow/flutter_flow_util.dart';
+import '/vivan/vivan.dart';
 import 'passageiro_detalhe_m_widget.dart' show PassageiroDetalheMWidget;
 import 'package:flutter/material.dart';
-import 'package:ff_commons/api_requests/api_manager.dart' show ApiCallResponse;
 
 class PassageiroDetalheMModel
     extends FlutterFlowModel<PassageiroDetalheMWidget> {
   ///  Local state fields for this page.
 
   bool isLoading = true;
-  ApiCallResponse? passageiroResponse;
+  VivanPassageiro? passageiro;
+  List<VivanResponsavel> responsaveis = [];
 
   // Computed fields
-  String get nome =>
-      VivanPassageiroGetCall.nome(passageiroResponse?.jsonBody) ?? '';
-  String get cpf =>
-      VivanPassageiroGetCall.cpf(passageiroResponse?.jsonBody) ?? '';
-  String get escola =>
-      VivanPassageiroGetCall.escola(passageiroResponse?.jsonBody) ?? '';
-  String get endereco =>
-      VivanPassageiroGetCall.endereco(passageiroResponse?.jsonBody) ?? '';
-  String get foto =>
-      VivanPassageiroGetCall.foto(passageiroResponse?.jsonBody) ?? '';
-  String get status =>
-      VivanPassageiroGetCall.status(passageiroResponse?.jsonBody) ?? '';
-  List<dynamic> get responsaveis =>
-      VivanPassageiroGetCall.responsaveis(passageiroResponse?.jsonBody) ?? [];
+  String get nome => passageiro?.nomePassageiro ?? '';
+  String get cpf => passageiro?.cpfPassageiro ?? '';
+  String get escola => passageiro?.nomeEscola ?? '';
+  String get endereco => passageiro?.enderecoCompleto ?? '';
+  String get foto => passageiro?.urlFoto ?? '';
+  String get status => passageiro?.ativo == true ? 'ATIVO' : 'INATIVO';
 
   @override
   void initState(BuildContext context) {}
@@ -35,9 +27,21 @@ class PassageiroDetalheMModel
 
   Future<void> fetchPassageiro(int passageiroId) async {
     isLoading = true;
-    passageiroResponse = await VivanPassageiroGetCall.call(
-      passageiroId: passageiroId,
-    );
+    try {
+      passageiro = await VivanLocator.service.getPassageiro(passageiroId);
+      responsaveis = await VivanLocator.service.getResponsaveis(passageiroId);
+    } catch (e) {
+      debugPrint('Erro ao buscar passageiro: $e');
+    }
     isLoading = false;
+  }
+
+  Future<void> deleteResponsavel(int passageiroId, int responsavelId) async {
+    try {
+      await VivanLocator.service.deleteResponsavel(passageiroId, responsavelId);
+      responsaveis.removeWhere((r) => r.idResponsavel == responsavelId);
+    } catch (e) {
+      debugPrint('Erro ao excluir responsável: $e');
+    }
   }
 }

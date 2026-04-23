@@ -1,20 +1,15 @@
-import '/backend/api_requests/api_calls.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/frame_work/menu_side_bar_expandido/menu_side_bar_expandido_widget.dart';
+import '/vivan/vivan.dart';
 import 'passageiros_lista_m_widget.dart' show PassageirosListaMWidget;
-import 'package:ff_theme/flutter_flow/flutter_flow_theme.dart';
 import 'package:flutter/material.dart';
-import 'package:ff_commons/api_requests/api_manager.dart' show ApiCallResponse;
 
 class PassageirosListaMModel extends FlutterFlowModel<PassageirosListaMWidget> {
   ///  Local state fields for this page.
 
   bool isLoading = true;
-  ApiCallResponse? passageirosResponse;
-  List<dynamic> get passageiros =>
-      VivanPassageirosListCall.passageiros(passageirosResponse?.jsonBody) ?? [];
-  int get total =>
-      VivanPassageirosListCall.total(passageirosResponse?.jsonBody) ?? 0;
+  List<VivanPassageiro> passageiros = [];
+  int total = 0;
 
   ///  State fields for stateful widgets in this page.
 
@@ -41,10 +36,18 @@ class PassageirosListaMModel extends FlutterFlowModel<PassageirosListaMWidget> {
   /// Fetch passageiros from API
   Future<void> fetchPassageiros(int motoristaId, {String? busca}) async {
     isLoading = true;
-    passageirosResponse = await VivanPassageirosListCall.call(
-      motoristaId: motoristaId,
-      busca: busca,
-    );
+    try {
+      final result = await VivanLocator.service.getPassageiros(
+        motorista: motoristaId,
+        busca: busca,
+      );
+      passageiros = result.data;
+      total = result.total;
+    } catch (e) {
+      debugPrint('Erro ao buscar passageiros: $e');
+      passageiros = [];
+      total = 0;
+    }
     isLoading = false;
   }
 }

@@ -1,24 +1,22 @@
-import '/backend/api_requests/api_calls.dart';
 import '/flutter_flow/flutter_flow_util.dart';
+import '/vivan/vivan.dart';
 import 'contrato_detalhe_m_widget.dart' show ContratoDetalheMWidget;
 import 'package:flutter/material.dart';
-import 'package:ff_commons/api_requests/api_manager.dart' show ApiCallResponse;
 
 class ContratoDetalheMModel extends FlutterFlowModel<ContratoDetalheMWidget> {
   bool isLoading = true;
   bool isActionLoading = false;
-  ApiCallResponse? contratoResponse;
-  ApiCallResponse? historicoResponse;
+  VivanContrato? contrato;
+  List<VivanContratoHistorico> historico = [];
 
   // Computed
-  int? get id => VivanContratoGetCall.id(contratoResponse?.jsonBody);
-  String get status => VivanContratoGetCall.status(contratoResponse?.jsonBody) ?? '';
-  double get valorMensal => VivanContratoGetCall.valorMensal(contratoResponse?.jsonBody) ?? 0.0;
-  String get passageiroNome => VivanContratoGetCall.passageiroNome(contratoResponse?.jsonBody) ?? '';
-  String get dataInicio => VivanContratoGetCall.dataInicio(contratoResponse?.jsonBody) ?? '';
-  String get dataFim => VivanContratoGetCall.dataFim(contratoResponse?.jsonBody) ?? '';
-  String get condicoes => VivanContratoGetCall.condicoes(contratoResponse?.jsonBody) ?? '';
-  List<dynamic> get historico => VivanContratoHistoricoCall.historico(historicoResponse?.jsonBody) ?? [];
+  int? get id => contrato?.idContrato;
+  String get status => contrato?.status ?? '';
+  double get valorMensal => contrato?.valMensal ?? 0.0;
+  String get passageiroNome => contrato?.nomePassageiro ?? '';
+  String get dataInicio => contrato?.dtInicio ?? '';
+  String get dataFim => contrato?.dtTermino ?? '';
+  String get condicoes => contrato?.observacoes ?? '';
 
   // Form fields for creation
   FocusNode? valorFocusNode;
@@ -48,40 +46,64 @@ class ContratoDetalheMModel extends FlutterFlowModel<ContratoDetalheMWidget> {
 
   Future<void> fetchContrato(int contratoId) async {
     isLoading = true;
-    final results = await Future.wait([
-      VivanContratoGetCall.call(contratoId: contratoId),
-      VivanContratoHistoricoCall.call(contratoId: contratoId),
-    ]);
-    contratoResponse = results[0];
-    historicoResponse = results[1];
+    try {
+      final results = await Future.wait([
+        VivanLocator.service.getContrato(contratoId),
+        VivanLocator.service.getContratoHistorico(contratoId),
+      ]);
+      contrato = results[0] as VivanContrato;
+      historico = results[1] as List<VivanContratoHistorico>;
+    } catch (e) {
+      debugPrint('Erro ao buscar contrato: $e');
+    }
     isLoading = false;
   }
 
-  Future<ApiCallResponse> ativar(int contratoId) async {
+  Future<bool> ativar(int contratoId) async {
     isActionLoading = true;
-    final r = await VivanContratoAtivarCall.call(contratoId: contratoId);
-    isActionLoading = false;
-    return r;
+    try {
+      contrato = await VivanLocator.service.ativarContrato(contratoId);
+      isActionLoading = false;
+      return true;
+    } catch (e) {
+      isActionLoading = false;
+      return false;
+    }
   }
 
-  Future<ApiCallResponse> suspender(int contratoId) async {
+  Future<bool> suspender(int contratoId, {String motivo = ''}) async {
     isActionLoading = true;
-    final r = await VivanContratoSuspenderCall.call(contratoId: contratoId);
-    isActionLoading = false;
-    return r;
+    try {
+      contrato = await VivanLocator.service.suspenderContrato(contratoId, motivo);
+      isActionLoading = false;
+      return true;
+    } catch (e) {
+      isActionLoading = false;
+      return false;
+    }
   }
 
-  Future<ApiCallResponse> cancelar(int contratoId, String motivo) async {
+  Future<bool> cancelar(int contratoId, String motivo) async {
     isActionLoading = true;
-    final r = await VivanContratoCancelarCall.call(contratoId: contratoId, motivo: motivo);
-    isActionLoading = false;
-    return r;
+    try {
+      contrato = await VivanLocator.service.cancelarContrato(contratoId, motivo);
+      isActionLoading = false;
+      return true;
+    } catch (e) {
+      isActionLoading = false;
+      return false;
+    }
   }
 
-  Future<ApiCallResponse> enviarAssinatura(int contratoId) async {
+  Future<bool> enviarAssinatura(int contratoId) async {
     isActionLoading = true;
-    final r = await VivanContratoEnviarAssinaturaCall.call(contratoId: contratoId);
-    isActionLoading = false;
-    return r;
+    try {
+      contrato = await VivanLocator.service.enviarParaAssinatura(contratoId);
+      isActionLoading = false;
+      return true;
+    } catch (e) {
+      isActionLoading = false;
+      return false;
+    }
   }
 }

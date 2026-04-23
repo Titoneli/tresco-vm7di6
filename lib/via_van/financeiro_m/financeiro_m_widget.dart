@@ -1,4 +1,4 @@
-import '/backend/api_requests/api_calls.dart';
+import '/vivan/vivan.dart';
 import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
@@ -147,7 +147,7 @@ class _FinanceiroMWidgetState extends State<FinanceiroMWidget>
                     itemCount: _model.mensalidades.length,
                     itemBuilder: (context, index) {
                       final m = _model.mensalidades[index];
-                      final status = getJsonField(m, r'''$.status''')?.toString() ?? '';
+                      final status = m.status;
                       final isPago = status.toUpperCase() == 'PAGO';
                       final isAbonado = status.toUpperCase() == 'ABONADO';
 
@@ -167,7 +167,7 @@ class _FinanceiroMWidgetState extends State<FinanceiroMWidget>
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Text(getJsonField(m, r'''$.passageiro_nome''')?.toString() ?? '',
+                                    Text(m.nomePassageiro,
                                       style: FlutterFlowTheme.of(context).bodyLarge.override(
                                         font: GoogleFonts.inter(fontWeight: FontWeight.w600), letterSpacing: 0.0,
                                       ),
@@ -194,13 +194,13 @@ class _FinanceiroMWidgetState extends State<FinanceiroMWidget>
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Text('R\$ ${getJsonField(m, r'''$.valor''')?.toString() ?? '0,00'}',
+                                    Text('R\$ ${m.valorLiquido}',
                                       style: FlutterFlowTheme.of(context).titleSmall.override(
                                         font: GoogleFonts.inter(fontWeight: FontWeight.w600),
                                         color: FlutterFlowTheme.of(context).primary, letterSpacing: 0.0,
                                       ),
                                     ),
-                                    Text('Venc: ${getJsonField(m, r'''$.vencimento''')?.toString() ?? ''}',
+                                    Text('Venc: ${m.dtVencimento}',
                                       style: FlutterFlowTheme.of(context).bodySmall.override(
                                         font: GoogleFonts.inter(fontWeight: FontWeight.normal),
                                         color: FlutterFlowTheme.of(context).secondaryText, letterSpacing: 0.0,
@@ -216,7 +216,7 @@ class _FinanceiroMWidgetState extends State<FinanceiroMWidget>
                                         Expanded(
                                           child: FFButtonWidget(
                                             onPressed: () async {
-                                              await _showPagamentoManualDialog(context, getJsonField(m, r'''$.id'''));
+                                              await _showPagamentoManualDialog(context, m.idMensalidade);
                                             },
                                             text: 'Pag. Manual',
                                             options: FFButtonOptions(
@@ -234,7 +234,7 @@ class _FinanceiroMWidgetState extends State<FinanceiroMWidget>
                                         Expanded(
                                           child: FFButtonWidget(
                                             onPressed: () async {
-                                              await _showAbonoDialog(context, getJsonField(m, r'''$.id'''));
+                                              await _showAbonoDialog(context, m.idMensalidade);
                                             },
                                             text: 'Abonar',
                                             options: FFButtonOptions(
@@ -254,8 +254,8 @@ class _FinanceiroMWidgetState extends State<FinanceiroMWidget>
                                           fillColor: FlutterFlowTheme.of(context).secondaryBackground,
                                           icon: Icon(Icons.qr_code, color: FlutterFlowTheme.of(context).primary, size: 20.0),
                                           onPressed: () async {
-                                            final pixUrl = getJsonField(m, r'''$.pix_url''')?.toString();
-                                            final pixQr = getJsonField(m, r'''$.pix_qr_code''')?.toString();
+                                            final pixUrl = m.asaasPixCopiaECola;
+                                            final pixQr = m.asaasPixQrCode;
                                             if (pixUrl != null || pixQr != null) {
                                               await _showPixDialog(context, pixUrl, pixQr);
                                             }
@@ -269,9 +269,7 @@ class _FinanceiroMWidgetState extends State<FinanceiroMWidget>
                                     padding: EdgeInsets.only(top: 8.0),
                                     child: FFButtonWidget(
                                       onPressed: () async {
-                                        await VivanMensalidadeCancelarAbonoCall.call(
-                                          mensalidadeId: getJsonField(m, r'''$.id'''),
-                                        );
+                                        await VivanLocator.service.cancelarAbono(m.idMensalidade!);
                                         await _model.fetchMensalidades(FFAppState().idUsuario);
                                         safeSetState(() {});
                                       },
@@ -370,18 +368,18 @@ class _FinanceiroMWidgetState extends State<FinanceiroMWidget>
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      Text(getJsonField(d, r'''$.categoria''')?.toString() ?? '',
+                                      Text(d.categoria,
                                         style: FlutterFlowTheme.of(context).bodyLarge.override(
                                           font: GoogleFonts.inter(fontWeight: FontWeight.w600), letterSpacing: 0.0,
                                         ),
                                       ),
-                                      Text(getJsonField(d, r'''$.descricao''')?.toString() ?? '',
+                                      Text(d.descricao,
                                         style: FlutterFlowTheme.of(context).bodySmall.override(
                                           font: GoogleFonts.inter(fontWeight: FontWeight.normal),
                                           color: FlutterFlowTheme.of(context).secondaryText, letterSpacing: 0.0,
                                         ),
                                       ),
-                                      Text(getJsonField(d, r'''$.data''')?.toString() ?? '',
+                                      Text(d.dtDespesa,
                                         style: FlutterFlowTheme.of(context).bodySmall.override(
                                           font: GoogleFonts.inter(fontWeight: FontWeight.normal),
                                           color: FlutterFlowTheme.of(context).secondaryText, letterSpacing: 0.0,
@@ -390,7 +388,7 @@ class _FinanceiroMWidgetState extends State<FinanceiroMWidget>
                                     ],
                                   ),
                                 ),
-                                Text('R\$ ${getJsonField(d, r'''$.valor''')?.toString() ?? '0,00'}',
+                                Text('R\$ ${d.valor}',
                                   style: FlutterFlowTheme.of(context).titleSmall.override(
                                     font: GoogleFonts.inter(fontWeight: FontWeight.w600),
                                     color: Color(0xFFFF5963), letterSpacing: 0.0,
@@ -399,7 +397,7 @@ class _FinanceiroMWidgetState extends State<FinanceiroMWidget>
                                 PopupMenuButton<String>(
                                   onSelected: (value) async {
                                     if (value == 'excluir') {
-                                      await VivanDespesaDeleteCall.call(despesaId: getJsonField(d, r'''$.id'''));
+                                      await _model.deleteDespesa(d.idDespesa!);
                                       await _model.fetchDespesas(FFAppState().idUsuario);
                                       safeSetState(() {});
                                     }
@@ -440,10 +438,10 @@ class _FinanceiroMWidgetState extends State<FinanceiroMWidget>
           TextButton(onPressed: () => Navigator.of(ctx).pop(), child: Text('Cancelar')),
           TextButton(
             onPressed: () async {
-              await VivanMensalidadePagamentoManualCall.call(
-                mensalidadeId: mensalidadeId,
-                formaPagamento: formaController.text,
-                observacao: obsController.text,
+              await _model.pagarManual(
+                mensalidadeId!,
+                double.tryParse(valorController.text) ?? 0,
+                formaController.text,
               );
               Navigator.of(ctx).pop();
               await _model.fetchMensalidades(FFAppState().idUsuario);
@@ -467,10 +465,7 @@ class _FinanceiroMWidgetState extends State<FinanceiroMWidget>
           TextButton(onPressed: () => Navigator.of(ctx).pop(), child: Text('Cancelar')),
           TextButton(
             onPressed: () async {
-              await VivanMensalidadeAbonarCall.call(
-                mensalidadeId: mensalidadeId,
-                motivo: motivoController.text,
-              );
+              await _model.abonar(mensalidadeId!, motivoController.text);
               Navigator.of(ctx).pop();
               await _model.fetchMensalidades(FFAppState().idUsuario);
               safeSetState(() {});

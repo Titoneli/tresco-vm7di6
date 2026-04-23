@@ -1,4 +1,4 @@
-import '/backend/api_requests/api_calls.dart';
+import '/vivan/vivan.dart';
 import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
@@ -186,7 +186,7 @@ class _PresencaMWidgetState extends State<PresencaMWidget>
                 child: FFButtonWidget(
                   onPressed: () {
                     for (final p in passageiros) {
-                      final id = getJsonField(p, r'''$.passageiro_id''');
+                      final id = p.idPassageiro;
                       if (id != null) _model.presencaMap[id] = 'P';
                     }
                     safeSetState(() {});
@@ -208,7 +208,7 @@ class _PresencaMWidgetState extends State<PresencaMWidget>
                 child: FFButtonWidget(
                   onPressed: () {
                     for (final p in passageiros) {
-                      final id = getJsonField(p, r'''$.passageiro_id''');
+                      final id = p.idPassageiro;
                       if (id != null) _model.presencaMap[id] = 'F';
                     }
                     safeSetState(() {});
@@ -241,8 +241,8 @@ class _PresencaMWidgetState extends State<PresencaMWidget>
                   itemCount: passageiros.length,
                   itemBuilder: (context, index) {
                     final p = passageiros[index];
-                    final passageiroId = getJsonField(p, r'''$.passageiro_id''') as int?;
-                    final nome = getJsonField(p, r'''$.passageiro_nome''')?.toString() ?? '';
+                    final passageiroId = p.idPassageiro as int?;
+                    final nome = p.nomePassageiro;
                     final status = passageiroId != null ? (_model.presencaMap[passageiroId] ?? 'F') : 'F';
                     final isPresente = status == 'P';
 
@@ -316,7 +316,7 @@ class _PresencaMWidgetState extends State<PresencaMWidget>
               onPressed: _model.isSending ? null : () async {
                 final response = await _model.enviarPresencasLote(FFAppState().idUsuario);
                 safeSetState(() {});
-                if (response.succeeded) {
+                if (response) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text('Presenças registradas com sucesso!')),
                   );
@@ -417,10 +417,9 @@ class _PresencaMWidgetState extends State<PresencaMWidget>
                     itemCount: _model.presencas.length,
                     itemBuilder: (context, index) {
                       final p = _model.presencas[index];
-                      final nome = getJsonField(p, r'''$.passageiro_nome''')?.toString() ?? '';
-                      final data = getJsonField(p, r'''$.data''')?.toString() ?? '';
-                      final status = getJsonField(p, r'''$.status''')?.toString() ?? '';
-                      final isPresente = status == 'P';
+                      final nome = p.nomePassageiro;
+                      final data = p.dtPresenca;
+                      final isPresente = p.isPresente;
 
                       return Padding(
                         padding: EdgeInsetsDirectional.fromSTEB(16.0, 2.0, 16.0, 2.0),

@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"name": "TopERP",
+			"path": "../Top/TopERP"
+		},
+		{
+			"name": "Downloads",
+			"path": "../Downloads"
+		}
+	],
+	"settings": {}
+}

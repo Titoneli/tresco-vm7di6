@@ -1,0 +1,11 @@
+{
+	"folders": [
+		{
+			"name": "dashboard-processos",
+			"path": "../Documents/dashboard_automacao/dashboard-processos"
+		}
+	],
+	"settings": {
+		"chat.agent.maxRequests": 100
+	}
+}

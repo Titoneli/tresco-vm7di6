@@ -1,0 +1,1 @@
+{"inputs":["/Users/user/Tresco/web/*/index.html","/Users/user/Tresco/web/flutter_bootstrap.js","/Users/user/flutter/bin/cache/engine.stamp"],"outputs":["/Users/user/Tresco/build/web/*/index.html","/Users/user/Tresco/build/web/flutter_bootstrap.js"],"buildKey":"[{\"compileTarget\":\"dart2js\",\"renderer\":\"canvaskit\",\"mainJsPath\":\"main.dart.js\"}]"}

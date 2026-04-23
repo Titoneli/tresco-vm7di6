@@ -1,7 +1,4 @@
-cd /Users/user/Tresco/ff_tresco/tresco-vm7di6
-git add -A
-git commit -m "feat: implementa fluxo completo ViVan - passageiros, contratos, financeiro e presença"
-git pushname: tresco
+name: tresco
 description: Transporte Escolar Cooperativo
 
 # The following line prevents the package from being accidentally published to

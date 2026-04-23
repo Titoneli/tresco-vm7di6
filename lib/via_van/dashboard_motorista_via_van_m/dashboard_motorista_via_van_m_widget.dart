@@ -1,5 +1,6 @@
 import '/alunos/bts_aluno_adicionar/bts_aluno_adicionar_widget.dart';
 import '/backend/supabase/supabase.dart';
+import '/backend/api_requests/api_calls.dart';
 import '/escolas/bts_turmas/bts_turmas_widget.dart';
 import '/flutter_flow/flutter_flow_drop_down.dart';
 import '/flutter_flow/flutter_flow_icon_button.dart';
@@ -58,6 +59,21 @@ class _DashboardMotoristaViaVanMWidgetState
 
         context.pushNamed(LoginWidget.routeName);
       }
+      // Fetch ViVan dashboard data from API
+      _model.isLoadingDashboard = true;
+      safeSetState(() {});
+      final results = await Future.wait([
+        VivanDashboardResumoCall.call(
+          motoristaId: FFAppState().idUsuario,
+        ),
+        VivanDashboardCapacidadeCall.call(
+          motoristaId: FFAppState().idUsuario,
+        ),
+      ]);
+      _model.dashboardResumoResponse = results[0];
+      _model.dashboardCapacidadeResponse = results[1];
+      _model.isLoadingDashboard = false;
+      safeSetState(() {});
     });
 
     _model.filterAlunoTextController ??= TextEditingController();
@@ -4173,30 +4189,7 @@ class _DashboardMotoristaViaVanMWidgetState
                                       hoverColor: Colors.transparent,
                                       highlightColor: Colors.transparent,
                                       onTap: () async {
-                                        await showModalBottomSheet(
-                                          isScrollControlled: true,
-                                          backgroundColor: Colors.transparent,
-                                          enableDrag: false,
-                                          context: context,
-                                          builder: (context) {
-                                            return GestureDetector(
-                                              onTap: () {
-                                                FocusScope.of(context)
-                                                    .unfocus();
-                                                FocusManager
-                                                    .instance.primaryFocus
-                                                    ?.unfocus();
-                                              },
-                                              child: Padding(
-                                                padding:
-                                                    MediaQuery.viewInsetsOf(
-                                                        context),
-                                                child:
-                                                    BtsAlunoAdicionarWidget(),
-                                              ),
-                                            );
-                                          },
-                                        ).then((value) => safeSetState(() {}));
+                                        context.pushNamed('presencaM');
                                       },
                                       child: Container(
                                         width: 100.0,
@@ -4268,30 +4261,7 @@ class _DashboardMotoristaViaVanMWidgetState
                                       hoverColor: Colors.transparent,
                                       highlightColor: Colors.transparent,
                                       onTap: () async {
-                                        await showModalBottomSheet(
-                                          isScrollControlled: true,
-                                          backgroundColor: Colors.transparent,
-                                          enableDrag: false,
-                                          context: context,
-                                          builder: (context) {
-                                            return GestureDetector(
-                                              onTap: () {
-                                                FocusScope.of(context)
-                                                    .unfocus();
-                                                FocusManager
-                                                    .instance.primaryFocus
-                                                    ?.unfocus();
-                                              },
-                                              child: Padding(
-                                                padding:
-                                                    MediaQuery.viewInsetsOf(
-                                                        context),
-                                                child:
-                                                    BtsAlunoAdicionarWidget(),
-                                              ),
-                                            );
-                                          },
-                                        ).then((value) => safeSetState(() {}));
+                                        context.pushNamed('passageirosListaM');
                                       },
                                       child: Container(
                                         width: 100.0,
@@ -4362,30 +4332,7 @@ class _DashboardMotoristaViaVanMWidgetState
                                       hoverColor: Colors.transparent,
                                       highlightColor: Colors.transparent,
                                       onTap: () async {
-                                        await showModalBottomSheet(
-                                          isScrollControlled: true,
-                                          backgroundColor: Colors.transparent,
-                                          enableDrag: false,
-                                          context: context,
-                                          builder: (context) {
-                                            return GestureDetector(
-                                              onTap: () {
-                                                FocusScope.of(context)
-                                                    .unfocus();
-                                                FocusManager
-                                                    .instance.primaryFocus
-                                                    ?.unfocus();
-                                              },
-                                              child: Padding(
-                                                padding:
-                                                    MediaQuery.viewInsetsOf(
-                                                        context),
-                                                child:
-                                                    BtsAlunoAdicionarWidget(),
-                                              ),
-                                            );
-                                          },
-                                        ).then((value) => safeSetState(() {}));
+                                        context.pushNamed('financeiroM');
                                       },
                                       child: Container(
                                         width: 100.0,

@@ -2584,6 +2584,943 @@ class WhGeraATFCall {
   }
 }
 
+// ============================================================
+// ViVan API Calls
+// Base URL: https://app.coopertransmig.com.br/api/vivan
+// ============================================================
+
+const String _vivanBaseUrl = 'https://app.coopertransmig.com.br/api/vivan';
+
+// --- Dashboard ---
+
+class VivanDashboardResumoCall {
+  static Future<ApiCallResponse> call({
+    int? motoristaId,
+  }) async {
+    return ApiManager.instance.makeApiCall(
+      callName: 'VivanDashboardResumo',
+      apiUrl: '$_vivanBaseUrl/dashboard/resumo',
+      callType: ApiCallType.GET,
+      headers: {},
+      params: {
+        'motorista_id': motoristaId,
+      },
+      returnBody: true,
+      encodeBodyUtf8: false,
+      decodeUtf8: true,
+      cache: false,
+      isStreamingApi: false,
+      alwaysAllowBody: false,
+    );
+  }
+
+  static int? totalPassageiros(dynamic response) => castToType<int>(getJsonField(response, r'''$.total_passageiros'''));
+  static int? totalAtivos(dynamic response) => castToType<int>(getJsonField(response, r'''$.total_ativos'''));
+  static int? totalContratos(dynamic response) => castToType<int>(getJsonField(response, r'''$.total_contratos'''));
+  static double? receitaMensal(dynamic response) => castToType<double>(getJsonField(response, r'''$.receita_mensal'''));
+  static double? despesaMensal(dynamic response) => castToType<double>(getJsonField(response, r'''$.despesa_mensal'''));
+  static double? saldoMensal(dynamic response) => castToType<double>(getJsonField(response, r'''$.saldo_mensal'''));
+  static int? mensalidadesPendentes(dynamic response) => castToType<int>(getJsonField(response, r'''$.mensalidades_pendentes'''));
+  static int? presencasHoje(dynamic response) => castToType<int>(getJsonField(response, r'''$.presencas_hoje'''));
+}
+
+class VivanDashboardCapacidadeCall {
+  static Future<ApiCallResponse> call({
+    int? motoristaId,
+  }) async {
+    return ApiManager.instance.makeApiCall(
+      callName: 'VivanDashboardCapacidade',
+      apiUrl: '$_vivanBaseUrl/dashboard/capacidade',
+      callType: ApiCallType.GET,
+      headers: {},
+      params: {
+        'motorista_id': motoristaId,
+      },
+      returnBody: true,
+      encodeBodyUtf8: false,
+      decodeUtf8: true,
+      cache: false,
+      isStreamingApi: false,
+      alwaysAllowBody: false,
+    );
+  }
+
+  static List<dynamic>? escolas(dynamic response) => getJsonField(response, r'''$.escolas''', true) as List<dynamic>?;
+  static int? capacidadeTotal(dynamic response) => castToType<int>(getJsonField(response, r'''$.capacidade_total'''));
+  static int? ocupacaoTotal(dynamic response) => castToType<int>(getJsonField(response, r'''$.ocupacao_total'''));
+}
+
+// --- Passageiros ---
+
+class VivanPassageirosListCall {
+  static Future<ApiCallResponse> call({
+    int? motoristaId,
+    String? busca,
+    String? status,
+  }) async {
+    return ApiManager.instance.makeApiCall(
+      callName: 'VivanPassageirosList',
+      apiUrl: '$_vivanBaseUrl/passageiros',
+      callType: ApiCallType.GET,
+      headers: {},
+      params: {
+        'motorista_id': motoristaId,
+        'busca': busca,
+        'status': status,
+      },
+      returnBody: true,
+      encodeBodyUtf8: false,
+      decodeUtf8: true,
+      cache: false,
+      isStreamingApi: false,
+      alwaysAllowBody: false,
+    );
+  }
+
+  static List<dynamic>? passageiros(dynamic response) => getJsonField(response, r'''$.passageiros''', true) as List<dynamic>?;
+  static int? total(dynamic response) => castToType<int>(getJsonField(response, r'''$.total'''));
+}
+
+class VivanPassageiroGetCall {
+  static Future<ApiCallResponse> call({
+    int? passageiroId,
+  }) async {
+    return ApiManager.instance.makeApiCall(
+      callName: 'VivanPassageiroGet',
+      apiUrl: '$_vivanBaseUrl/passageiros/$passageiroId',
+      callType: ApiCallType.GET,
+      headers: {},
+      params: {},
+      returnBody: true,
+      encodeBodyUtf8: false,
+      decodeUtf8: true,
+      cache: false,
+      isStreamingApi: false,
+      alwaysAllowBody: false,
+    );
+  }
+
+  static int? id(dynamic response) => castToType<int>(getJsonField(response, r'''$.id'''));
+  static String? nome(dynamic response) => castToType<String>(getJsonField(response, r'''$.nome'''));
+  static String? cpf(dynamic response) => castToType<String>(getJsonField(response, r'''$.cpf'''));
+  static String? escola(dynamic response) => castToType<String>(getJsonField(response, r'''$.escola'''));
+  static String? endereco(dynamic response) => castToType<String>(getJsonField(response, r'''$.endereco'''));
+  static String? foto(dynamic response) => castToType<String>(getJsonField(response, r'''$.foto'''));
+  static String? status(dynamic response) => castToType<String>(getJsonField(response, r'''$.status'''));
+  static List<dynamic>? responsaveis(dynamic response) => getJsonField(response, r'''$.responsaveis''', true) as List<dynamic>?;
+}
+
+class VivanPassageiroCreateCall {
+  static Future<ApiCallResponse> call({
+    int? motoristaId,
+    String? nome,
+    String? cpf,
+    int? escolaId,
+    String? endereco,
+    String? foto,
+  }) async {
+    final ffApiRequestBody = '''
+{
+  "motorista_id": $motoristaId,
+  "nome": "$nome",
+  "cpf": "$cpf",
+  "escola_id": $escolaId,
+  "endereco": "$endereco",
+  "foto": "$foto"
+}''';
+    return ApiManager.instance.makeApiCall(
+      callName: 'VivanPassageiroCreate',
+      apiUrl: '$_vivanBaseUrl/passageiros',
+      callType: ApiCallType.POST,
+      headers: {'Content-Type': 'application/json'},
+      params: {},
+      body: ffApiRequestBody,
+      bodyType: BodyType.JSON,
+      returnBody: true,
+      encodeBodyUtf8: false,
+      decodeUtf8: true,
+      cache: false,
+      isStreamingApi: false,
+      alwaysAllowBody: false,
+    );
+  }
+
+  static int? id(dynamic response) => castToType<int>(getJsonField(response, r'''$.id'''));
+}
+
+class VivanPassageiroUpdateCall {
+  static Future<ApiCallResponse> call({
+    int? passageiroId,
+    String? nome,
+    String? cpf,
+    int? escolaId,
+    String? endereco,
+    String? foto,
+  }) async {
+    final ffApiRequestBody = '''
+{
+  "nome": "$nome",
+  "cpf": "$cpf",
+  "escola_id": $escolaId,
+  "endereco": "$endereco",
+  "foto": "$foto"
+}''';
+    return ApiManager.instance.makeApiCall(
+      callName: 'VivanPassageiroUpdate',
+      apiUrl: '$_vivanBaseUrl/passageiros/$passageiroId',
+      callType: ApiCallType.PUT,
+      headers: {'Content-Type': 'application/json'},
+      params: {},
+      body: ffApiRequestBody,
+      bodyType: BodyType.JSON,
+      returnBody: true,
+      encodeBodyUtf8: false,
+      decodeUtf8: true,
+      cache: false,
+      isStreamingApi: false,
+      alwaysAllowBody: false,
+    );
+  }
+}
+
+class VivanPassageiroDeleteCall {
+  static Future<ApiCallResponse> call({
+    int? passageiroId,
+  }) async {
+    return ApiManager.instance.makeApiCall(
+      callName: 'VivanPassageiroDelete',
+      apiUrl: '$_vivanBaseUrl/passageiros/$passageiroId',
+      callType: ApiCallType.DELETE,
+      headers: {},
+      params: {},
+      returnBody: true,
+      encodeBodyUtf8: false,
+      decodeUtf8: true,
+      cache: false,
+      isStreamingApi: false,
+      alwaysAllowBody: false,
+    );
+  }
+}
+
+// --- Responsáveis ---
+
+class VivanResponsaveisListCall {
+  static Future<ApiCallResponse> call({
+    int? passageiroId,
+  }) async {
+    return ApiManager.instance.makeApiCall(
+      callName: 'VivanResponsaveisList',
+      apiUrl: '$_vivanBaseUrl/passageiros/$passageiroId/responsaveis',
+      callType: ApiCallType.GET,
+      headers: {},
+      params: {},
+      returnBody: true,
+      encodeBodyUtf8: false,
+      decodeUtf8: true,
+      cache: false,
+      isStreamingApi: false,
+      alwaysAllowBody: false,
+    );
+  }
+
+  static List<dynamic>? responsaveis(dynamic response) => getJsonField(response, r'''$.responsaveis''', true) as List<dynamic>?;
+}
+
+class VivanResponsavelCreateCall {
+  static Future<ApiCallResponse> call({
+    int? passageiroId,
+    String? nome,
+    String? cpf,
+    String? telefone,
+    String? parentesco,
+  }) async {
+    final ffApiRequestBody = '''
+{
+  "nome": "$nome",
+  "cpf": "$cpf",
+  "telefone": "$telefone",
+  "parentesco": "$parentesco"
+}''';
+    return ApiManager.instance.makeApiCall(
+      callName: 'VivanResponsavelCreate',
+      apiUrl: '$_vivanBaseUrl/passageiros/$passageiroId/responsaveis',
+      callType: ApiCallType.POST,
+      headers: {'Content-Type': 'application/json'},
+      params: {},
+      body: ffApiRequestBody,
+      bodyType: BodyType.JSON,
+      returnBody: true,
+      encodeBodyUtf8: false,
+      decodeUtf8: true,
+      cache: false,
+      isStreamingApi: false,
+      alwaysAllowBody: false,
+    );
+  }
+
+  static int? id(dynamic response) => castToType<int>(getJsonField(response, r'''$.id'''));
+}
+
+class VivanResponsavelUpdateCall {
+  static Future<ApiCallResponse> call({
+    int? responsavelId,
+    String? nome,
+    String? cpf,
+    String? telefone,
+    String? parentesco,
+  }) async {
+    final ffApiRequestBody = '''
+{
+  "nome": "$nome",
+  "cpf": "$cpf",
+  "telefone": "$telefone",
+  "parentesco": "$parentesco"
+}''';
+    return ApiManager.instance.makeApiCall(
+      callName: 'VivanResponsavelUpdate',
+      apiUrl: '$_vivanBaseUrl/responsaveis/$responsavelId',
+      callType: ApiCallType.PUT,
+      headers: {'Content-Type': 'application/json'},
+      params: {},
+      body: ffApiRequestBody,
+      bodyType: BodyType.JSON,
+      returnBody: true,
+      encodeBodyUtf8: false,
+      decodeUtf8: true,
+      cache: false,
+      isStreamingApi: false,
+      alwaysAllowBody: false,
+    );
+  }
+}
+
+class VivanResponsavelDeleteCall {
+  static Future<ApiCallResponse> call({
+    int? responsavelId,
+  }) async {
+    return ApiManager.instance.makeApiCall(
+      callName: 'VivanResponsavelDelete',
+      apiUrl: '$_vivanBaseUrl/responsaveis/$responsavelId',
+      callType: ApiCallType.DELETE,
+      headers: {},
+      params: {},
+      returnBody: true,
+      encodeBodyUtf8: false,
+      decodeUtf8: true,
+      cache: false,
+      isStreamingApi: false,
+      alwaysAllowBody: false,
+    );
+  }
+}
+
+// --- Contratos ---
+
+class VivanContratosListCall {
+  static Future<ApiCallResponse> call({
+    int? motoristaId,
+    String? status,
+  }) async {
+    return ApiManager.instance.makeApiCall(
+      callName: 'VivanContratosList',
+      apiUrl: '$_vivanBaseUrl/contratos',
+      callType: ApiCallType.GET,
+      headers: {},
+      params: {
+        'motorista_id': motoristaId,
+        'status': status,
+      },
+      returnBody: true,
+      encodeBodyUtf8: false,
+      decodeUtf8: true,
+      cache: false,
+      isStreamingApi: false,
+      alwaysAllowBody: false,
+    );
+  }
+
+  static List<dynamic>? contratos(dynamic response) => getJsonField(response, r'''$.contratos''', true) as List<dynamic>?;
+  static int? total(dynamic response) => castToType<int>(getJsonField(response, r'''$.total'''));
+}
+
+class VivanContratoGetCall {
+  static Future<ApiCallResponse> call({
+    int? contratoId,
+  }) async {
+    return ApiManager.instance.makeApiCall(
+      callName: 'VivanContratoGet',
+      apiUrl: '$_vivanBaseUrl/contratos/$contratoId',
+      callType: ApiCallType.GET,
+      headers: {},
+      params: {},
+      returnBody: true,
+      encodeBodyUtf8: false,
+      decodeUtf8: true,
+      cache: false,
+      isStreamingApi: false,
+      alwaysAllowBody: false,
+    );
+  }
+
+  static int? id(dynamic response) => castToType<int>(getJsonField(response, r'''$.id'''));
+  static String? status(dynamic response) => castToType<String>(getJsonField(response, r'''$.status'''));
+  static double? valorMensal(dynamic response) => castToType<double>(getJsonField(response, r'''$.valor_mensal'''));
+  static String? passageiroNome(dynamic response) => castToType<String>(getJsonField(response, r'''$.passageiro_nome'''));
+  static int? passageiroId(dynamic response) => castToType<int>(getJsonField(response, r'''$.passageiro_id'''));
+  static String? dataInicio(dynamic response) => castToType<String>(getJsonField(response, r'''$.data_inicio'''));
+  static String? dataFim(dynamic response) => castToType<String>(getJsonField(response, r'''$.data_fim'''));
+  static String? condicoes(dynamic response) => castToType<String>(getJsonField(response, r'''$.condicoes'''));
+}
+
+class VivanContratoCreateCall {
+  static Future<ApiCallResponse> call({
+    int? motoristaId,
+    int? passageiroId,
+    double? valorMensal,
+    String? dataInicio,
+    String? dataFim,
+    String? condicoes,
+  }) async {
+    final ffApiRequestBody = '''
+{
+  "motorista_id": $motoristaId,
+  "passageiro_id": $passageiroId,
+  "valor_mensal": $valorMensal,
+  "data_inicio": "$dataInicio",
+  "data_fim": "$dataFim",
+  "condicoes": "$condicoes"
+}''';
+    return ApiManager.instance.makeApiCall(
+      callName: 'VivanContratoCreate',
+      apiUrl: '$_vivanBaseUrl/contratos',
+      callType: ApiCallType.POST,
+      headers: {'Content-Type': 'application/json'},
+      params: {},
+      body: ffApiRequestBody,
+      bodyType: BodyType.JSON,
+      returnBody: true,
+      encodeBodyUtf8: false,
+      decodeUtf8: true,
+      cache: false,
+      isStreamingApi: false,
+      alwaysAllowBody: false,
+    );
+  }
+
+  static int? id(dynamic response) => castToType<int>(getJsonField(response, r'''$.id'''));
+}
+
+class VivanContratoUpdateCall {
+  static Future<ApiCallResponse> call({
+    int? contratoId,
+    double? valorMensal,
+    String? dataInicio,
+    String? dataFim,
+    String? condicoes,
+  }) async {
+    final ffApiRequestBody = '''
+{
+  "valor_mensal": $valorMensal,
+  "data_inicio": "$dataInicio",
+  "data_fim": "$dataFim",
+  "condicoes": "$condicoes"
+}''';
+    return ApiManager.instance.makeApiCall(
+      callName: 'VivanContratoUpdate',
+      apiUrl: '$_vivanBaseUrl/contratos/$contratoId',
+      callType: ApiCallType.PUT,
+      headers: {'Content-Type': 'application/json'},
+      params: {},
+      body: ffApiRequestBody,
+      bodyType: BodyType.JSON,
+      returnBody: true,
+      encodeBodyUtf8: false,
+      decodeUtf8: true,
+      cache: false,
+      isStreamingApi: false,
+      alwaysAllowBody: false,
+    );
+  }
+}
+
+class VivanContratoEnviarAssinaturaCall {
+  static Future<ApiCallResponse> call({
+    int? contratoId,
+  }) async {
+    return ApiManager.instance.makeApiCall(
+      callName: 'VivanContratoEnviarAssinatura',
+      apiUrl: '$_vivanBaseUrl/contratos/$contratoId/enviar-assinatura',
+      callType: ApiCallType.POST,
+      headers: {},
+      params: {},
+      returnBody: true,
+      encodeBodyUtf8: false,
+      decodeUtf8: true,
+      cache: false,
+      isStreamingApi: false,
+      alwaysAllowBody: false,
+    );
+  }
+}
+
+class VivanContratoAtivarCall {
+  static Future<ApiCallResponse> call({
+    int? contratoId,
+  }) async {
+    return ApiManager.instance.makeApiCall(
+      callName: 'VivanContratoAtivar',
+      apiUrl: '$_vivanBaseUrl/contratos/$contratoId/ativar',
+      callType: ApiCallType.POST,
+      headers: {},
+      params: {},
+      returnBody: true,
+      encodeBodyUtf8: false,
+      decodeUtf8: true,
+      cache: false,
+      isStreamingApi: false,
+      alwaysAllowBody: false,
+    );
+  }
+}
+
+class VivanContratoSuspenderCall {
+  static Future<ApiCallResponse> call({
+    int? contratoId,
+  }) async {
+    return ApiManager.instance.makeApiCall(
+      callName: 'VivanContratoSuspender',
+      apiUrl: '$_vivanBaseUrl/contratos/$contratoId/suspender',
+      callType: ApiCallType.POST,
+      headers: {},
+      params: {},
+      returnBody: true,
+      encodeBodyUtf8: false,
+      decodeUtf8: true,
+      cache: false,
+      isStreamingApi: false,
+      alwaysAllowBody: false,
+    );
+  }
+}
+
+class VivanContratoCancelarCall {
+  static Future<ApiCallResponse> call({
+    int? contratoId,
+    String? motivo,
+  }) async {
+    final ffApiRequestBody = '''
+{
+  "motivo": "$motivo"
+}''';
+    return ApiManager.instance.makeApiCall(
+      callName: 'VivanContratoCancelar',
+      apiUrl: '$_vivanBaseUrl/contratos/$contratoId/cancelar',
+      callType: ApiCallType.POST,
+      headers: {'Content-Type': 'application/json'},
+      params: {},
+      body: ffApiRequestBody,
+      bodyType: BodyType.JSON,
+      returnBody: true,
+      encodeBodyUtf8: false,
+      decodeUtf8: true,
+      cache: false,
+      isStreamingApi: false,
+      alwaysAllowBody: false,
+    );
+  }
+}
+
+class VivanContratoHistoricoCall {
+  static Future<ApiCallResponse> call({
+    int? contratoId,
+  }) async {
+    return ApiManager.instance.makeApiCall(
+      callName: 'VivanContratoHistorico',
+      apiUrl: '$_vivanBaseUrl/contratos/$contratoId/historico',
+      callType: ApiCallType.GET,
+      headers: {},
+      params: {},
+      returnBody: true,
+      encodeBodyUtf8: false,
+      decodeUtf8: true,
+      cache: false,
+      isStreamingApi: false,
+      alwaysAllowBody: false,
+    );
+  }
+
+  static List<dynamic>? historico(dynamic response) => getJsonField(response, r'''$.historico''', true) as List<dynamic>?;
+}
+
+// --- Mensalidades ---
+
+class VivanMensalidadesListCall {
+  static Future<ApiCallResponse> call({
+    int? motoristaId,
+    String? mes,
+    String? status,
+  }) async {
+    return ApiManager.instance.makeApiCall(
+      callName: 'VivanMensalidadesList',
+      apiUrl: '$_vivanBaseUrl/mensalidades',
+      callType: ApiCallType.GET,
+      headers: {},
+      params: {
+        'motorista_id': motoristaId,
+        'mes': mes,
+        'status': status,
+      },
+      returnBody: true,
+      encodeBodyUtf8: false,
+      decodeUtf8: true,
+      cache: false,
+      isStreamingApi: false,
+      alwaysAllowBody: false,
+    );
+  }
+
+  static List<dynamic>? mensalidades(dynamic response) => getJsonField(response, r'''$.mensalidades''', true) as List<dynamic>?;
+  static int? total(dynamic response) => castToType<int>(getJsonField(response, r'''$.total'''));
+  static double? totalValor(dynamic response) => castToType<double>(getJsonField(response, r'''$.total_valor'''));
+}
+
+class VivanMensalidadeGetCall {
+  static Future<ApiCallResponse> call({
+    int? mensalidadeId,
+  }) async {
+    return ApiManager.instance.makeApiCall(
+      callName: 'VivanMensalidadeGet',
+      apiUrl: '$_vivanBaseUrl/mensalidades/$mensalidadeId',
+      callType: ApiCallType.GET,
+      headers: {},
+      params: {},
+      returnBody: true,
+      encodeBodyUtf8: false,
+      decodeUtf8: true,
+      cache: false,
+      isStreamingApi: false,
+      alwaysAllowBody: false,
+    );
+  }
+
+  static int? id(dynamic response) => castToType<int>(getJsonField(response, r'''$.id'''));
+  static String? status(dynamic response) => castToType<String>(getJsonField(response, r'''$.status'''));
+  static double? valor(dynamic response) => castToType<double>(getJsonField(response, r'''$.valor'''));
+  static String? vencimento(dynamic response) => castToType<String>(getJsonField(response, r'''$.vencimento'''));
+  static String? passageiroNome(dynamic response) => castToType<String>(getJsonField(response, r'''$.passageiro_nome'''));
+  static String? pixUrl(dynamic response) => castToType<String>(getJsonField(response, r'''$.pix_url'''));
+  static String? pixQrCode(dynamic response) => castToType<String>(getJsonField(response, r'''$.pix_qr_code'''));
+}
+
+class VivanMensalidadePagamentoManualCall {
+  static Future<ApiCallResponse> call({
+    int? mensalidadeId,
+    String? formaPagamento,
+    String? observacao,
+  }) async {
+    final ffApiRequestBody = '''
+{
+  "forma_pagamento": "$formaPagamento",
+  "observacao": "$observacao"
+}''';
+    return ApiManager.instance.makeApiCall(
+      callName: 'VivanMensalidadePagamentoManual',
+      apiUrl: '$_vivanBaseUrl/mensalidades/$mensalidadeId/pagamento-manual',
+      callType: ApiCallType.POST,
+      headers: {'Content-Type': 'application/json'},
+      params: {},
+      body: ffApiRequestBody,
+      bodyType: BodyType.JSON,
+      returnBody: true,
+      encodeBodyUtf8: false,
+      decodeUtf8: true,
+      cache: false,
+      isStreamingApi: false,
+      alwaysAllowBody: false,
+    );
+  }
+}
+
+class VivanMensalidadeAbonarCall {
+  static Future<ApiCallResponse> call({
+    int? mensalidadeId,
+    String? motivo,
+  }) async {
+    final ffApiRequestBody = '''
+{
+  "motivo": "$motivo"
+}''';
+    return ApiManager.instance.makeApiCall(
+      callName: 'VivanMensalidadeAbonar',
+      apiUrl: '$_vivanBaseUrl/mensalidades/$mensalidadeId/abonar',
+      callType: ApiCallType.POST,
+      headers: {'Content-Type': 'application/json'},
+      params: {},
+      body: ffApiRequestBody,
+      bodyType: BodyType.JSON,
+      returnBody: true,
+      encodeBodyUtf8: false,
+      decodeUtf8: true,
+      cache: false,
+      isStreamingApi: false,
+      alwaysAllowBody: false,
+    );
+  }
+}
+
+class VivanMensalidadeCancelarAbonoCall {
+  static Future<ApiCallResponse> call({
+    int? mensalidadeId,
+  }) async {
+    return ApiManager.instance.makeApiCall(
+      callName: 'VivanMensalidadeCancelarAbono',
+      apiUrl: '$_vivanBaseUrl/mensalidades/$mensalidadeId/cancelar-abono',
+      callType: ApiCallType.POST,
+      headers: {},
+      params: {},
+      returnBody: true,
+      encodeBodyUtf8: false,
+      decodeUtf8: true,
+      cache: false,
+      isStreamingApi: false,
+      alwaysAllowBody: false,
+    );
+  }
+}
+
+// --- Despesas ---
+
+class VivanDespesasListCall {
+  static Future<ApiCallResponse> call({
+    int? motoristaId,
+    String? mes,
+  }) async {
+    return ApiManager.instance.makeApiCall(
+      callName: 'VivanDespesasList',
+      apiUrl: '$_vivanBaseUrl/despesas',
+      callType: ApiCallType.GET,
+      headers: {},
+      params: {
+        'motorista_id': motoristaId,
+        'mes': mes,
+      },
+      returnBody: true,
+      encodeBodyUtf8: false,
+      decodeUtf8: true,
+      cache: false,
+      isStreamingApi: false,
+      alwaysAllowBody: false,
+    );
+  }
+
+  static List<dynamic>? despesas(dynamic response) => getJsonField(response, r'''$.despesas''', true) as List<dynamic>?;
+  static double? totalValor(dynamic response) => castToType<double>(getJsonField(response, r'''$.total_valor'''));
+}
+
+class VivanDespesaCreateCall {
+  static Future<ApiCallResponse> call({
+    int? motoristaId,
+    String? categoria,
+    double? valor,
+    String? descricao,
+    int? veiculoId,
+    String? comprovante,
+    String? data,
+  }) async {
+    final ffApiRequestBody = '''
+{
+  "motorista_id": $motoristaId,
+  "categoria": "$categoria",
+  "valor": $valor,
+  "descricao": "$descricao",
+  "veiculo_id": $veiculoId,
+  "comprovante": "$comprovante",
+  "data": "$data"
+}''';
+    return ApiManager.instance.makeApiCall(
+      callName: 'VivanDespesaCreate',
+      apiUrl: '$_vivanBaseUrl/despesas',
+      callType: ApiCallType.POST,
+      headers: {'Content-Type': 'application/json'},
+      params: {},
+      body: ffApiRequestBody,
+      bodyType: BodyType.JSON,
+      returnBody: true,
+      encodeBodyUtf8: false,
+      decodeUtf8: true,
+      cache: false,
+      isStreamingApi: false,
+      alwaysAllowBody: false,
+    );
+  }
+
+  static int? id(dynamic response) => castToType<int>(getJsonField(response, r'''$.id'''));
+}
+
+class VivanDespesaUpdateCall {
+  static Future<ApiCallResponse> call({
+    int? despesaId,
+    String? categoria,
+    double? valor,
+    String? descricao,
+    int? veiculoId,
+    String? comprovante,
+    String? data,
+  }) async {
+    final ffApiRequestBody = '''
+{
+  "categoria": "$categoria",
+  "valor": $valor,
+  "descricao": "$descricao",
+  "veiculo_id": $veiculoId,
+  "comprovante": "$comprovante",
+  "data": "$data"
+}''';
+    return ApiManager.instance.makeApiCall(
+      callName: 'VivanDespesaUpdate',
+      apiUrl: '$_vivanBaseUrl/despesas/$despesaId',
+      callType: ApiCallType.PUT,
+      headers: {'Content-Type': 'application/json'},
+      params: {},
+      body: ffApiRequestBody,
+      bodyType: BodyType.JSON,
+      returnBody: true,
+      encodeBodyUtf8: false,
+      decodeUtf8: true,
+      cache: false,
+      isStreamingApi: false,
+      alwaysAllowBody: false,
+    );
+  }
+}
+
+class VivanDespesaDeleteCall {
+  static Future<ApiCallResponse> call({
+    int? despesaId,
+  }) async {
+    return ApiManager.instance.makeApiCall(
+      callName: 'VivanDespesaDelete',
+      apiUrl: '$_vivanBaseUrl/despesas/$despesaId',
+      callType: ApiCallType.DELETE,
+      headers: {},
+      params: {},
+      returnBody: true,
+      encodeBodyUtf8: false,
+      decodeUtf8: true,
+      cache: false,
+      isStreamingApi: false,
+      alwaysAllowBody: false,
+    );
+  }
+}
+
+// --- Presença ---
+
+class VivanPresencasListCall {
+  static Future<ApiCallResponse> call({
+    int? motoristaId,
+    String? data,
+    String? dataInicio,
+    String? dataFim,
+  }) async {
+    return ApiManager.instance.makeApiCall(
+      callName: 'VivanPresencasList',
+      apiUrl: '$_vivanBaseUrl/presencas',
+      callType: ApiCallType.GET,
+      headers: {},
+      params: {
+        'motorista_id': motoristaId,
+        'data': data,
+        'data_inicio': dataInicio,
+        'data_fim': dataFim,
+      },
+      returnBody: true,
+      encodeBodyUtf8: false,
+      decodeUtf8: true,
+      cache: false,
+      isStreamingApi: false,
+      alwaysAllowBody: false,
+    );
+  }
+
+  static List<dynamic>? presencas(dynamic response) => getJsonField(response, r'''$.presencas''', true) as List<dynamic>?;
+  static int? totalPresentes(dynamic response) => castToType<int>(getJsonField(response, r'''$.total_presentes'''));
+  static int? totalFaltas(dynamic response) => castToType<int>(getJsonField(response, r'''$.total_faltas'''));
+}
+
+class VivanPresencaCreateCall {
+  static Future<ApiCallResponse> call({
+    int? motoristaId,
+    int? passageiroId,
+    String? data,
+    String? status,
+    double? latitude,
+    double? longitude,
+  }) async {
+    final ffApiRequestBody = '''
+{
+  "motorista_id": $motoristaId,
+  "passageiro_id": $passageiroId,
+  "data": "$data",
+  "status": "$status",
+  "latitude": $latitude,
+  "longitude": $longitude
+}''';
+    return ApiManager.instance.makeApiCall(
+      callName: 'VivanPresencaCreate',
+      apiUrl: '$_vivanBaseUrl/presencas',
+      callType: ApiCallType.POST,
+      headers: {'Content-Type': 'application/json'},
+      params: {},
+      body: ffApiRequestBody,
+      bodyType: BodyType.JSON,
+      returnBody: true,
+      encodeBodyUtf8: false,
+      decodeUtf8: true,
+      cache: false,
+      isStreamingApi: false,
+      alwaysAllowBody: false,
+    );
+  }
+}
+
+class VivanPresencaLoteCall {
+  static Future<ApiCallResponse> call({
+    int? motoristaId,
+    String? data,
+    double? latitude,
+    double? longitude,
+    String? presencasJson,
+  }) async {
+    final ffApiRequestBody = '''
+{
+  "motorista_id": $motoristaId,
+  "data": "$data",
+  "latitude": $latitude,
+  "longitude": $longitude,
+  "presencas": $presencasJson
+}''';
+    return ApiManager.instance.makeApiCall(
+      callName: 'VivanPresencaLote',
+      apiUrl: '$_vivanBaseUrl/presencas/lote',
+      callType: ApiCallType.POST,
+      headers: {'Content-Type': 'application/json'},
+      params: {},
+      body: ffApiRequestBody,
+      bodyType: BodyType.JSON,
+      returnBody: true,
+      encodeBodyUtf8: false,
+      decodeUtf8: true,
+      cache: false,
+      isStreamingApi: false,
+      alwaysAllowBody: false,
+    );
+  }
+
+  static int? registrados(dynamic response) => castToType<int>(getJsonField(response, r'''$.registrados'''));
+}
+
 String _toEncodable(dynamic item) {
   return item;
 }

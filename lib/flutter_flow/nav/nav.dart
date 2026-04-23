@@ -150,6 +150,47 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) {
         builder: (context, params) => DashboardRespViaVanMWidget(),
       ),
       FFRoute(
+        name: PassageirosListaMWidget.routeName,
+        path: PassageirosListaMWidget.routePath,
+        builder: (context, params) => PassageirosListaMWidget(),
+      ),
+      FFRoute(
+        name: PassageiroDetalheMWidget.routeName,
+        path: PassageiroDetalheMWidget.routePath,
+        builder: (context, params) => PassageiroDetalheMWidget(
+          passageiroId: params.getParam('passageiroId', ParamType.int),
+        ),
+      ),
+      FFRoute(
+        name: PassageiroFormMWidget.routeName,
+        path: PassageiroFormMWidget.routePath,
+        builder: (context, params) => PassageiroFormMWidget(
+          passageiroId: params.getParam('passageiroId', ParamType.int),
+        ),
+      ),
+      FFRoute(
+        name: ContratosListaMWidget.routeName,
+        path: ContratosListaMWidget.routePath,
+        builder: (context, params) => ContratosListaMWidget(),
+      ),
+      FFRoute(
+        name: ContratoDetalheMWidget.routeName,
+        path: ContratoDetalheMWidget.routePath,
+        builder: (context, params) => ContratoDetalheMWidget(
+          contratoId: params.getParam('contratoId', ParamType.int),
+        ),
+      ),
+      FFRoute(
+        name: FinanceiroMWidget.routeName,
+        path: FinanceiroMWidget.routePath,
+        builder: (context, params) => FinanceiroMWidget(),
+      ),
+      FFRoute(
+        name: PresencaMWidget.routeName,
+        path: PresencaMWidget.routePath,
+        builder: (context, params) => PresencaMWidget(),
+      ),
+      FFRoute(
         name: $csv_download_library_zcbxbg.HomePageWidget.routeName,
         path: $csv_download_library_zcbxbg.HomePageWidget.routePath,
         builder: (context, params) =>

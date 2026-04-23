@@ -1,5 +1,6 @@
 import '/alunos/bts_aluno_adicionar/bts_aluno_adicionar_widget.dart';
 import '/backend/supabase/supabase.dart';
+import '/backend/api_requests/api_calls.dart';
 import '/escolas/bts_turmas/bts_turmas_widget.dart';
 import '/flutter_flow/flutter_flow_drop_down.dart';
 import '/flutter_flow/flutter_flow_icon_button.dart';
@@ -28,6 +29,24 @@ class DashboardMotoristaViaVanMModel
   ///  Local state fields for this page.
 
   int? paginaAtiva;
+
+  // ViVan API response data
+  ApiCallResponse? dashboardResumoResponse;
+  ApiCallResponse? dashboardCapacidadeResponse;
+  bool isLoadingDashboard = true;
+
+  // Computed fields from API
+  int get totalPassageiros => VivanDashboardResumoCall.totalPassageiros(dashboardResumoResponse?.jsonBody) ?? 0;
+  int get totalAtivos => VivanDashboardResumoCall.totalAtivos(dashboardResumoResponse?.jsonBody) ?? 0;
+  int get totalContratos => VivanDashboardResumoCall.totalContratos(dashboardResumoResponse?.jsonBody) ?? 0;
+  double get receitaMensal => VivanDashboardResumoCall.receitaMensal(dashboardResumoResponse?.jsonBody) ?? 0.0;
+  double get despesaMensal => VivanDashboardResumoCall.despesaMensal(dashboardResumoResponse?.jsonBody) ?? 0.0;
+  double get saldoMensal => VivanDashboardResumoCall.saldoMensal(dashboardResumoResponse?.jsonBody) ?? 0.0;
+  int get mensalidadesPendentes => VivanDashboardResumoCall.mensalidadesPendentes(dashboardResumoResponse?.jsonBody) ?? 0;
+  int get presencasHoje => VivanDashboardResumoCall.presencasHoje(dashboardResumoResponse?.jsonBody) ?? 0;
+  List<dynamic> get escolasCapacidade => VivanDashboardCapacidadeCall.escolas(dashboardCapacidadeResponse?.jsonBody) ?? [];
+  int get capacidadeTotal => VivanDashboardCapacidadeCall.capacidadeTotal(dashboardCapacidadeResponse?.jsonBody) ?? 0;
+  int get ocupacaoTotal => VivanDashboardCapacidadeCall.ocupacaoTotal(dashboardCapacidadeResponse?.jsonBody) ?? 0;
 
   ///  State fields for stateful widgets in this page.
 

@@ -4388,41 +4388,49 @@ class _DashboardAssociadoMWidgetState extends State<DashboardAssociadoMWidget>
                                                         EdgeInsetsDirectional
                                                             .fromSTEB(16.0, 0.0,
                                                                 16.0, 0.0),
-                                                    child: Container(
-                                                      width: 100.0,
-                                                      height: 50.0,
-                                                      decoration: BoxDecoration(
-                                                        color: FlutterFlowTheme
-                                                                .of(context)
-                                                            .secondaryBackground,
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(24.0),
-                                                      ),
-                                                      child: Row(
-                                                        mainAxisSize:
-                                                            MainAxisSize.max,
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .spaceBetween,
-                                                        children: [
-                                                          Expanded(
-                                                            flex: 8,
-                                                            child: Align(
-                                                              alignment:
-                                                                  AlignmentDirectional(
-                                                                      -1.0,
-                                                                      0.0),
-                                                              child: Padding(
-                                                                padding:
-                                                                    EdgeInsetsDirectional
-                                                                        .fromSTEB(
-                                                                            16.0,
-                                                                            0.0,
-                                                                            0.0,
-                                                                            0.0),
-                                                                child: Text(
-                                                                  'Clube CooperTransmig',
+                                                    child: InkWell(
+                                                      borderRadius:
+                                                          BorderRadius
+                                                              .circular(24.0),
+                                                      onTap: () async {
+                                                        context.pushNamed(
+                                                            'dashboardMotoristaViaVanM');
+                                                      },
+                                                      child: Container(
+                                                        width: 100.0,
+                                                        height: 50.0,
+                                                        decoration: BoxDecoration(
+                                                          color: FlutterFlowTheme
+                                                                  .of(context)
+                                                              .secondaryBackground,
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(24.0),
+                                                        ),
+                                                        child: Row(
+                                                          mainAxisSize:
+                                                              MainAxisSize.max,
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .spaceBetween,
+                                                          children: [
+                                                            Expanded(
+                                                              flex: 8,
+                                                              child: Align(
+                                                                alignment:
+                                                                    AlignmentDirectional(
+                                                                        -1.0,
+                                                                        0.0),
+                                                                child: Padding(
+                                                                  padding:
+                                                                      EdgeInsetsDirectional
+                                                                          .fromSTEB(
+                                                                              16.0,
+                                                                              0.0,
+                                                                              0.0,
+                                                                              0.0),
+                                                                  child: Text(
+                                                                    'Gestão de Passageiros',
                                                                   style: FlutterFlowTheme.of(
                                                                           context)
                                                                       .bodyMedium
@@ -4492,6 +4500,7 @@ class _DashboardAssociadoMWidgetState extends State<DashboardAssociadoMWidget>
                                                         ],
                                                       ),
                                                     ),
+                                                  ),
                                                   ),
                                                 ),
                                               ],

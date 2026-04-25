@@ -1,2 +1,6 @@
 # Flutter SDK zip (muito grande para o repositório)
 ff_tresco/ff_flutter_sdk/flutter.zip
+
+# Subprojetos com seus próprios repos Git
+dashboard-tresco/
+ff_flutter_sdk/flutter/

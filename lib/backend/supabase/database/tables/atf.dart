@@ -17,6 +17,8 @@ class AtfRow extends SupabaseDataRow {
   int get id => getField<int>('id')!;
   set id(int value) => setField<int>('id', value);
 
+  int get idAtf => getField<int>('id')!;
+
   String? get origem => getField<String>('origem');
   set origem(String? value) => setField<String>('origem', value);
 
@@ -34,4 +36,22 @@ class AtfRow extends SupabaseDataRow {
 
   DateTime? get updatedAt => getField<DateTime>('updated_at');
   set updatedAt(DateTime? value) => setField<DateTime>('updated_at', value);
+
+  int? get idUsuarioMotorista => getField<int>('id_usuario_motorista');
+  set idUsuarioMotorista(int? value) => setField<int>('id_usuario_motorista', value);
+
+  String? get numeroAtf => getField<String>('numero_atf');
+  set numeroAtf(String? value) => setField<String>('numero_atf', value);
+
+  String? get codVerificador => getField<String>('cod_verificador');
+  set codVerificador(String? value) => setField<String>('cod_verificador', value);
+
+  String? get codCrc => getField<String>('cod_crc');
+  set codCrc(String? value) => setField<String>('cod_crc', value);
+
+  String? get placa => getField<String>('placa');
+  set placa(String? value) => setField<String>('placa', value);
+
+  String? get horaIda => getField<String>('hora_ida');
+  set horaIda(String? value) => setField<String>('hora_ida', value);
 }

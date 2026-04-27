@@ -441,10 +441,9 @@ class _DashboardAssociadoMWidgetState extends State<DashboardAssociadoMWidget>
                                                     primary: false,
                                                     child: Column(
                                                       mainAxisSize:
-                                                          MainAxisSize.max,
+                                                          MainAxisSize.min,
                                                       children: [
-                                                        Expanded(
-                                                          child: Row(
+                                                          Row(
                                                             mainAxisSize:
                                                                 MainAxisSize
                                                                     .max,
@@ -515,7 +514,7 @@ class _DashboardAssociadoMWidgetState extends State<DashboardAssociadoMWidget>
                                                                         child:
                                                                             Column(
                                                                           mainAxisSize:
-                                                                              MainAxisSize.max,
+                                                                              MainAxisSize.min,
                                                                           mainAxisAlignment:
                                                                               MainAxisAlignment.center,
                                                                           children:
@@ -523,9 +522,7 @@ class _DashboardAssociadoMWidgetState extends State<DashboardAssociadoMWidget>
                                                                             Row(
                                                                               mainAxisSize: MainAxisSize.max,
                                                                               children: [
-                                                                                Expanded(
-                                                                                  flex: 1,
-                                                                                  child: Padding(
+                                                                                  Padding(
                                                                                     padding: EdgeInsets.all(6.0),
                                                                                     child: Container(
                                                                                       height: 100.0,
@@ -629,10 +626,7 @@ class _DashboardAssociadoMWidgetState extends State<DashboardAssociadoMWidget>
                                                                                       ),
                                                                                     ),
                                                                                   ),
-                                                                                ),
-                                                                                Expanded(
-                                                                                  flex: 1,
-                                                                                  child: Padding(
+                                                                                  Padding(
                                                                                     padding: EdgeInsets.all(6.0),
                                                                                     child: Container(
                                                                                       height: 100.0,
@@ -739,7 +733,6 @@ class _DashboardAssociadoMWidgetState extends State<DashboardAssociadoMWidget>
                                                                                       ),
                                                                                     ),
                                                                                   ),
-                                                                                ),
                                                                               ],
                                                                             ),
                                                                           ].addToEnd(SizedBox(height: 24.0)),
@@ -751,7 +744,6 @@ class _DashboardAssociadoMWidgetState extends State<DashboardAssociadoMWidget>
                                                               ),
                                                             ],
                                                           ),
-                                                        ),
                                                         Padding(
                                                           padding:
                                                               EdgeInsetsDirectional
@@ -1274,7 +1266,7 @@ class _DashboardAssociadoMWidgetState extends State<DashboardAssociadoMWidget>
                                                                         child:
                                                                             Column(
                                                                           mainAxisSize:
-                                                                              MainAxisSize.max,
+                                                                              MainAxisSize.min,
                                                                           children:
                                                                               [
                                                                             Padding(
@@ -2391,7 +2383,7 @@ class _DashboardAssociadoMWidgetState extends State<DashboardAssociadoMWidget>
                                                                         child:
                                                                             Column(
                                                                           mainAxisSize:
-                                                                              MainAxisSize.max,
+                                                                              MainAxisSize.min,
                                                                           children:
                                                                               [
                                                                             Padding(
@@ -3029,7 +3021,7 @@ class _DashboardAssociadoMWidgetState extends State<DashboardAssociadoMWidget>
                                           Expanded(
                                             child: SingleChildScrollView(
                                               child: Column(
-                                                mainAxisSize: MainAxisSize.max,
+                                                mainAxisSize: MainAxisSize.min,
                                                 crossAxisAlignment:
                                                     CrossAxisAlignment.start,
                                                 children: [
@@ -3092,7 +3084,7 @@ class _DashboardAssociadoMWidgetState extends State<DashboardAssociadoMWidget>
                                                                               ),
                                                                               child: SingleChildScrollView(
                                                                                 child: Column(
-                                                                                  mainAxisSize: MainAxisSize.max,
+                                                                                  mainAxisSize: MainAxisSize.min,
                                                                                   children: [
                                                                                     Align(
                                                                                       alignment: AlignmentDirectional(-1.0, 0.0),
@@ -4002,10 +3994,10 @@ class _DashboardAssociadoMWidgetState extends State<DashboardAssociadoMWidget>
                                     decoration: BoxDecoration(),
                                     child: SingleChildScrollView(
                                       child: Column(
-                                        mainAxisSize: MainAxisSize.max,
+                                        mainAxisSize: MainAxisSize.min,
                                         children: [
                                           Row(
-                                            mainAxisSize: MainAxisSize.max,
+                                            mainAxisSize: MainAxisSize.min,
                                             children: [
                                               Expanded(
                                                 flex: 1,

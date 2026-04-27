@@ -68,3 +68,6 @@ export 'tables/banco_empresa.dart';
 export 'tables/relcontabilmotesc.dart';
 export 'tables/retdempfpj.dart';
 export 'tables/atf.dart';
+export 'tables/atf_passageiro.dart';
+export 'tables/documento.dart';
+export 'tables/finfechamento_bkp.dart';

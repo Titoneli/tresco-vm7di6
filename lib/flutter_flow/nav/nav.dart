@@ -142,7 +142,6 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) {
         builder: (context, params) => DashboardRespViaVanMWidget(),
       ),
       FFRoute(
-<<<<<<< HEAD
         name: PassageirosListaMWidget.routeName,
         path: PassageirosListaMWidget.routePath,
         builder: (context, params) => PassageirosListaMWidget(),
@@ -182,11 +181,11 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) {
         name: PresencaMWidget.routeName,
         path: PresencaMWidget.routePath,
         builder: (context, params) => PresencaMWidget(),
-=======
+      ),
+      FFRoute(
         name: AtfListaWidget.routeName,
         path: AtfListaWidget.routePath,
         builder: (context, params) => AtfListaWidget(),
->>>>>>> 39b572d7af40db5cc4d574b21bd0f35377f6381b
       ),
       FFRoute(
         name: $csv_download_library_zcbxbg.HomePageWidget.routeName,

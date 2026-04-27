@@ -1,0 +1,22 @@
+# Arquivos binários - evita corrupção por conversão de line endings
+*.ttf binary
+*.otf binary
+*.woff binary
+*.woff2 binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.webp binary
+*.pdf binary
+*.keystore binary
+*.p8 binary
+*.p12 binary
+*.cer binary
+*.der binary
+*.zip binary
+*.mp4 binary
+*.mp3 binary
+*.wav binary
+*.riv binary

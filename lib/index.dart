@@ -20,6 +20,7 @@ export '/via_van/dashboard_motorista_via_van_m/dashboard_motorista_via_van_m_wid
     show DashboardMotoristaViaVanMWidget;
 export '/via_van/dashboard_resp_via_van_m/dashboard_resp_via_van_m_widget.dart'
     show DashboardRespViaVanMWidget;
+<<<<<<< HEAD
 export '/via_van/passageiros_lista_m/passageiros_lista_m_widget.dart'
     show PassageirosListaMWidget;
 export '/via_van/passageiro_detalhe_m/passageiro_detalhe_m_widget.dart'
@@ -34,3 +35,6 @@ export '/via_van/financeiro_m/financeiro_m_widget.dart'
     show FinanceiroMWidget;
 export '/via_van/presenca_m/presenca_m_widget.dart'
     show PresencaMWidget;
+=======
+export '/atfs/atf_lista/atf_lista_widget.dart' show AtfListaWidget;
+>>>>>>> 39b572d7af40db5cc4d574b21bd0f35377f6381b

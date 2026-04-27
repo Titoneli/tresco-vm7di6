@@ -1,50 +1,9 @@
-# Miscellaneous
-*.class
-*.log
-*.pyc
-*.swp
-.DS_Store
-.atom/
-.buildlog/
-.history
-.svn/
+# Flutter SDK zip (muito grande para o repositório)
+ff_tresco/ff_flutter_sdk/flutter.zip
 
-# IntelliJ related
-*.iml
-*.ipr
-*.iws
-.idea/
-
-# The .vscode folder contains launch configuration and tasks you configure in
-# VS Code which you may wish to be included in version control, so this line
-# is commented out by default.
-#.vscode/
-
-# Flutter/Dart/Pub related
-**/doc/api/
-**/ios/Flutter/.last_build_id
+# Subprojetos com seus próprios repos Git
+dashboard-tresco/
+ff_flutter_sdk/flutter/
+temp/Tresco/dashboard_automacao.zip
 .dart_tool/
-.flutter-plugins
-.flutter-plugins-dependencies
-.packages
-.pub-cache/
-.pub/
-/build/
-
-# Firebase – this is necessary if you use Firebase since it could otherwise 
-# lead to leaking of private certificates to your repository, which is no bueno.
-.firebase/
-
-# Web related
-lib/generated_plugin_registrant.dart
-
-# Symbolication related
-app.*.symbols
-
-# Obfuscation related
-app.*.map.json
-
-# Android Studio will place build artifacts here
-/android/app/debug
-/android/app/profile
-/android/app/release
+temp/build/

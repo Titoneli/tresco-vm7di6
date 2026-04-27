@@ -1,21 +1,13 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:go_router/go_router.dart';
-import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 
 import '/backend/schema/structs/index.dart';
 
-import '/backend/supabase/supabase.dart';
 
-import '/main.dart';
 import 'package:ff_theme/flutter_flow/flutter_flow_theme.dart';
-import 'package:ff_commons/flutter_flow/lat_lng.dart';
-import 'package:ff_commons/flutter_flow/place.dart';
 import '/flutter_flow/flutter_flow_util.dart';
-import 'serialization_util.dart';
 
 import '/index.dart';
 import 'package:csv_download_library_zcbxbg/index.dart'
@@ -150,6 +142,7 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) {
         builder: (context, params) => DashboardRespViaVanMWidget(),
       ),
       FFRoute(
+<<<<<<< HEAD
         name: PassageirosListaMWidget.routeName,
         path: PassageirosListaMWidget.routePath,
         builder: (context, params) => PassageirosListaMWidget(),
@@ -189,6 +182,11 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) {
         name: PresencaMWidget.routeName,
         path: PresencaMWidget.routePath,
         builder: (context, params) => PresencaMWidget(),
+=======
+        name: AtfListaWidget.routeName,
+        path: AtfListaWidget.routePath,
+        builder: (context, params) => AtfListaWidget(),
+>>>>>>> 39b572d7af40db5cc4d574b21bd0f35377f6381b
       ),
       FFRoute(
         name: $csv_download_library_zcbxbg.HomePageWidget.routeName,
@@ -227,18 +225,9 @@ extension _GoRouterStateExtensions on GoRouterState {
     ..addAll(pathParameters)
     ..addAll(uri.queryParameters)
     ..addAll(extraMap);
-  TransitionInfo get transitionInfo {
-    final possibleKeys = [
-      '__transition_info__',
-      '__transition_info__csv_download_library_zcbxbg'
-    ];
-    for (final key in possibleKeys) {
-      if (extraMap.containsKey(key)) {
-        return extraMap[key] as TransitionInfo;
-      }
-    }
-    return TransitionInfo.appDefault();
-  }
+  TransitionInfo get transitionInfo => extraMap.containsKey(kTransitionInfoKey)
+      ? extraMap[kTransitionInfoKey] as TransitionInfo
+      : TransitionInfo.appDefault();
 }
 
 class FFParameters {
@@ -334,7 +323,6 @@ class FFRoute {
           return transitionInfo.hasTransition
               ? CustomTransitionPage(
                   key: state.pageKey,
-                  name: state.name,
                   child: child,
                   transitionDuration: transitionInfo.duration,
                   transitionsBuilder:
@@ -352,8 +340,7 @@ class FFRoute {
                     child,
                   ),
                 )
-              : MaterialPage(
-                  key: state.pageKey, name: state.name, child: child);
+              : MaterialPage(key: state.pageKey, child: child);
         },
         routes: routes,
       );

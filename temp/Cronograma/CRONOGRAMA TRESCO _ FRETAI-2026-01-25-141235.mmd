@@ -1,0 +1,91 @@
+---
+config:
+  theme: forest
+---
+gantt
+    title Cronograma do Projeto Aplicativo FRETAI
+    dateFormat  YYYY-MM-DD
+
+    section Login
+    Definir escopo, identidade visual e layout telas         :a1, 2025-02-02, 1d
+    Criar Telas de Login e Autenticação   :a2, after a1, 2d
+    Definições de Restrições de Acesso    :a3, after a2, 3d    
+    Cadastrar usuários/perfis permissões  :a4, after a3, 2d  
+    Históricos básicos para auditoria     :a5, after a4, 1d  
+
+    section Cadastros básicos
+    CRUD Cadastro de Condutores - Códigos CTE e ATF :b1, after a5, 5d
+    CRUD Cadastro de Veículos   - Códigos CTE e ATF :b2, after b1, 4d
+    CRUD Cadastro de Passageiros                    :b3, after b2, 3d
+    Importação de Dados dos Sistemas Legados        :b4, after b3, 4d
+    Adequação do Tresco a nova estrutura            :b5, after b4, 5d
+    Parametrizações gerais do Módulo                :b6, after b5, 2d            
+
+    section Financeiro - BackOffice - V 1.0
+    Gestão de CTE - Cadastro, Geração e Emissão Integrada       :c1, after b5, 5d
+    Arquivos CTE - Gestão de arquivos XML                       :c2, after c1, 5d
+    Gestão de ATF - Geração e Emissão Integrada do SGTF e CTE   :c3, after c2, 5d
+    Gestão de Boletos Impostos CTE - Cobrança (PIX \ Conta Crédido-Débito) e Controle de Inadimplentes :c4, after c3, 10d
+    Integração Sicred via API PIX                               :c5, after c4, 10d    
+    Integração com Contábil - Processamento de Arquivos XML     :c6, after c5, 5d    
+    Relatórios Gerência e Operacionais                          :c7, after c6, 5d    
+    Parametrizações gerais do Módulo                            :c8, after c7, 2d            
+    Integração com IA - Para análises e processos automatizados :c9, after c8, 5d            
+
+    section Auditoria e Testes
+    Testes e Validações                     :d1, after c9, 3d
+    Registros de atividades                 :d2, after d1, 3d
+    Históricos das Alterações Efetuadas     :d3, after d2, 2d     
+
+    section App FRETAI
+    Dashboard - Gestão de Condutor          :e1, after d3, 1d        
+    Emissão de CTE - Integrado BackOffice   :e2, after e1, 3d        
+    Emissão de ATF - Integrado BackOffice   :e3, after e1, 5d
+    Cancelamento de CTE                     :e4, after e3, 2d        
+    Cancelamento de ATF                     :e5, after e3, 3d
+    Acompanhamento de Pagamentos CTE        :e6, after e5, 5d
+    Estorno / Crédito-Débito                :e7, after e5, 5d
+    Integração com Banco Digital            :e8, after e7, 5d
+    Central de Mensagens                    :e9, after e8, 1d
+    Relatórios e/ou Históricos              :e10, after e9, 5d      
+    Automatizações de Alertas e Movimentações :e11, after e10, 1d      
+
+    section App TRESCO - Área do Motoristas Permissionários
+    Dashboard - Painel de Controle          :f1, after e11, 1d        
+    Conferência Fechamento                  :f2, after f1, 1d        
+    Aprovação Fechamento                    :f3, after f1, 1d
+    Acompanhamento de Recebimentos          :f4, after f1, 1d
+    Acompanhamento de Pagamentos PIX Sicred :f5, after f1, 1d
+    Central de Mensagens                    :f6, after f1, 1d
+    CRUD Contas Bancárias/PIX               :f7, after f1, 1d
+    Emissão de CTE - Integrado BackOffice   :f8, after f7, 1d        
+    Emissão de ATF - Integrado BackOffice   :f9, after f7, 1d
+    Cancelamento de CTE                     :f10, after f9, 1d        
+    Cancelamento de ATF                     :f11, after f9, 1d
+    Integração com Banco Digital            :f12, after f9, 1d
+    Acompanhamento de Pagamentos CTE        :f13, after f12, 1d
+    Estorno / Crédito-Débito                :f14, after f12, 1d
+    Dashboard Financeiro                    :f15, after f14, 3d      
+    Gestão de Benefícios                    :f16, after f14, 1d
+    Relatórios e/ou Históricos de Saques.   :f17, after f16, 1d      
+    Automatizações de Alertas e Movimentações :f18, after f16, 1d      
+
+    section App TRESCO - Área da Escola
+    Definir escopo do App Escola           :g1, after f18, 5d
+    Cadastros / Movimentações              :g2, after g1, 10d      
+    Automações de Alertas de Movimentações :g3, after g2, 3d     
+
+    section App TRESCO - Área do Responsável
+    Definir escopo do App Responsável     :h1, after g3, 3d
+    CRUD para Liberação da Acesso         :h2, after h1, 3d    
+    CRUD Geração Link de Rastreamento     :h3, after h1, 2d
+    Acompanhamento de Movimentação        :h4, after h1, 5d      
+    Automações de Alertas e Movimentações :h5, after h1, 1d        
+
+    section App TRESCO e FRETAI - Área de Relatórios Unificados BackOffice
+    Definir escopo e layouts Relatórios    :i1, after h5, 1d
+    Modelos - Relatórios Executivos        :i2, after j1, 1d    
+    Modelos - Relatórios Operacionais      :i3, after j1, 1d
+    Modelos - Relatórios Gerenciais        :i4, after j1, 1d      
+    Automações de Relatórios Periódicos    :i6, after j1, 1d      
+

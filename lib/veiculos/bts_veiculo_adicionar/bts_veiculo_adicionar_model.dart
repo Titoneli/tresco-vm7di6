@@ -1,19 +1,8 @@
 import '/backend/supabase/supabase.dart';
-import '/flutter_flow/flutter_flow_drop_down.dart';
 import '/flutter_flow/flutter_flow_util.dart';
-import '/flutter_flow/flutter_flow_widgets.dart';
 import '/flutter_flow/form_field_controller.dart';
-import '/veiculos/bts_categoria_veiculo/bts_categoria_veiculo_widget.dart';
-import '/veiculos/bts_marca/bts_marca_widget.dart';
-import '/veiculos/bts_modelo/bts_modelo_widget.dart';
-import '/veiculos/bts_tipo_veiculo/bts_tipo_veiculo_widget.dart';
-import 'dart:ui';
 import 'bts_veiculo_adicionar_widget.dart' show BtsVeiculoAdicionarWidget;
-import 'package:ff_theme/flutter_flow/flutter_flow_theme.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/provider.dart';
 
 class BtsVeiculoAdicionarModel
     extends FlutterFlowModel<BtsVeiculoAdicionarWidget> {

@@ -11,8 +11,6 @@ import '/flutter_flow/form_field_controller.dart';
 import '/flutter_flow/upload_data.dart';
 import '/frame_work/bts_aguarde/bts_aguarde_widget.dart';
 import 'dart:async';
-import 'dart:convert';
-import 'dart:ui';
 import '/flutter_flow/custom_functions.dart' as functions;
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -131,7 +129,7 @@ class _BtsAlunoEditarWidgetState extends State<BtsAlunoEditarWidget>
           future: AlunoTable().querySingleRow(
             queryFn: (q) => q.eqOrNull(
               'idAluno',
-              widget!.idAluno,
+              widget.idAluno,
             ),
           ),
           builder: (context, snapshot) {
@@ -201,7 +199,7 @@ class _BtsAlunoEditarWidgetState extends State<BtsAlunoEditarWidget>
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    'Aluno:  ${containerAlunoRow?.nomeAluno?.toUpperCase() ?? ''}',
+                                    'Aluno:  ${containerAlunoRow?.nomeAluno}',
                                     style: FlutterFlowTheme.of(context)
                                         .titleLarge
                                         .override(
@@ -376,7 +374,7 @@ class _BtsAlunoEditarWidgetState extends State<BtsAlunoEditarWidget>
                                           containerAlunoRow!.endAluno!;
                                       FFAppState().latLongAluno =
                                           functions.parseLatLngFromString(
-                                              containerAlunoRow!.latlongAluno!);
+                                              containerAlunoRow.latlongAluno!);
                                       _model.updatePage(() {});
                                     },
                                     () async {},
@@ -3597,7 +3595,7 @@ class _BtsAlunoEditarWidgetState extends State<BtsAlunoEditarWidget>
                                                                             .idAluno,
                                                                     nomeAluno:
                                                                         containerAlunoRow
-                                                                            ?.nomeAluno,
+                                                                            .nomeAluno,
                                                                     latLongEndAtual:
                                                                         FFAppState()
                                                                             .latLongAluno,
@@ -4278,7 +4276,7 @@ class _BtsAlunoEditarWidgetState extends State<BtsAlunoEditarWidget>
                                                         (newValue) async {
                                                       safeSetState(() => _model
                                                               .swcAutorizacaoEntregueValue =
-                                                          newValue!);
+                                                          newValue);
                                                     },
                                                     activeColor:
                                                         FlutterFlowTheme.of(
@@ -4365,7 +4363,7 @@ class _BtsAlunoEditarWidgetState extends State<BtsAlunoEditarWidget>
                                                   containerAlunoRow?.nomeAluno,
                                               idAluno: containerAlunoRow
                                                   ?.idAluno
-                                                  ?.toString(),
+                                                  .toString(),
                                             );
 
                                             await launchURL(
@@ -4576,8 +4574,6 @@ class _BtsAlunoEditarWidgetState extends State<BtsAlunoEditarWidget>
                                               ),
                                             );
                                             if (_model.uploadedFileUrl_updataSupabase !=
-                                                    null &&
-                                                _model.uploadedFileUrl_updataSupabase !=
                                                     '') {
                                               _model.apiResSalvaFoto =
                                                   await AlunoTable().update(
@@ -4588,7 +4584,7 @@ class _BtsAlunoEditarWidgetState extends State<BtsAlunoEditarWidget>
                                                 matchingRows: (rows) =>
                                                     rows.eqOrNull(
                                                   'idAluno',
-                                                  containerAlunoRow?.idAluno,
+                                                  containerAlunoRow.idAluno,
                                                 ),
                                                 returnRows: true,
                                               );
@@ -4713,7 +4709,7 @@ class _BtsAlunoEditarWidgetState extends State<BtsAlunoEditarWidget>
                                                   queryFn: (q) => q.eqOrNull(
                                                     'idEmpresa',
                                                     containerAlunoRow
-                                                        ?.idEmpresa,
+                                                        .idEmpresa,
                                                   ),
                                                 ),
                                                 builder: (context, snapshot) {
@@ -4744,7 +4740,7 @@ class _BtsAlunoEditarWidgetState extends State<BtsAlunoEditarWidget>
                                                             int>(
                                                       _model.ddwEscolaValue ??=
                                                           containerAlunoRow
-                                                              ?.idEscola,
+                                                              .idEscola,
                                                     ),
                                                     options: List<int>.from(
                                                         ddwEscolaEscolaRowList
@@ -4885,7 +4881,7 @@ class _BtsAlunoEditarWidgetState extends State<BtsAlunoEditarWidget>
                                                                 String>(
                                                           _model.ddwSerieValue ??=
                                                               containerAlunoRow
-                                                                  ?.domSerie,
+                                                                  .domSerie,
                                                         ),
                                                         options:
                                                             ddwSerieCorDominioRowList
@@ -5026,7 +5022,7 @@ class _BtsAlunoEditarWidgetState extends State<BtsAlunoEditarWidget>
                                                                 String>(
                                                           _model.ddwTurnoValue ??=
                                                               containerAlunoRow
-                                                                  ?.domTurno,
+                                                                  .domTurno,
                                                         ),
                                                         options:
                                                             ddwTurnoCorDominioRowList
@@ -5167,7 +5163,7 @@ class _BtsAlunoEditarWidgetState extends State<BtsAlunoEditarWidget>
                                                                 int>(
                                                           _model.ddwTurmaValue ??=
                                                               containerAlunoRow
-                                                                  ?.idTurma,
+                                                                  .idTurma,
                                                         ),
                                                         options: List<int>.from(
                                                             ddwTurmaTurmaRowList
@@ -5291,7 +5287,7 @@ class _BtsAlunoEditarWidgetState extends State<BtsAlunoEditarWidget>
                                                                     null
                                                                 ? _model
                                                                     .ddwEscolaValue!
-                                                                : containerAlunoRow!
+                                                                : containerAlunoRow
                                                                     .idEscola!,
                                                           ),
                                                         );
@@ -5324,7 +5320,7 @@ class _BtsAlunoEditarWidgetState extends State<BtsAlunoEditarWidget>
                                                       .eqOrNull(
                                                         'idEmpresa',
                                                         containerAlunoRow
-                                                            ?.idEmpresa,
+                                                            .idEmpresa,
                                                       )
                                                       .eqOrNull(
                                                         'domCargo',
@@ -5361,7 +5357,7 @@ class _BtsAlunoEditarWidgetState extends State<BtsAlunoEditarWidget>
                                                             int>(
                                                       _model.ddwMotoristaValue ??=
                                                           containerAlunoRow
-                                                              ?.idMotorista,
+                                                              .idMotorista,
                                                     ),
                                                     options: List<int>.from(
                                                         ddwMotoristaUsuarioRowList
@@ -5536,7 +5532,7 @@ class _BtsAlunoEditarWidgetState extends State<BtsAlunoEditarWidget>
                                                         .nomeTextController2 ??=
                                                     TextEditingController(
                                                   text: containerAlunoRow
-                                                      ?.domTipoAluno,
+                                                      .domTipoAluno,
                                                 ),
                                                 focusNode:
                                                     _model.nomeFocusNode2,
@@ -5735,7 +5731,7 @@ class _BtsAlunoEditarWidgetState extends State<BtsAlunoEditarWidget>
                                                 child: Checkbox(
                                                   value: _model
                                                           .chkConfirmaMotoristaValue ??=
-                                                      containerAlunoRow!
+                                                      containerAlunoRow
                                                           .domCheckAluno,
                                                   onChanged: (newValue) async {
                                                     safeSetState(() => _model
@@ -5750,7 +5746,7 @@ class _BtsAlunoEditarWidgetState extends State<BtsAlunoEditarWidget>
                                                           width: 2,
                                                           color: FlutterFlowTheme
                                                                   .of(context)
-                                                              .alternate!,
+                                                              .alternate,
                                                         )
                                                       : null,
                                                   activeColor:
@@ -5813,7 +5809,7 @@ class _BtsAlunoEditarWidgetState extends State<BtsAlunoEditarWidget>
                                             queryFn: (q) => q
                                                 .eqOrNull(
                                                   'idaluno',
-                                                  containerAlunoRow?.idAluno,
+                                                  containerAlunoRow.idAluno,
                                                 )
                                                 .order('alterado_em'),
                                           ),
@@ -6161,25 +6157,25 @@ class _BtsAlunoEditarWidgetState extends State<BtsAlunoEditarWidget>
                                           _model.emailTextController.text,
                                       'idEscola': _model.ddwEscolaValue != null
                                           ? _model.ddwEscolaValue
-                                          : containerAlunoRow?.idEscola,
+                                          : containerAlunoRow.idEscola,
                                       'cpfAluno':
                                           _model.cpfCnpjTextController.text,
                                       'domTipoAluno': _model.ddwTipoAlunoValue,
                                       'idTurma': _model.ddwTurmaValue != null
                                           ? _model.ddwTurmaValue
-                                          : containerAlunoRow?.idTurma,
+                                          : containerAlunoRow.idTurma,
                                       'lat': FFAppState().latitudeAluno,
                                       'long': FFAppState().longitudeAluno,
                                       'idVeiculo': _model.ddwVeiculoValue,
                                       'idMotorista':
                                           _model.ddwMotoristaValue != null
                                               ? _model.ddwMotoristaValue
-                                              : containerAlunoRow?.idMotorista,
+                                              : containerAlunoRow.idMotorista,
                                       'domTurno':
                                           _model.ddwTurnoValue != null &&
                                                   _model.ddwTurnoValue != ''
                                               ? _model.ddwTurnoValue
-                                              : containerAlunoRow?.domTurno,
+                                              : containerAlunoRow.domTurno,
                                       'domSitAluno': _model.ddwSitAlunoValue,
                                       'nomeResponsavel':
                                           _model.nomeRespTextController.text,
@@ -6204,11 +6200,11 @@ class _BtsAlunoEditarWidgetState extends State<BtsAlunoEditarWidget>
                                           _model.ddwSerieValue != null &&
                                                   _model.ddwSerieValue != ''
                                               ? _model.ddwSerieValue
-                                              : containerAlunoRow?.domSerie,
+                                              : containerAlunoRow.domSerie,
                                       'latlongAluno': _model.googleMapsCenter !=
                                               null
                                           ? _model.googleMapsCenter?.toString()
-                                          : containerAlunoRow?.latlongAluno,
+                                          : containerAlunoRow.latlongAluno,
                                       'ativo':
                                           _model.ddwSitAlunoValue == 'Ativo',
                                       'urlGoogleMaps':
@@ -6220,7 +6216,7 @@ class _BtsAlunoEditarWidgetState extends State<BtsAlunoEditarWidget>
                                     },
                                     matchingRows: (rows) => rows.eqOrNull(
                                       'idAluno',
-                                      widget!.idAluno,
+                                      widget.idAluno,
                                     ),
                                     returnRows: true,
                                   );

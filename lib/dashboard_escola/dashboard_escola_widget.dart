@@ -7,11 +7,8 @@ import '/flutter_flow/flutter_flow_animations.dart';
 import '/flutter_flow/flutter_flow_charts.dart';
 import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_util.dart';
-import '/flutter_flow/flutter_flow_widgets.dart';
 import '/frame_work/menu_side_bar_expandido/menu_side_bar_expandido_widget.dart';
 import '/veiculos/bts_veiculo_editar/bts_veiculo_editar_widget.dart';
-import 'dart:math';
-import 'dart:ui';
 import '/index.dart';
 import 'package:easy_debounce/easy_debounce.dart';
 import 'package:ff_theme/flutter_flow/flutter_flow_theme.dart';
@@ -1432,7 +1429,7 @@ class _DashboardEscolaWidgetState extends State<DashboardEscolaWidget>
                                                                                                     getJsonField(
                                                                                                       motoristaListaItem,
                                                                                                       r'''$.nomeUsuario''',
-                                                                                                    ).toString().toUpperCase(),
+                                                                                                    ).toString(),
                                                                                                     style: FlutterFlowTheme.of(context).bodyMedium.override(
                                                                                                           font: GoogleFonts.inter(
                                                                                                             fontWeight: FontWeight.w300,

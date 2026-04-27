@@ -21,9 +21,6 @@ import '/frame_work/row_aluno_vazio/row_aluno_vazio_widget.dart';
 import '/frame_work/row_escola_vazio/row_escola_vazio_widget.dart';
 import '/frame_work/row_motorista_vazio/row_motorista_vazio_widget.dart';
 import 'dart:async';
-import 'dart:convert';
-import 'dart:math';
-import 'dart:ui';
 import '/index.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:easy_debounce/easy_debounce.dart';
@@ -2126,7 +2123,7 @@ class _DashboardAdminWidgetState extends State<DashboardAdminWidget>
                                                                                                                                           getJsonField(
                                                                                                                                             motoristaListaItem,
                                                                                                                                             r'''$.nomeUsuario''',
-                                                                                                                                          ).toString().toUpperCase(),
+                                                                                                                                          ).toString(),
                                                                                                                                           style: FlutterFlowTheme.of(context).bodyMedium.override(
                                                                                                                                                 font: GoogleFonts.inter(
                                                                                                                                                   fontWeight: FontWeight.w500,
@@ -2710,7 +2707,7 @@ class _DashboardAdminWidgetState extends State<DashboardAdminWidget>
                                                                                                                                                                 getJsonField(
                                                                                                                                                                   alunosListaWrapItem,
                                                                                                                                                                   r'''$.nomeAluno''',
-                                                                                                                                                                ).toString().toUpperCase(),
+                                                                                                                                                                ).toString(),
                                                                                                                                                                 textAlign: TextAlign.start,
                                                                                                                                                                 minFontSize: 8.0,
                                                                                                                                                                 style: FlutterFlowTheme.of(context).bodyMedium.override(
@@ -4392,7 +4389,7 @@ class _DashboardAdminWidgetState extends State<DashboardAdminWidget>
                                                                             valueOrDefault<String>(
                                                                               lstGestaoPagtoFinfechconfirmadoRow.nomeusuario,
                                                                               '-',
-                                                                            ).toUpperCase(),
+                                                                            ),
                                                                             style: FlutterFlowTheme.of(context).bodyMedium.override(
                                                                                   font: GoogleFonts.inter(
                                                                                     fontWeight: FlutterFlowTheme.of(context).bodyMedium.fontWeight,
@@ -4487,7 +4484,7 @@ class _DashboardAdminWidgetState extends State<DashboardAdminWidget>
                                                                               Text(
                                                                             valueOrDefault<String>(
                                                                               dateTimeFormat(
-                                                                                "dd/MM/y",
+                                                                                "d/M/y",
                                                                                 lstGestaoPagtoFinfechconfirmadoRow.dtconfusuario,
                                                                                 locale: FFLocalizations.of(context).languageCode,
                                                                               ),
@@ -5819,7 +5816,7 @@ class _DashboardAdminWidgetState extends State<DashboardAdminWidget>
                                                                         listViewFinfechamentoRow
                                                                             .nomeUsuario,
                                                                         '-',
-                                                                      ).toUpperCase(),
+                                                                      ),
                                                                       style: FlutterFlowTheme.of(
                                                                               context)
                                                                           .bodyMedium

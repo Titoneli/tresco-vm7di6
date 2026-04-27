@@ -1,24 +1,10 @@
 import '/backend/api_requests/api_calls.dart';
-import '/backend/supabase/supabase.dart';
-import '/flutter_flow/flutter_flow_drop_down.dart';
-import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_util.dart';
-import '/flutter_flow/flutter_flow_widgets.dart';
 import '/flutter_flow/form_field_controller.dart';
-import '/frame_work/bts_aguarde/bts_aguarde_widget.dart';
 import '/frame_work/menu_side_bar_expandido/menu_side_bar_expandido_widget.dart';
-import 'dart:async';
-import 'dart:convert';
-import 'dart:ui';
 import '/index.dart';
 import 'dashboard_rel_widget.dart' show DashboardRelWidget;
-import 'package:ff_theme/flutter_flow/flutter_flow_theme.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/provider.dart';
 
 class DashboardRelModel extends FlutterFlowModel<DashboardRelWidget> {
   ///  State fields for stateful widgets in this page.

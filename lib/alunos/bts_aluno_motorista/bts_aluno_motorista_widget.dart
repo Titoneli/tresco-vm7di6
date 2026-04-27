@@ -4,7 +4,6 @@ import '/flutter_flow/flutter_flow_drop_down.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
 import '/flutter_flow/form_field_controller.dart';
-import 'dart:ui';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:ff_theme/flutter_flow/flutter_flow_theme.dart';
 import 'package:flutter/material.dart';
@@ -61,7 +60,7 @@ class _BtsAlunoMotoristaWidgetState extends State<BtsAlunoMotoristaWidget> {
     _model = createModel(context, () => BtsAlunoMotoristaModel());
 
     _model.nomeTextController ??=
-        TextEditingController(text: widget!.nomeAluno);
+        TextEditingController(text: widget.nomeAluno);
     _model.nomeFocusNode ??= FocusNode();
 
     WidgetsBinding.instance.addPostFrameCallback((_) => safeSetState(() {}));
@@ -324,7 +323,7 @@ class _BtsAlunoMotoristaWidgetState extends State<BtsAlunoMotoristaWidget> {
                                     _model.ddwMotoristaValueController ??=
                                         FormFieldController<int>(
                                   _model.ddwMotoristaValue ??=
-                                      widget!.idMotorista,
+                                      widget.idMotorista,
                                 ),
                                 options: List<int>.from(
                                     ddwMotoristaUsuarioRowList
@@ -455,7 +454,7 @@ class _BtsAlunoMotoristaWidgetState extends State<BtsAlunoMotoristaWidget> {
                               return FlutterFlowDropDown<int>(
                                 controller: _model.ddwEscolaValueController ??=
                                     FormFieldController<int>(
-                                  _model.ddwEscolaValue ??= widget!.idEscola,
+                                  _model.ddwEscolaValue ??= widget.idEscola,
                                 ),
                                 options: List<int>.from(ddwEscolaEscolaRowList
                                     .map((e) => e.idEscola)
@@ -545,7 +544,7 @@ class _BtsAlunoMotoristaWidgetState extends State<BtsAlunoMotoristaWidget> {
                                 return FlutterFlowDropDown<String>(
                                   controller: _model.ddwSerieValueController ??=
                                       FormFieldController<String>(
-                                    _model.ddwSerieValue ??= widget!.domSerie,
+                                    _model.ddwSerieValue ??= widget.domSerie,
                                   ),
                                   options: ddwSerieCorDominioRowList
                                       .map((e) => e.nomeDominio)
@@ -646,7 +645,7 @@ class _BtsAlunoMotoristaWidgetState extends State<BtsAlunoMotoristaWidget> {
                                             _model.ddwTurnoValueController ??=
                                                 FormFieldController<String>(
                                           _model.ddwTurnoValue ??=
-                                              widget!.domTurno,
+                                              widget.domTurno,
                                         ),
                                         options: ddwTurnoCorDominioRowList
                                             .map((e) => e.nomeDominio)
@@ -753,7 +752,7 @@ class _BtsAlunoMotoristaWidgetState extends State<BtsAlunoMotoristaWidget> {
                                             _model.ddwTurmaValueController ??=
                                                 FormFieldController<int>(
                                           _model.ddwTurmaValue ??=
-                                              widget!.idTurma,
+                                              widget.idTurma,
                                         ),
                                         options: List<int>.from(
                                             ddwTurmaTurmaRowList
@@ -855,7 +854,7 @@ class _BtsAlunoMotoristaWidgetState extends State<BtsAlunoMotoristaWidget> {
                                       ? BorderSide(
                                           width: 2,
                                           color: FlutterFlowTheme.of(context)
-                                              .alternate!,
+                                              .alternate,
                                         )
                                       : null,
                                   activeColor:
@@ -987,7 +986,7 @@ class _BtsAlunoMotoristaWidgetState extends State<BtsAlunoMotoristaWidget> {
                                 'idMotorista': _model.ddwMotoristaValue,
                                 'idEscola': _model.ddwEscolaValue != null
                                     ? _model.ddwEscolaValue
-                                    : widget!.idEscola,
+                                    : widget.idEscola,
                                 'idTurma': _model.ddwTurmaValue,
                                 'domTurno': _model.ddwTurnoValue,
                                 'domSerie': _model.ddwSerieValue,
@@ -996,7 +995,7 @@ class _BtsAlunoMotoristaWidgetState extends State<BtsAlunoMotoristaWidget> {
                               },
                               matchingRows: (rows) => rows.eqOrNull(
                                 'idAluno',
-                                widget!.idAlunoMotorista,
+                                widget.idAlunoMotorista,
                               ),
                               returnRows: true,
                             );

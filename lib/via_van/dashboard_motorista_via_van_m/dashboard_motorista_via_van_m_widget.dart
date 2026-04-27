@@ -1,7 +1,5 @@
 import '/alunos/bts_aluno_adicionar/bts_aluno_adicionar_widget.dart';
 import '/backend/supabase/supabase.dart';
-import '/backend/api_requests/api_calls.dart';
-import '/vivan/vivan.dart';
 import '/escolas/bts_turmas/bts_turmas_widget.dart';
 import '/flutter_flow/flutter_flow_drop_down.dart';
 import '/flutter_flow/flutter_flow_icon_button.dart';
@@ -13,7 +11,6 @@ import '/frame_work/bts_nav_aluno_float/bts_nav_aluno_float_widget.dart';
 import '/frame_work/bts_selecione/bts_selecione_widget.dart';
 import '/frame_work/menu_side_bar_expandido/menu_side_bar_expandido_widget.dart';
 import '/via_van/bts_via_van_motorista_editar_m/bts_via_van_motorista_editar_m_widget.dart';
-import 'dart:ui';
 import '/index.dart';
 import 'package:easy_debounce/easy_debounce.dart';
 import 'package:ff_theme/flutter_flow/flutter_flow_theme.dart';
@@ -60,11 +57,6 @@ class _DashboardMotoristaViaVanMWidgetState
 
         context.pushNamed(LoginWidget.routeName);
       }
-      // Fetch ViVan dashboard data from API
-      _model.isLoadingDashboard = true;
-      safeSetState(() {});
-      await _model.fetchDashboardData(FFAppState().idUsuario);
-      safeSetState(() {});
     });
 
     _model.filterAlunoTextController ??= TextEditingController();
@@ -2452,7 +2444,7 @@ class _DashboardMotoristaViaVanMWidgetState
                                                                                                                         valueOrDefault<String>(
                                                                                                                           wrapViewRetdadosalunosRow.nomeAluno,
                                                                                                                           '-',
-                                                                                                                        ).toUpperCase(),
+                                                                                                                        ),
                                                                                                                         style: FlutterFlowTheme.of(context).bodyMedium.override(
                                                                                                                               font: GoogleFonts.inter(
                                                                                                                                 fontWeight: FontWeight.bold,
@@ -4076,13 +4068,13 @@ class _DashboardMotoristaViaVanMWidgetState
                                                                                                       child: Text(
                                                                                                         '${valueOrDefault<String>(
                                                                                                           dateTimeFormat(
-                                                                                                            "dd/MM/y",
+                                                                                                            "d/M/y",
                                                                                                             listViewCorComunicadoRow.dtComunicado,
                                                                                                             locale: FFLocalizations.of(context).languageCode,
                                                                                                           ),
                                                                                                           '-',
                                                                                                         )} - ${dateTimeFormat(
-                                                                                                          "HH:mm",
+                                                                                                          "Hm",
                                                                                                           listViewCorComunicadoRow.horaComunicado?.time,
                                                                                                           locale: FFLocalizations.of(context).languageCode,
                                                                                                         )}',
@@ -4180,7 +4172,30 @@ class _DashboardMotoristaViaVanMWidgetState
                                       hoverColor: Colors.transparent,
                                       highlightColor: Colors.transparent,
                                       onTap: () async {
-                                        context.pushNamed('presencaM');
+                                        await showModalBottomSheet(
+                                          isScrollControlled: true,
+                                          backgroundColor: Colors.transparent,
+                                          enableDrag: false,
+                                          context: context,
+                                          builder: (context) {
+                                            return GestureDetector(
+                                              onTap: () {
+                                                FocusScope.of(context)
+                                                    .unfocus();
+                                                FocusManager
+                                                    .instance.primaryFocus
+                                                    ?.unfocus();
+                                              },
+                                              child: Padding(
+                                                padding:
+                                                    MediaQuery.viewInsetsOf(
+                                                        context),
+                                                child:
+                                                    BtsAlunoAdicionarWidget(),
+                                              ),
+                                            );
+                                          },
+                                        ).then((value) => safeSetState(() {}));
                                       },
                                       child: Container(
                                         width: 100.0,
@@ -4252,7 +4267,30 @@ class _DashboardMotoristaViaVanMWidgetState
                                       hoverColor: Colors.transparent,
                                       highlightColor: Colors.transparent,
                                       onTap: () async {
-                                        context.pushNamed('passageirosListaM');
+                                        await showModalBottomSheet(
+                                          isScrollControlled: true,
+                                          backgroundColor: Colors.transparent,
+                                          enableDrag: false,
+                                          context: context,
+                                          builder: (context) {
+                                            return GestureDetector(
+                                              onTap: () {
+                                                FocusScope.of(context)
+                                                    .unfocus();
+                                                FocusManager
+                                                    .instance.primaryFocus
+                                                    ?.unfocus();
+                                              },
+                                              child: Padding(
+                                                padding:
+                                                    MediaQuery.viewInsetsOf(
+                                                        context),
+                                                child:
+                                                    BtsAlunoAdicionarWidget(),
+                                              ),
+                                            );
+                                          },
+                                        ).then((value) => safeSetState(() {}));
                                       },
                                       child: Container(
                                         width: 100.0,
@@ -4323,7 +4361,30 @@ class _DashboardMotoristaViaVanMWidgetState
                                       hoverColor: Colors.transparent,
                                       highlightColor: Colors.transparent,
                                       onTap: () async {
-                                        context.pushNamed('financeiroM');
+                                        await showModalBottomSheet(
+                                          isScrollControlled: true,
+                                          backgroundColor: Colors.transparent,
+                                          enableDrag: false,
+                                          context: context,
+                                          builder: (context) {
+                                            return GestureDetector(
+                                              onTap: () {
+                                                FocusScope.of(context)
+                                                    .unfocus();
+                                                FocusManager
+                                                    .instance.primaryFocus
+                                                    ?.unfocus();
+                                              },
+                                              child: Padding(
+                                                padding:
+                                                    MediaQuery.viewInsetsOf(
+                                                        context),
+                                                child:
+                                                    BtsAlunoAdicionarWidget(),
+                                              ),
+                                            );
+                                          },
+                                        ).then((value) => safeSetState(() {}));
                                       },
                                       child: Container(
                                         width: 100.0,

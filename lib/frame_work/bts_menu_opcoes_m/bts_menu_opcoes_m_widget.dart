@@ -1,10 +1,7 @@
 import '/backend/supabase/supabase.dart';
 import '/colaboradores/bts_colab_editar_m/bts_colab_editar_m_widget.dart';
 import '/flutter_flow/flutter_flow_util.dart';
-import '/flutter_flow/flutter_flow_widgets.dart';
-import 'dart:ui';
 import '/index.dart';
-import '/frame_work/documentos_usuario/documentos_usuario_widget.dart';
 import 'package:ff_theme/flutter_flow/flutter_flow_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -366,7 +363,7 @@ class _BtsMenuOpcoesMWidgetState extends State<BtsMenuOpcoesMWidget> {
                                                               wrapUsuarioRow
                                                                   ?.nomeUsuario,
                                                               '-',
-                                                            ).toUpperCase(),
+                                                            ),
                                                             style: FlutterFlowTheme
                                                                     .of(context)
                                                                 .headlineSmall
@@ -946,45 +943,7 @@ class _BtsMenuOpcoesMWidgetState extends State<BtsMenuOpcoesMWidget> {
                                                         EdgeInsetsDirectional
                                                             .fromSTEB(0.0, 0.0,
                                                                 0.0, 1.0),
-                                                    child: InkWell(
-                                                      splashColor:
-                                                          Colors.transparent,
-                                                      focusColor:
-                                                          Colors.transparent,
-                                                      hoverColor:
-                                                          Colors.transparent,
-                                                      highlightColor:
-                                                          Colors.transparent,
-                                                      onTap: () async {
-                                                        await showModalBottomSheet(
-                                                          isScrollControlled:
-                                                              true,
-                                                          backgroundColor:
-                                                              Colors
-                                                                  .transparent,
-                                                          enableDrag: true,
-                                                          context: context,
-                                                          builder: (context) {
-                                                            return Padding(
-                                                              padding: MediaQuery
-                                                                  .viewInsetsOf(
-                                                                      context),
-                                                              child:
-                                                                  DocumentosUsuarioWidget(
-                                                                idUsuario:
-                                                                    wrapUsuarioRow
-                                                                        ?.idUsuario,
-                                                                nomeUsuario:
-                                                                    wrapUsuarioRow
-                                                                        ?.nomeUsuario,
-                                                              ),
-                                                            );
-                                                          },
-                                                        ).then((value) =>
-                                                            safeSetState(
-                                                                () {}));
-                                                      },
-                                                      child: Container(
+                                                    child: Container(
                                                       width: MediaQuery.sizeOf(
                                                                   context)
                                                               .width *
@@ -1086,7 +1045,6 @@ class _BtsMenuOpcoesMWidgetState extends State<BtsMenuOpcoesMWidget> {
                                                           ],
                                                         ),
                                                       ),
-                                                    ),
                                                     ),
                                                   ),
                                                 ],

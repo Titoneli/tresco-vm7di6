@@ -11,7 +11,6 @@ import '/flutter_flow/form_field_controller.dart';
 import '/frame_work/bts_nav_aluno_float/bts_nav_aluno_float_widget.dart';
 import '/frame_work/bts_selecione/bts_selecione_widget.dart';
 import '/frame_work/menu_side_bar_expandido/menu_side_bar_expandido_widget.dart';
-import 'dart:ui';
 import '/index.dart';
 import 'package:easy_debounce/easy_debounce.dart';
 import 'package:ff_theme/flutter_flow/flutter_flow_theme.dart';
@@ -19,7 +18,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 import 'dashboard_escola_m_model.dart';
 export 'dashboard_escola_m_model.dart';
@@ -240,7 +238,7 @@ class _DashboardEscolaMWidgetState extends State<DashboardEscolaMWidget> {
                                                                             8.0),
                                                                         child:
                                                                             Text(
-                                                                          FFAppState().nomeUsuario.toUpperCase(),
+                                                                          '${FFAppState().nomeUsuario}',
                                                                           style: FlutterFlowTheme.of(context)
                                                                               .labelMedium
                                                                               .override(
@@ -1896,7 +1894,7 @@ class _DashboardEscolaMWidgetState extends State<DashboardEscolaMWidget> {
                                                                                                                           valueOrDefault<String>(
                                                                                                                             wrapViewRetdadosalunosRow.nomeAluno,
                                                                                                                             '-',
-                                                                                                                          ).toUpperCase(),
+                                                                                                                          ),
                                                                                                                           style: FlutterFlowTheme.of(context).bodyMedium.override(
                                                                                                                                 font: GoogleFonts.inter(
                                                                                                                                   fontWeight: FontWeight.bold,
@@ -1996,7 +1994,7 @@ class _DashboardEscolaMWidgetState extends State<DashboardEscolaMWidget> {
                                                                                                                       side: (FlutterFlowTheme.of(context).alternate != null)
                                                                                                                           ? BorderSide(
                                                                                                                               width: 2,
-                                                                                                                              color: FlutterFlowTheme.of(context).alternate!,
+                                                                                                                              color: FlutterFlowTheme.of(context).alternate,
                                                                                                                             )
                                                                                                                           : null,
                                                                                                                       activeColor: FlutterFlowTheme.of(context).primary,
@@ -2399,13 +2397,13 @@ class _DashboardEscolaMWidgetState extends State<DashboardEscolaMWidget> {
                                                                                                       child: Text(
                                                                                                         '${valueOrDefault<String>(
                                                                                                           dateTimeFormat(
-                                                                                                            "dd/MM/y",
+                                                                                                            "d/M/y",
                                                                                                             listViewCorComunicadoRow.dtComunicado,
                                                                                                             locale: FFLocalizations.of(context).languageCode,
                                                                                                           ),
                                                                                                           '-',
                                                                                                         )} - ${dateTimeFormat(
-                                                                                                          "HH:mm",
+                                                                                                          "Hm",
                                                                                                           listViewCorComunicadoRow.horaComunicado?.time,
                                                                                                           locale: FFLocalizations.of(context).languageCode,
                                                                                                         )}',
@@ -2744,7 +2742,7 @@ class _DashboardEscolaMWidgetState extends State<DashboardEscolaMWidget> {
                                                                                   valueOrDefault<String>(
                                                                                     wrapUsuarioRow?.nomeUsuario,
                                                                                     '-',
-                                                                                  ).toUpperCase(),
+                                                                                  ),
                                                                                   style: FlutterFlowTheme.of(context).headlineSmall.override(
                                                                                         font: GoogleFonts.interTight(
                                                                                           fontWeight: FlutterFlowTheme.of(context).headlineSmall.fontWeight,

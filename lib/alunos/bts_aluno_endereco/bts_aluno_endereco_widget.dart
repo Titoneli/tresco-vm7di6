@@ -3,15 +3,9 @@ import '/flutter_flow/flutter_flow_google_map.dart';
 import '/flutter_flow/flutter_flow_place_picker.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
-import 'dart:convert';
-import 'dart:io';
-import 'dart:ui';
-import 'package:ff_commons/flutter_flow/place.dart';
 import 'package:ff_theme/flutter_flow/flutter_flow_theme.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/provider.dart';
 import 'bts_aluno_endereco_model.dart';
 export 'bts_aluno_endereco_model.dart';
 
@@ -46,7 +40,7 @@ class _BtsAlunoEnderecoWidgetState extends State<BtsAlunoEnderecoWidget> {
     _model = createModel(context, () => BtsAlunoEnderecoModel());
 
     _model.nomeTextController ??=
-        TextEditingController(text: widget!.nomeAluno);
+        TextEditingController(text: widget.nomeAluno);
     _model.nomeFocusNode ??= FocusNode();
 
     WidgetsBinding.instance.addPostFrameCallback((_) => safeSetState(() {}));
@@ -364,13 +358,12 @@ class _BtsAlunoEnderecoWidgetState extends State<BtsAlunoEnderecoWidget> {
                                               _model.googleMapsCenter = latLng,
                                           initialLocation:
                                               _model.googleMapsCenter ??=
-                                                  widget!.latLongEndAtual!,
+                                                  widget.latLongEndAtual!,
                                           markers: [
-                                            if (_googleMapMarker != null)
-                                              FlutterFlowMarker(
-                                                _googleMapMarker.serialize(),
-                                                _googleMapMarker,
-                                              ),
+                                            FlutterFlowMarker(
+                                              _googleMapMarker.serialize(),
+                                              _googleMapMarker,
+                                            ),
                                           ],
                                           markerColor: GoogleMarkerColor.violet,
                                           mapType: MapType.normal,
@@ -440,108 +433,90 @@ class _BtsAlunoEnderecoWidgetState extends State<BtsAlunoEnderecoWidget> {
                           borderRadius: BorderRadius.circular(24.0),
                         ),
                       ),
-                      if (_model.placePickerOriginValue.latLng != null)
-                        FFButtonWidget(
-                          onPressed: () async {
-                            if (_model.placePickerOriginValue.latLng != null) {
-                              _model.apiResGeraUrlGoogleMaps =
-                                  await WhgeraurlgooglemapsCall.call(
-                                idAluno: _model.placePickerOriginValue.latLng
-                                    ?.toString(),
-                                sys: isWeb
-                                    ? 'web'
-                                    : (isAndroid
-                                        ? 'android'
-                                        : (isiOS ? 'ios' : '')),
-                              );
+                      FFButtonWidget(
+                        onPressed: () async {
+                          _model.apiResGeraUrlGoogleMaps =
+                              await WhgeraurlgooglemapsCall.call(
+                            idAluno: _model.placePickerOriginValue.latLng
+                                .toString(),
+                            sys: isWeb
+                                ? 'web'
+                                : (isAndroid
+                                    ? 'android'
+                                    : (isiOS ? 'ios' : '')),
+                          );
 
-                              FFAppState().enderecoAluno =
-                                  _model.placePickerOriginValue.address;
-                              FFAppState().latLongAluno =
-                                  _model.placePickerOriginValue.latLng;
-                              FFAppState().googlePlaceID =
-                                  WhgeraurlgooglemapsCall.url(
-                                (_model.apiResGeraUrlGoogleMaps?.jsonBody ??
-                                    ''),
-                              )!;
-                              FFAppState().latGeoCodeAddress =
-                                  WhgeraurlgooglemapsCall.latitude(
-                                (_model.apiResGeraUrlGoogleMaps?.jsonBody ??
-                                    ''),
-                              )!;
-                              FFAppState().lngGeoCodeAddress =
-                                  WhgeraurlgooglemapsCall.longitude(
-                                (_model.apiResGeraUrlGoogleMaps?.jsonBody ??
-                                    ''),
-                              )!;
-                              FFAppState().latitudeAluno =
-                                  WhgeraurlgooglemapsCall.dolatitude(
-                                (_model.apiResGeraUrlGoogleMaps?.jsonBody ??
-                                    ''),
-                              )!;
-                              FFAppState().longitudeAluno =
-                                  WhgeraurlgooglemapsCall.dolongitude(
-                                (_model.apiResGeraUrlGoogleMaps?.jsonBody ??
-                                    ''),
-                              )!;
-                              safeSetState(() {});
-                              Navigator.pop(context);
-                            } else {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(
-                                    'Informe o endereço para prosseguir.',
-                                    style: TextStyle(
-                                      color: FlutterFlowTheme.of(context)
-                                          .primaryBackground,
-                                    ),
-                                  ),
-                                  duration: Duration(milliseconds: 4000),
-                                  backgroundColor:
-                                      FlutterFlowTheme.of(context).secondary,
-                                ),
-                              );
-                            }
-
-                            safeSetState(() {});
-                          },
-                          text: 'Confirmar endereço',
-                          icon: Icon(
-                            Icons.loupe,
-                            size: 20.0,
-                          ),
-                          options: FFButtonOptions(
-                            height: 40.0,
-                            padding: EdgeInsetsDirectional.fromSTEB(
-                                24.0, 0.0, 24.0, 0.0),
-                            iconPadding: EdgeInsetsDirectional.fromSTEB(
-                                0.0, 0.0, 0.0, 0.0),
-                            color: FlutterFlowTheme.of(context).primary,
-                            textStyle: FlutterFlowTheme.of(context)
-                                .titleSmall
-                                .override(
-                                  font: GoogleFonts.interTight(
-                                    fontWeight: FontWeight.w500,
-                                    fontStyle: FlutterFlowTheme.of(context)
-                                        .titleSmall
-                                        .fontStyle,
-                                  ),
-                                  color: Colors.white,
-                                  fontSize: 12.0,
-                                  letterSpacing: 0.0,
+                          FFAppState().enderecoAluno =
+                              _model.placePickerOriginValue.address;
+                          FFAppState().latLongAluno =
+                              _model.placePickerOriginValue.latLng;
+                          FFAppState().googlePlaceID =
+                              WhgeraurlgooglemapsCall.url(
+                            (_model.apiResGeraUrlGoogleMaps?.jsonBody ??
+                                ''),
+                          )!;
+                          FFAppState().latGeoCodeAddress =
+                              WhgeraurlgooglemapsCall.latitude(
+                            (_model.apiResGeraUrlGoogleMaps?.jsonBody ??
+                                ''),
+                          )!;
+                          FFAppState().lngGeoCodeAddress =
+                              WhgeraurlgooglemapsCall.longitude(
+                            (_model.apiResGeraUrlGoogleMaps?.jsonBody ??
+                                ''),
+                          )!;
+                          FFAppState().latitudeAluno =
+                              WhgeraurlgooglemapsCall.dolatitude(
+                            (_model.apiResGeraUrlGoogleMaps?.jsonBody ??
+                                ''),
+                          )!;
+                          FFAppState().longitudeAluno =
+                              WhgeraurlgooglemapsCall.dolongitude(
+                            (_model.apiResGeraUrlGoogleMaps?.jsonBody ??
+                                ''),
+                          )!;
+                          safeSetState(() {});
+                          Navigator.pop(context);
+                        
+                          safeSetState(() {});
+                        },
+                        text: 'Confirmar endereço',
+                        icon: Icon(
+                          Icons.loupe,
+                          size: 20.0,
+                        ),
+                        options: FFButtonOptions(
+                          height: 40.0,
+                          padding: EdgeInsetsDirectional.fromSTEB(
+                              24.0, 0.0, 24.0, 0.0),
+                          iconPadding: EdgeInsetsDirectional.fromSTEB(
+                              0.0, 0.0, 0.0, 0.0),
+                          color: FlutterFlowTheme.of(context).primary,
+                          textStyle: FlutterFlowTheme.of(context)
+                              .titleSmall
+                              .override(
+                                font: GoogleFonts.interTight(
                                   fontWeight: FontWeight.w500,
                                   fontStyle: FlutterFlowTheme.of(context)
                                       .titleSmall
                                       .fontStyle,
                                 ),
-                            elevation: 3.0,
-                            borderSide: BorderSide(
-                              color: Colors.transparent,
-                              width: 1.0,
-                            ),
-                            borderRadius: BorderRadius.circular(24.0),
+                                color: Colors.white,
+                                fontSize: 12.0,
+                                letterSpacing: 0.0,
+                                fontWeight: FontWeight.w500,
+                                fontStyle: FlutterFlowTheme.of(context)
+                                    .titleSmall
+                                    .fontStyle,
+                              ),
+                          elevation: 3.0,
+                          borderSide: BorderSide(
+                            color: Colors.transparent,
+                            width: 1.0,
                           ),
+                          borderRadius: BorderRadius.circular(24.0),
                         ),
+                      ),
                     ],
                   ),
                 ],

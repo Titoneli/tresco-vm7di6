@@ -142,53 +142,6 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) {
         builder: (context, params) => DashboardRespViaVanMWidget(),
       ),
       FFRoute(
-<<<<<<< HEAD
-        name: PassageirosListaMWidget.routeName,
-        path: PassageirosListaMWidget.routePath,
-        builder: (context, params) => PassageirosListaMWidget(),
-      ),
-      FFRoute(
-        name: PassageiroDetalheMWidget.routeName,
-        path: PassageiroDetalheMWidget.routePath,
-        builder: (context, params) => PassageiroDetalheMWidget(
-          passageiroId: params.getParam('passageiroId', ParamType.int),
-        ),
-      ),
-      FFRoute(
-        name: PassageiroFormMWidget.routeName,
-        path: PassageiroFormMWidget.routePath,
-        builder: (context, params) => PassageiroFormMWidget(
-          passageiroId: params.getParam('passageiroId', ParamType.int),
-        ),
-      ),
-      FFRoute(
-        name: ContratosListaMWidget.routeName,
-        path: ContratosListaMWidget.routePath,
-        builder: (context, params) => ContratosListaMWidget(),
-      ),
-      FFRoute(
-        name: ContratoDetalheMWidget.routeName,
-        path: ContratoDetalheMWidget.routePath,
-        builder: (context, params) => ContratoDetalheMWidget(
-          contratoId: params.getParam('contratoId', ParamType.int),
-        ),
-      ),
-      FFRoute(
-        name: FinanceiroMWidget.routeName,
-        path: FinanceiroMWidget.routePath,
-        builder: (context, params) => FinanceiroMWidget(),
-      ),
-      FFRoute(
-        name: PresencaMWidget.routeName,
-        path: PresencaMWidget.routePath,
-        builder: (context, params) => PresencaMWidget(),
-=======
-        name: AtfListaWidget.routeName,
-        path: AtfListaWidget.routePath,
-        builder: (context, params) => AtfListaWidget(),
->>>>>>> 39b572d7af40db5cc4d574b21bd0f35377f6381b
-      ),
-      FFRoute(
         name: $csv_download_library_zcbxbg.HomePageWidget.routeName,
         path: $csv_download_library_zcbxbg.HomePageWidget.routePath,
         builder: (context, params) =>
@@ -225,9 +178,18 @@ extension _GoRouterStateExtensions on GoRouterState {
     ..addAll(pathParameters)
     ..addAll(uri.queryParameters)
     ..addAll(extraMap);
-  TransitionInfo get transitionInfo => extraMap.containsKey(kTransitionInfoKey)
-      ? extraMap[kTransitionInfoKey] as TransitionInfo
-      : TransitionInfo.appDefault();
+  TransitionInfo get transitionInfo {
+    final possibleKeys = [
+      '__transition_info__',
+      '__transition_info__csv_download_library_zcbxbg'
+    ];
+    for (final key in possibleKeys) {
+      if (extraMap.containsKey(key)) {
+        return extraMap[key] as TransitionInfo;
+      }
+    }
+    return TransitionInfo.appDefault();
+  }
 }
 
 class FFParameters {
@@ -323,6 +285,7 @@ class FFRoute {
           return transitionInfo.hasTransition
               ? CustomTransitionPage(
                   key: state.pageKey,
+                  name: state.name,
                   child: child,
                   transitionDuration: transitionInfo.duration,
                   transitionsBuilder:
@@ -340,7 +303,8 @@ class FFRoute {
                     child,
                   ),
                 )
-              : MaterialPage(key: state.pageKey, child: child);
+              : MaterialPage(
+                  key: state.pageKey, name: state.name, child: child);
         },
         routes: routes,
       );

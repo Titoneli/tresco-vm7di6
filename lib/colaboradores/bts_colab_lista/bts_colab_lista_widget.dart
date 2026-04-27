@@ -4,7 +4,6 @@ import '/colaboradores/bts_colab_editar/bts_colab_editar_widget.dart';
 import '/colaboradores/bts_colab_novo/bts_colab_novo_widget.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
-import 'dart:ui';
 import 'package:easy_debounce/easy_debounce.dart';
 import 'package:ff_theme/flutter_flow/flutter_flow_theme.dart';
 import 'package:flutter/material.dart';
@@ -767,7 +766,7 @@ class _BtsColabListaWidgetState extends State<BtsColabListaWidget>
                                                                     getJsonField(
                                                                       usuariosListaItem,
                                                                       r'''$.nomeUsuario''',
-                                                                    ).toString().toUpperCase(),
+                                                                    ).toString(),
                                                                     style: FlutterFlowTheme.of(
                                                                             context)
                                                                         .bodyMedium

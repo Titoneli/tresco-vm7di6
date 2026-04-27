@@ -3,7 +3,6 @@ import '/flutter_flow/flutter_flow_drop_down.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
 import '/flutter_flow/form_field_controller.dart';
-import 'dart:ui';
 import '/index.dart';
 import 'package:ff_theme/flutter_flow/flutter_flow_theme.dart';
 import 'package:flutter/material.dart';
@@ -54,7 +53,7 @@ class _BtsViaVanMotoristaEditarMWidgetState
       length: 2,
       initialIndex: min(
           valueOrDefault<int>(
-            widget!.tabindex,
+            widget.tabindex,
             0,
           ),
           1),
@@ -98,7 +97,7 @@ class _BtsViaVanMotoristaEditarMWidgetState
           future: UsuarioTable().querySingleRow(
             queryFn: (q) => q.eqOrNull(
               'idUsuario',
-              widget!.idUsuario,
+              widget.idUsuario,
             ),
           ),
           builder: (context, snapshot) {
@@ -154,7 +153,7 @@ class _BtsViaVanMotoristaEditarMWidgetState
                         mainAxisSize: MainAxisSize.max,
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          if (!widget!.obrigatorio)
+                          if (!widget.obrigatorio)
                             InkWell(
                               splashColor: Colors.transparent,
                               focusColor: Colors.transparent,
@@ -201,7 +200,7 @@ class _BtsViaVanMotoristaEditarMWidgetState
                                             .fontStyle,
                                       ),
                                 ),
-                                if (widget!.obrigatorio)
+                                if (widget.obrigatorio)
                                   Text(
                                     'Preencha seu perfil para acessar o app completo',
                                     style: FlutterFlowTheme.of(context)
@@ -1852,7 +1851,7 @@ class _BtsViaVanMotoristaEditarMWidgetState
                                                         matchingRows: (rows) =>
                                                             rows.eqOrNull(
                                                           'idUsuario',
-                                                          widget!.idUsuario,
+                                                          widget.idUsuario,
                                                         ),
                                                         returnRows: true,
                                                       );
@@ -2256,18 +2255,11 @@ class _BtsViaVanMotoristaEditarMWidgetState
                                                   var _shouldSetState = false;
                                                   if (!(_model.confirmaSenhaTextController
                                                               .text !=
-                                                          null &&
-                                                      _model.confirmaSenhaTextController
-                                                              .text !=
                                                           '')) {
                                                     if (_shouldSetState)
                                                       safeSetState(() {});
                                                     return;
-                                                  } else if (_model
-                                                              .edtLoginTextController
-                                                              .text !=
-                                                          null &&
-                                                      _model.edtLoginTextController
+                                                  } else if (_model.edtLoginTextController
                                                               .text !=
                                                           '') {}
 
@@ -2285,7 +2277,7 @@ class _BtsViaVanMotoristaEditarMWidgetState
                                                     matchingRows: (rows) =>
                                                         rows.eqOrNull(
                                                       'idUsuario',
-                                                      widget!.idUsuario,
+                                                      widget.idUsuario,
                                                     ),
                                                     returnRows: true,
                                                   );
@@ -2457,7 +2449,7 @@ class _BtsViaVanMotoristaEditarMWidgetState
                                                         matchingRows: (rows) =>
                                                             rows.eqOrNull(
                                                           'idUsuario',
-                                                          widget!.idUsuario,
+                                                          widget.idUsuario,
                                                         ),
                                                       );
                                                       await showDialog(

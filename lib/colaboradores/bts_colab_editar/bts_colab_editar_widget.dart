@@ -3,7 +3,6 @@ import '/flutter_flow/flutter_flow_drop_down.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
 import '/flutter_flow/form_field_controller.dart';
-import 'dart:ui';
 import '/flutter_flow/custom_functions.dart' as functions;
 import '/index.dart';
 import 'package:auto_size_text/auto_size_text.dart';
@@ -105,7 +104,7 @@ class _BtsColabEditarWidgetState extends State<BtsColabEditarWidget>
           future: UsuarioTable().querySingleRow(
             queryFn: (q) => q.eqOrNull(
               'idUsuario',
-              widget!.idUsuario,
+              widget.idUsuario,
             ),
           ),
           builder: (context, snapshot) {
@@ -168,7 +167,7 @@ class _BtsColabEditarWidgetState extends State<BtsColabEditarWidget>
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Editar Pessoa :: ${containerUsuarioRow?.nomeUsuario?.toUpperCase() ?? ''}',
+                                'Editar Pessoa :: ${containerUsuarioRow?.nomeUsuario}',
                                 style: FlutterFlowTheme.of(context)
                                     .titleLarge
                                     .override(
@@ -1269,7 +1268,7 @@ class _BtsColabEditarWidgetState extends State<BtsColabEditarWidget>
                                                           (newValue) async {
                                                         safeSetState(() => _model
                                                                 .swcLoginValue =
-                                                            newValue!);
+                                                            newValue);
                                                       },
                                                       activeColor:
                                                           FlutterFlowTheme.of(
@@ -1337,7 +1336,7 @@ class _BtsColabEditarWidgetState extends State<BtsColabEditarWidget>
                                                             (newValue) async {
                                                           safeSetState(() =>
                                                               _model.swcAcessoValue =
-                                                                  newValue!);
+                                                                  newValue);
                                                         },
                                                         activeColor:
                                                             FlutterFlowTheme.of(
@@ -1756,9 +1755,6 @@ class _BtsColabEditarWidgetState extends State<BtsColabEditarWidget>
                                                                   }
                                                                   if (!(_model.confirmaSenhaTextController
                                                                               .text !=
-                                                                          null &&
-                                                                      _model.confirmaSenhaTextController
-                                                                              .text !=
                                                                           '')) {
                                                                     if (_shouldSetState)
                                                                       safeSetState(
@@ -1780,7 +1776,7 @@ class _BtsColabEditarWidgetState extends State<BtsColabEditarWidget>
                                                                         (rows) =>
                                                                             rows.eqOrNull(
                                                                       'idUsuario',
-                                                                      widget!
+                                                                      widget
                                                                           .idUsuario,
                                                                     ),
                                                                     returnRows:
@@ -1970,7 +1966,7 @@ class _BtsColabEditarWidgetState extends State<BtsColabEditarWidget>
                                                                             (rows) =>
                                                                                 rows.eqOrNull(
                                                                           'idUsuario',
-                                                                          widget!
+                                                                          widget
                                                                               .idUsuario,
                                                                         ),
                                                                       );
@@ -4830,9 +4826,7 @@ class _BtsColabEditarWidgetState extends State<BtsColabEditarWidget>
                                     'codPermDER':
                                         _model.codPermDERTextController.text,
                                     'valAluno':
-                                        _model.edtValAlunoTextController.text !=
-                                                    null &&
-                                                _model.edtValAlunoTextController
+                                        _model.edtValAlunoTextController
                                                         .text !=
                                                     ''
                                             ? double.tryParse(_model
@@ -4840,20 +4834,14 @@ class _BtsColabEditarWidgetState extends State<BtsColabEditarWidget>
                                             : containerUsuarioRow?.valAluno,
                                     'domTipoPessoa': _model.ddwTipoPessoaValue,
                                     'codINSS': _model.codNISTextController.text,
-                                    'qtdDependentesIR': _model
-                                                    .qtdeDependentesTextController
-                                                    .text !=
-                                                null &&
-                                            _model.qtdeDependentesTextController
+                                    'qtdDependentesIR': _model.qtdeDependentesTextController
                                                     .text !=
                                                 ''
                                         ? double.tryParse(_model
                                             .qtdeDependentesTextController.text)
                                         : containerUsuarioRow?.qtdDependentesIR,
                                     'chavePIX':
-                                        _model.chavePIXTextController.text !=
-                                                    null &&
-                                                _model.chavePIXTextController
+                                        _model.chavePIXTextController
                                                         .text !=
                                                     ''
                                             ? _model.chavePIXTextController.text
@@ -4864,11 +4852,7 @@ class _BtsColabEditarWidgetState extends State<BtsColabEditarWidget>
                                             _model.ddwTipoChavePIXValue != ''
                                         ? _model.ddwTipoChavePIXValue
                                         : containerUsuarioRow?.domTipoChavePIX,
-                                    'valDescontoCooperativa': _model
-                                                    .edtDescontoCooperativaTextController
-                                                    .text !=
-                                                null &&
-                                            _model.edtDescontoCooperativaTextController
+                                    'valDescontoCooperativa': _model.edtDescontoCooperativaTextController
                                                     .text !=
                                                 ''
                                         ? _model
@@ -4876,11 +4860,7 @@ class _BtsColabEditarWidgetState extends State<BtsColabEditarWidget>
                                             .text
                                         : containerUsuarioRow
                                             ?.valDescontoCooperativa,
-                                    'matriculaCooperativa': _model
-                                                    .edtMatriculaoCooperativaTextController
-                                                    .text !=
-                                                null &&
-                                            _model.edtMatriculaoCooperativaTextController
+                                    'matriculaCooperativa': _model.edtMatriculaoCooperativaTextController
                                                     .text !=
                                                 ''
                                         ? _model
@@ -4897,7 +4877,7 @@ class _BtsColabEditarWidgetState extends State<BtsColabEditarWidget>
                                   },
                                   matchingRows: (rows) => rows.eqOrNull(
                                     'idUsuario',
-                                    widget!.idUsuario,
+                                    widget.idUsuario,
                                   ),
                                   returnRows: true,
                                 );

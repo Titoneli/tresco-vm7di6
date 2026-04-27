@@ -10,13 +10,10 @@ import '/flutter_flow/form_field_controller.dart';
 import '/frame_work/bts_selecione/bts_selecione_widget.dart';
 import '/frame_work/menu_side_bar_expandido/menu_side_bar_expandido_widget.dart';
 import '/via_van/bts_via_van_assinante_editar_m/bts_via_van_assinante_editar_m_widget.dart';
-import 'dart:io';
-import 'dart:ui';
 import '/custom_code/widgets/index.dart' as custom_widgets;
 import '/index.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:easy_debounce/easy_debounce.dart';
-import 'package:ff_commons/flutter_flow/place.dart';
 import 'package:ff_theme/flutter_flow/flutter_flow_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -1129,7 +1126,7 @@ class _DashboardRespViaVanMWidgetState
                                                                 (newValue) async {
                                                               safeSetState(() =>
                                                                   _model.switchListTileAvoidTollsValue =
-                                                                      newValue!);
+                                                                      newValue);
                                                             },
                                                             title: Text(
                                                               'Avoid tolls',
@@ -2501,7 +2498,7 @@ class _DashboardRespViaVanMWidgetState
                                                                                                                         valueOrDefault<String>(
                                                                                                                           wrapViewRetdadosalunosRow.nomeAluno,
                                                                                                                           '-',
-                                                                                                                        ).toUpperCase(),
+                                                                                                                        ),
                                                                                                                         style: FlutterFlowTheme.of(context).bodyMedium.override(
                                                                                                                               font: GoogleFonts.inter(
                                                                                                                                 fontWeight: FontWeight.bold,

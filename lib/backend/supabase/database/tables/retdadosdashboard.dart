@@ -134,8 +134,8 @@ class RetdadosdashboardRow extends SupabaseDataRow {
   String? get latlongAluno => getField<String>('latlongAluno');
   set latlongAluno(String? value) => setField<String>('latlongAluno', value);
 
-  dynamic? get latlngAluno => getField<dynamic>('latlngAluno');
-  set latlngAluno(dynamic? value) => setField<dynamic>('latlngAluno', value);
+  dynamic get latlngAluno => getField<dynamic>('latlngAluno');
+  set latlngAluno(dynamic value) => setField<dynamic>('latlngAluno', value);
 
   String? get urlGoogleMaps => getField<String>('urlGoogleMaps');
   set urlGoogleMaps(String? value) => setField<String>('urlGoogleMaps', value);

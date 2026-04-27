@@ -1,24 +1,11 @@
 import '/backend/api_requests/api_calls.dart';
 import '/backend/supabase/supabase.dart';
-import '/flutter_flow/flutter_flow_drop_down.dart';
 import '/flutter_flow/flutter_flow_google_map.dart';
 import '/flutter_flow/flutter_flow_util.dart';
-import '/flutter_flow/flutter_flow_widgets.dart';
 import '/flutter_flow/form_field_controller.dart';
-import '/veiculos/bts_categoria_veiculo/bts_categoria_veiculo_widget.dart';
-import '/veiculos/bts_marca/bts_marca_widget.dart';
-import '/veiculos/bts_modelo/bts_modelo_widget.dart';
-import '/veiculos/bts_tipo_veiculo/bts_tipo_veiculo_widget.dart';
-import 'dart:convert';
-import 'dart:ui';
-import '/flutter_flow/custom_functions.dart' as functions;
 import 'bts_veiculo_editar_widget.dart' show BtsVeiculoEditarWidget;
-import 'package:ff_theme/flutter_flow/flutter_flow_theme.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
-import 'package:provider/provider.dart';
 
 class BtsVeiculoEditarModel extends FlutterFlowModel<BtsVeiculoEditarWidget> {
   ///  State fields for stateful widgets in this component.

@@ -3,12 +3,8 @@ import '/flutter_flow/flutter_flow_place_picker.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
 import '/frame_work/menu_side_bar_expandido/menu_side_bar_expandido_widget.dart';
-import 'dart:io';
-import 'dart:math';
-import 'dart:ui';
 import '/custom_code/widgets/index.dart' as custom_widgets;
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:ff_commons/flutter_flow/place.dart';
 import 'package:ff_theme/flutter_flow/flutter_flow_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -49,8 +45,7 @@ class _DashboardEnderecoWidgetState extends State<DashboardEnderecoWidget>
     SchedulerBinding.instance.addPostFrameCallback((_) async {
       FFAppState().googleApiKey = 'AIzaSyAwADjIcc_n1Bgkezy38P-8_zZR3RCsI6c';
       safeSetState(() {});
-      if (FFAppState().googleApiKey == null ||
-          FFAppState().googleApiKey == '') {
+      if (FFAppState().googleApiKey == '') {
         await showDialog(
           context: context,
           builder: (alertDialogContext) {
@@ -451,7 +446,7 @@ class _DashboardEnderecoWidgetState extends State<DashboardEnderecoWidget>
                                             onChanged: (newValue) async {
                                               safeSetState(() => _model
                                                       .switchListTileAvoidTollsValue =
-                                                  newValue!);
+                                                  newValue);
                                             },
                                             title: Text(
                                               'Avoid tolls',

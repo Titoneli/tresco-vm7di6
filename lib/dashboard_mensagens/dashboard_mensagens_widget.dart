@@ -8,8 +8,6 @@ import '/flutter_flow/form_field_controller.dart';
 import '/frame_work/menu_side_bar_expandido/menu_side_bar_expandido_widget.dart';
 import '/frame_work/menu_side_bar_reduzido/menu_side_bar_reduzido_widget.dart';
 import '/frame_work/menu_side_bar_tablet/menu_side_bar_tablet_widget.dart';
-import 'dart:convert';
-import 'dart:ui';
 import '/index.dart';
 import 'package:easy_debounce/easy_debounce.dart';
 import 'package:ff_theme/flutter_flow/flutter_flow_theme.dart';
@@ -2013,13 +2011,13 @@ class _DashboardMensagensWidgetState extends State<DashboardMensagensWidget>
                                                                                                                     child: Text(
                                                                                                                       '${valueOrDefault<String>(
                                                                                                                         dateTimeFormat(
-                                                                                                                          "dd/MM/y",
+                                                                                                                          "d/M/y",
                                                                                                                           listViewCorComunicadoRow.dtComunicado,
                                                                                                                           locale: FFLocalizations.of(context).languageCode,
                                                                                                                         ),
                                                                                                                         '-',
                                                                                                                       )} - ${dateTimeFormat(
-                                                                                                                        "HH:mm",
+                                                                                                                        "Hm",
                                                                                                                         listViewCorComunicadoRow.horaComunicado?.time,
                                                                                                                         locale: FFLocalizations.of(context).languageCode,
                                                                                                                       )}',

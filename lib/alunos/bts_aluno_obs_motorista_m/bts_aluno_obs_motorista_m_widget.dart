@@ -4,7 +4,6 @@ import '/flutter_flow/flutter_flow_drop_down.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
 import '/flutter_flow/form_field_controller.dart';
-import 'dart:ui';
 import 'package:ff_theme/flutter_flow/flutter_flow_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -61,7 +60,7 @@ class _BtsAlunoObsMotoristaMWidgetState
     _model = createModel(context, () => BtsAlunoObsMotoristaMModel());
 
     _model.nomeTextController ??=
-        TextEditingController(text: widget!.nomeAluno);
+        TextEditingController(text: widget.nomeAluno);
     _model.nomeFocusNode ??= FocusNode();
 
     WidgetsBinding.instance.addPostFrameCallback((_) => safeSetState(() {}));
@@ -474,7 +473,7 @@ class _BtsAlunoObsMotoristaMWidgetState
                                 },
                                 matchingRows: (rows) => rows.eqOrNull(
                                   'idAluno',
-                                  widget!.idAlunoMotorista,
+                                  widget.idAlunoMotorista,
                                 ),
                                 returnRows: true,
                               );

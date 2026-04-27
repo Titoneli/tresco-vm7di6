@@ -3,7 +3,6 @@ import '/flutter_flow/flutter_flow_drop_down.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
 import '/flutter_flow/form_field_controller.dart';
-import 'dart:ui';
 import '/index.dart';
 import 'package:ff_theme/flutter_flow/flutter_flow_theme.dart';
 import 'package:flutter/material.dart';
@@ -49,7 +48,7 @@ class _BtsColabEditarMWidgetState extends State<BtsColabEditarMWidget>
       length: 3,
       initialIndex: min(
           valueOrDefault<int>(
-            widget!.tabindex,
+            widget.tabindex,
             0,
           ),
           2),
@@ -107,7 +106,7 @@ class _BtsColabEditarMWidgetState extends State<BtsColabEditarMWidget>
           future: UsuarioTable().querySingleRow(
             queryFn: (q) => q.eqOrNull(
               'idUsuario',
-              widget!.idUsuario,
+              widget.idUsuario,
             ),
           ),
           builder: (context, snapshot) {
@@ -3674,9 +3673,6 @@ class _BtsColabEditarMWidgetState extends State<BtsColabEditarMWidget>
                                                   }
                                                   if (!(_model.confirmaSenhaTextController
                                                               .text !=
-                                                          null &&
-                                                      _model.confirmaSenhaTextController
-                                                              .text !=
                                                           '')) {
                                                     if (_shouldSetState)
                                                       safeSetState(() {});
@@ -3696,7 +3692,7 @@ class _BtsColabEditarMWidgetState extends State<BtsColabEditarMWidget>
                                                     matchingRows: (rows) =>
                                                         rows.eqOrNull(
                                                       'idUsuario',
-                                                      widget!.idUsuario,
+                                                      widget.idUsuario,
                                                     ),
                                                     returnRows: true,
                                                   );
@@ -3868,7 +3864,7 @@ class _BtsColabEditarMWidgetState extends State<BtsColabEditarMWidget>
                                                         matchingRows: (rows) =>
                                                             rows.eqOrNull(
                                                           'idUsuario',
-                                                          widget!.idUsuario,
+                                                          widget.idUsuario,
                                                         ),
                                                       );
                                                       await showDialog(
@@ -3966,7 +3962,7 @@ class _BtsColabEditarMWidgetState extends State<BtsColabEditarMWidget>
                           ],
                         ),
                       ),
-                      if (widget!.tabindex.toString() != '2')
+                      if (widget.tabindex.toString() != '2')
                         Padding(
                           padding: EdgeInsetsDirectional.fromSTEB(
                               0.0, 3.0, 0.0, 8.0),
@@ -3998,11 +3994,7 @@ class _BtsColabEditarMWidgetState extends State<BtsColabEditarMWidget>
                                               .codPermDERTextController.text,
                                           'codINSS':
                                               _model.codNISTextController.text,
-                                          'qtdDependentesIR': _model
-                                                          .qtdeDependentesTextController
-                                                          .text !=
-                                                      null &&
-                                                  _model.qtdeDependentesTextController
+                                          'qtdDependentesIR': _model.qtdeDependentesTextController
                                                           .text !=
                                                       ''
                                               ? double.tryParse(_model
@@ -4010,11 +4002,7 @@ class _BtsColabEditarMWidgetState extends State<BtsColabEditarMWidget>
                                                   .text)
                                               : containerUsuarioRow
                                                   ?.qtdDependentesIR,
-                                          'chavePIX': _model
-                                                          .chavePIXTextController
-                                                          .text !=
-                                                      null &&
-                                                  _model.chavePIXTextController
+                                          'chavePIX': _model.chavePIXTextController
                                                           .text !=
                                                       ''
                                               ? _model
@@ -4041,7 +4029,7 @@ class _BtsColabEditarMWidgetState extends State<BtsColabEditarMWidget>
                                         },
                                         matchingRows: (rows) => rows.eqOrNull(
                                           'idUsuario',
-                                          widget!.idUsuario,
+                                          widget.idUsuario,
                                         ),
                                         returnRows: true,
                                       );

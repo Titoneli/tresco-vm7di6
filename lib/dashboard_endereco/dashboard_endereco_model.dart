@@ -1,23 +1,7 @@
-import '/flutter_flow/flutter_flow_animations.dart';
-import '/flutter_flow/flutter_flow_place_picker.dart';
 import '/flutter_flow/flutter_flow_util.dart';
-import '/flutter_flow/flutter_flow_widgets.dart';
 import '/frame_work/menu_side_bar_expandido/menu_side_bar_expandido_widget.dart';
-import 'dart:io';
-import 'dart:math';
-import 'dart:ui';
-import '/custom_code/widgets/index.dart' as custom_widgets;
 import 'dashboard_endereco_widget.dart' show DashboardEnderecoWidget;
-import 'package:auto_size_text/auto_size_text.dart';
-import 'package:ff_commons/flutter_flow/place.dart';
-import 'package:ff_theme/flutter_flow/flutter_flow_theme.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
-import 'package:flutter_animate/flutter_animate.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/provider.dart';
 
 class DashboardEnderecoModel extends FlutterFlowModel<DashboardEnderecoWidget> {
   ///  Local state fields for this page.

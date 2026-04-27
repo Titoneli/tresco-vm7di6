@@ -1,22 +1,9 @@
-import '/alunos/bts_aluno_adicionar/bts_aluno_adicionar_widget.dart';
-import '/alunos/bts_aluno_busca/bts_aluno_busca_widget.dart';
-import '/alunos/bts_aluno_editar/bts_aluno_editar_widget.dart';
-import '/alunos/bts_aluno_motorista/bts_aluno_motorista_widget.dart';
-import '/backend/api_requests/api_calls.dart';
 import '/backend/supabase/supabase.dart';
 import '/flutter_flow/flutter_flow_util.dart';
-import '/flutter_flow/flutter_flow_widgets.dart';
-import 'dart:ui';
 import 'bts_aluno_lista_widget.dart' show BtsAlunoListaWidget;
 import 'package:ff_commons/api_requests/api_paging_params.dart';
-import 'package:easy_debounce/easy_debounce.dart';
-import 'package:ff_theme/flutter_flow/flutter_flow_theme.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
-import 'package:provider/provider.dart';
 
 class BtsAlunoListaModel extends FlutterFlowModel<BtsAlunoListaWidget> {
   ///  Local state fields for this component.

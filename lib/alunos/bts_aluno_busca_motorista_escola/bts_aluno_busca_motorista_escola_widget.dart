@@ -6,7 +6,6 @@ import '/backend/supabase/supabase.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
 import 'dart:async';
-import 'dart:ui';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:easy_debounce/easy_debounce.dart';
 import 'package:ff_theme/flutter_flow/flutter_flow_theme.dart';
@@ -15,7 +14,6 @@ import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/provider.dart';
 import 'bts_aluno_busca_motorista_escola_model.dart';
 export 'bts_aluno_busca_motorista_escola_model.dart';
 
@@ -753,8 +751,8 @@ class _BtsAlunoBuscaMotoristaEscolaWidgetState
                             future: SearchEscolaMotoristaAlunoCall.call(
                               searchString:
                                   _model.filterAlunoTextController.text,
-                              searchMotorista: widget!.parUsuario,
-                              searchEscola: widget!.idEscolaDash,
+                              searchMotorista: widget.parUsuario,
+                              searchEscola: widget.idEscolaDash,
                             ),
                             builder: (context, snapshot) {
                               // Customize what your widget looks like when it's loading.
@@ -865,7 +863,7 @@ class _BtsAlunoBuscaMotoristaEscolaWidgetState
                                                           getJsonField(
                                                             alunosListaItem,
                                                             r'''$.nomeAluno''',
-                                                          ).toString().toUpperCase(),
+                                                          ).toString(),
                                                           style: FlutterFlowTheme
                                                                   .of(context)
                                                               .bodyMedium
@@ -1015,7 +1013,7 @@ class _BtsAlunoBuscaMotoristaEscolaWidgetState
                                                                     width: 2,
                                                                     color: FlutterFlowTheme.of(
                                                                             context)
-                                                                        .alternate!,
+                                                                        .alternate,
                                                                   )
                                                                 : null,
                                                             activeColor:

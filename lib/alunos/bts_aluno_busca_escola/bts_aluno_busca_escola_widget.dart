@@ -9,7 +9,6 @@ import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
 import '/flutter_flow/form_field_controller.dart';
 import 'dart:async';
-import 'dart:ui';
 import '/custom_code/actions/index.dart' as actions;
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:easy_debounce/easy_debounce.dart';
@@ -19,7 +18,6 @@ import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/provider.dart';
 import 'bts_aluno_busca_escola_model.dart';
 export 'bts_aluno_busca_escola_model.dart';
 
@@ -135,7 +133,7 @@ class _BtsAlunoBuscaEscolaWidgetState extends State<BtsAlunoBuscaEscolaWidget> {
                             padding: EdgeInsetsDirectional.fromSTEB(
                                 3.0, 0.0, 0.0, 0.0),
                             child: Text(
-                              'Alunos da Escola ${widget!.nomeEscola}',
+                              'Alunos da Escola ${widget.nomeEscola}',
                               style: FlutterFlowTheme.of(context)
                                   .titleLarge
                                   .override(
@@ -924,7 +922,7 @@ class _BtsAlunoBuscaEscolaWidgetState extends State<BtsAlunoBuscaEscolaWidget> {
                         child: FutureBuilder<ApiCallResponse>(
                           future: SearchAlunoBuscaEscolaCall.call(
                             searchString: _model.filterAlunoTextController.text,
-                            searchEscola: widget!.idEscolaDash,
+                            searchEscola: widget.idEscolaDash,
                             checkAluno:
                                 _model.choiceRespMotoristaValue == 'Confirmado',
                             searchDomSitAluno: _model.choiceSituacaoValue,
@@ -1089,7 +1087,7 @@ class _BtsAlunoBuscaEscolaWidgetState extends State<BtsAlunoBuscaEscolaWidget> {
                                                         getJsonField(
                                                           alunosListaItem,
                                                           r'''$.nomeAluno''',
-                                                        ).toString().toUpperCase(),
+                                                        ).toString(),
                                                         style: FlutterFlowTheme
                                                                 .of(context)
                                                             .bodyMedium
@@ -1239,7 +1237,7 @@ class _BtsAlunoBuscaEscolaWidgetState extends State<BtsAlunoBuscaEscolaWidget> {
                                                                   width: 2,
                                                                   color: FlutterFlowTheme.of(
                                                                           context)
-                                                                      .alternate!,
+                                                                      .alternate,
                                                                 )
                                                               : null,
                                                           activeColor:
@@ -1821,12 +1819,12 @@ class _BtsAlunoBuscaEscolaWidgetState extends State<BtsAlunoBuscaEscolaWidget> {
                               queryFn: (q) => q
                                   .eqOrNull(
                                     'nomeEscola',
-                                    widget!.nomeEscola,
+                                    widget.nomeEscola,
                                   )
                                   .order('nomeAluno', ascending: true),
                             );
                             await actions.downloadToAnyPlatfromCSVCopy(
-                              widget!.nomeEscola,
+                              widget.nomeEscola,
                               _model.choiceSituacaoValue!,
                             );
 

@@ -3,12 +3,10 @@ import '/flutter_flow/flutter_flow_drop_down.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
 import '/flutter_flow/form_field_controller.dart';
-import 'dart:ui';
 import 'package:ff_theme/flutter_flow/flutter_flow_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/provider.dart';
 import 'bts_turmas_editar_model.dart';
 export 'bts_turmas_editar_model.dart';
 
@@ -135,11 +133,11 @@ class _BtsTurmasEditarWidgetState extends State<BtsTurmasEditarWidget> {
                       queryFn: (q) => q
                           .eqOrNull(
                             'idEscola',
-                            widget!.idEscola,
+                            widget.idEscola,
                           )
                           .eqOrNull(
                             'idTurma',
-                            widget!.idTurma,
+                            widget.idTurma,
                           ),
                     ),
                     builder: (context, snapshot) {
@@ -515,7 +513,7 @@ class _BtsTurmasEditarWidgetState extends State<BtsTurmasEditarWidget> {
                             }
                             await TurmaTable().update(
                               data: {
-                                'idEscola': widget!.idEscola,
+                                'idEscola': widget.idEscola,
                                 'nomeTurma': _model.nomeTextController.text,
                                 'domTurno': _model.ddwTurnoValue,
                                 'domSerie': _model.ddwSerieValue,
@@ -523,11 +521,11 @@ class _BtsTurmasEditarWidgetState extends State<BtsTurmasEditarWidget> {
                               matchingRows: (rows) => rows
                                   .eqOrNull(
                                     'idTurma',
-                                    widget!.idTurma,
+                                    widget.idTurma,
                                   )
                                   .eqOrNull(
                                     'idEscola',
-                                    widget!.idEscola,
+                                    widget.idEscola,
                                   ),
                             );
                             _shouldSetState = true;

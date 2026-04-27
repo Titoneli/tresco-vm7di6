@@ -1,17 +1,8 @@
 import '/backend/supabase/supabase.dart';
-import '/escolas/bts_turmas/bts_turmas_widget.dart';
-import '/escolas/bts_turmas_editar/bts_turmas_editar_widget.dart';
-import '/flutter_flow/flutter_flow_drop_down.dart';
 import '/flutter_flow/flutter_flow_util.dart';
-import '/flutter_flow/flutter_flow_widgets.dart';
 import '/flutter_flow/form_field_controller.dart';
-import 'dart:ui';
 import 'bts_escola_editar_widget.dart' show BtsEscolaEditarWidget;
-import 'package:ff_theme/flutter_flow/flutter_flow_theme.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/provider.dart';
 
 class BtsEscolaEditarModel extends FlutterFlowModel<BtsEscolaEditarWidget> {
   ///  State fields for stateful widgets in this component.

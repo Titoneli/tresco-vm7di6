@@ -5,12 +5,10 @@ import '/flutter_flow/flutter_flow_drop_down.dart';
 import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_radio_button.dart';
 import '/flutter_flow/flutter_flow_util.dart';
-import '/flutter_flow/flutter_flow_widgets.dart';
 import '/flutter_flow/form_field_controller.dart';
 import '/frame_work/bts_menu_opcoes_m/bts_menu_opcoes_m_widget.dart';
 import '/frame_work/bts_selecione/bts_selecione_widget.dart';
 import '/frame_work/menu_side_bar_expandido/menu_side_bar_expandido_widget.dart';
-import 'dart:ui';
 import '/flutter_flow/custom_functions.dart' as functions;
 import '/index.dart';
 import 'package:easy_debounce/easy_debounce.dart';
@@ -159,7 +157,7 @@ class _DashboardAssociadoMWidgetState extends State<DashboardAssociadoMWidget>
                                                   CrossAxisAlignment.start,
                                               children: [
                                                 Text(
-                                                  FFAppState().nomeUsuario.toUpperCase(),
+                                                  '${FFAppState().nomeUsuario}',
                                                   style: FlutterFlowTheme.of(
                                                           context)
                                                       .headlineMedium
@@ -559,7 +557,10 @@ class _DashboardAssociadoMWidgetState extends State<DashboardAssociadoMWidget>
                                                                                                         child: Padding(
                                                                                                           padding: EdgeInsetsDirectional.fromSTEB(0.0, 3.0, 4.0, 0.0),
                                                                                                           child: Text(
-                                                                                                            functions.formatBRL(primaryCOntentVfinfechamentototalmotRow?.reais),
+                                                                                                            'R\$ ${valueOrDefault<String>(
+                                                                                                              primaryCOntentVfinfechamentototalmotRow?.reais,
+                                                                                                              '0,00',
+                                                                                                            )}',
                                                                                                             textAlign: TextAlign.center,
                                                                                                             style: FlutterFlowTheme.of(context).displaySmall.override(
                                                                                                                   font: GoogleFonts.interTight(
@@ -1158,7 +1159,10 @@ class _DashboardAssociadoMWidgetState extends State<DashboardAssociadoMWidget>
                                                                                         child: Padding(
                                                                                           padding: EdgeInsetsDirectional.fromSTEB(3.0, 0.0, 6.0, 0.0),
                                                                                           child: Text(
-                                                                                            functions.formatBRL(listViewFinfechamentoRow.valliquidoresumo),
+                                                                                            'R\$ ${valueOrDefault<String>(
+                                                                                              listViewFinfechamentoRow.valliquidoresumo,
+                                                                                              '0',
+                                                                                            )}',
                                                                                             textAlign: TextAlign.end,
                                                                                             style: FlutterFlowTheme.of(context).bodyMedium.override(
                                                                                                   font: GoogleFonts.inter(
@@ -1556,7 +1560,7 @@ class _DashboardAssociadoMWidgetState extends State<DashboardAssociadoMWidget>
                                                                                                                                         title: Text(listViewFinfechamentoRow!.nomeescola!),
                                                                                                                                         content: Text('Você tem certeza que deseja confirmar o valor de ${'${valueOrDefault<String>(
                                                                                                                                           formatNumber(
-                                                                                                                                            listViewFinfechamentoRow?.valliquidoresumonum,
+                                                                                                                                            listViewFinfechamentoRow.valliquidoresumonum,
                                                                                                                                             formatType: FormatType.decimal,
                                                                                                                                             decimalType: DecimalType.commaDecimal,
                                                                                                                                             currency: 'R\$ ',
@@ -1866,7 +1870,10 @@ class _DashboardAssociadoMWidgetState extends State<DashboardAssociadoMWidget>
                                                                                                     child: Padding(
                                                                                                       padding: EdgeInsetsDirectional.fromSTEB(8.0, 0.0, 8.0, 0.0),
                                                                                                       child: Text(
-                                                                                                        functions.formatBRL(listViewFinfechamentoRow?.valDescontoCooperativa),
+                                                                                                        'R\$ ${valueOrDefault<String>(
+                                                                                                          listViewFinfechamentoRow?.valDescontoCooperativa,
+                                                                                                          '0',
+                                                                                                        )}',
                                                                                                         textAlign: TextAlign.end,
                                                                                                         style: FlutterFlowTheme.of(context).bodyMedium.override(
                                                                                                               font: GoogleFonts.inter(
@@ -1931,7 +1938,10 @@ class _DashboardAssociadoMWidgetState extends State<DashboardAssociadoMWidget>
                                                                                                       child: Padding(
                                                                                                         padding: EdgeInsetsDirectional.fromSTEB(8.0, 0.0, 8.0, 0.0),
                                                                                                         child: Text(
-                                                                                                          functions.formatBRL(listViewFinfechamentoRow?.valbrutoresumo),
+                                                                                                          'R\$ ${valueOrDefault<String>(
+                                                                                                            listViewFinfechamentoRow?.valbrutoresumo,
+                                                                                                            '0',
+                                                                                                          )}',
                                                                                                           textAlign: TextAlign.end,
                                                                                                           style: FlutterFlowTheme.of(context).bodyMedium.override(
                                                                                                                 font: GoogleFonts.inter(
@@ -2133,7 +2143,10 @@ class _DashboardAssociadoMWidgetState extends State<DashboardAssociadoMWidget>
                                                                                                       child: Padding(
                                                                                                         padding: EdgeInsetsDirectional.fromSTEB(8.0, 0.0, 8.0, 0.0),
                                                                                                         child: Text(
-                                                                                                          functions.formatBRL(listViewFinfechamentoRow?.valdescontosresumo),
+                                                                                                          'R\$ ${valueOrDefault<String>(
+                                                                                                            listViewFinfechamentoRow?.valdescontosresumo,
+                                                                                                            '0',
+                                                                                                          )}',
                                                                                                           textAlign: TextAlign.end,
                                                                                                           style: FlutterFlowTheme.of(context).bodyMedium.override(
                                                                                                                 font: GoogleFonts.inter(
@@ -2268,7 +2281,10 @@ class _DashboardAssociadoMWidgetState extends State<DashboardAssociadoMWidget>
                                                                                                       child: Padding(
                                                                                                         padding: EdgeInsetsDirectional.fromSTEB(8.0, 0.0, 8.0, 0.0),
                                                                                                         child: Text(
-                                                                                                          functions.formatBRL(listViewFinfechamentoRow?.valliquidoalunodetalhe),
+                                                                                                          'R\$ ${valueOrDefault<String>(
+                                                                                                            listViewFinfechamentoRow?.valliquidoalunodetalhe,
+                                                                                                            '0',
+                                                                                                          )}',
                                                                                                           textAlign: TextAlign.end,
                                                                                                           style: FlutterFlowTheme.of(context).bodyMedium.override(
                                                                                                                 font: GoogleFonts.inter(
@@ -2660,7 +2676,7 @@ class _DashboardAssociadoMWidgetState extends State<DashboardAssociadoMWidget>
                                                                                                           padding: EdgeInsetsDirectional.fromSTEB(16.0, 0.0, 0.0, 0.0),
                                                                                                           child: Text(
                                                                                                             '${dateTimeFormat(
-                                                                                                              "dd/MM/y HH:mm",
+                                                                                                              "d/M/y H:mm",
                                                                                                               listViewFinfechconfirmadoRow.dtsitpagamento,
                                                                                                               locale: FFLocalizations.of(context).languageCode,
                                                                                                             )}',
@@ -2694,7 +2710,14 @@ class _DashboardAssociadoMWidgetState extends State<DashboardAssociadoMWidget>
                                                                                                         child: Padding(
                                                                                                           padding: EdgeInsetsDirectional.fromSTEB(8.0, 0.0, 8.0, 0.0),
                                                                                                           child: Text(
-                                                                                                            functions.formatBRL(listViewFinfechconfirmadoRow.valconfusuario),
+                                                                                                            'R\$ ${valueOrDefault<String>(
+                                                                                                              formatNumber(
+                                                                                                                listViewFinfechconfirmadoRow.valconfusuario,
+                                                                                                                formatType: FormatType.decimal,
+                                                                                                                decimalType: DecimalType.commaDecimal,
+                                                                                                              ),
+                                                                                                              '0,00',
+                                                                                                            )}',
                                                                                                             textAlign: TextAlign.end,
                                                                                                             style: FlutterFlowTheme.of(context).bodyMedium.override(
                                                                                                                   font: GoogleFonts.inter(
@@ -3453,7 +3476,7 @@ class _DashboardAssociadoMWidgetState extends State<DashboardAssociadoMWidget>
                                                                                                                               valueOrDefault<String>(
                                                                                                                                 wrapViewAppAlunosConferenciaRow.nomeAluno,
                                                                                                                                 '-',
-                                                                                                                              ).toUpperCase(),
+                                                                                                                              ),
                                                                                                                               style: FlutterFlowTheme.of(context).bodyMedium.override(
                                                                                                                                     font: GoogleFonts.inter(
                                                                                                                                       fontWeight: FontWeight.bold,
@@ -3549,7 +3572,7 @@ class _DashboardAssociadoMWidgetState extends State<DashboardAssociadoMWidget>
                                                                                                                         side: (FlutterFlowTheme.of(context).alternate != null)
                                                                                                                             ? BorderSide(
                                                                                                                                 width: 2,
-                                                                                                                                color: FlutterFlowTheme.of(context).alternate!,
+                                                                                                                                color: FlutterFlowTheme.of(context).alternate,
                                                                                                                               )
                                                                                                                             : null,
                                                                                                                         activeColor: FlutterFlowTheme.of(context).primary,
@@ -3911,13 +3934,13 @@ class _DashboardAssociadoMWidgetState extends State<DashboardAssociadoMWidget>
                                                                                                               '-',
                                                                                                             )} - ${valueOrDefault<String>(
                                                                                                               dateTimeFormat(
-                                                                                                                "dd/MM/y",
+                                                                                                                "d/M/y",
                                                                                                                 listViewCorComunicadoRow.dtComunicado,
                                                                                                                 locale: FFLocalizations.of(context).languageCode,
                                                                                                               ),
                                                                                                               '-',
                                                                                                             )} - ${dateTimeFormat(
-                                                                                                              "HH:mm",
+                                                                                                              "Hm",
                                                                                                               listViewCorComunicadoRow.horaComunicado?.time,
                                                                                                               locale: FFLocalizations.of(context).languageCode,
                                                                                                             )}',
@@ -4388,49 +4411,41 @@ class _DashboardAssociadoMWidgetState extends State<DashboardAssociadoMWidget>
                                                         EdgeInsetsDirectional
                                                             .fromSTEB(16.0, 0.0,
                                                                 16.0, 0.0),
-                                                    child: InkWell(
-                                                      borderRadius:
-                                                          BorderRadius
-                                                              .circular(24.0),
-                                                      onTap: () async {
-                                                        context.pushNamed(
-                                                            'dashboardMotoristaViaVanM');
-                                                      },
-                                                      child: Container(
-                                                        width: 100.0,
-                                                        height: 50.0,
-                                                        decoration: BoxDecoration(
-                                                          color: FlutterFlowTheme
-                                                                  .of(context)
-                                                              .secondaryBackground,
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(24.0),
-                                                        ),
-                                                        child: Row(
-                                                          mainAxisSize:
-                                                              MainAxisSize.max,
-                                                          mainAxisAlignment:
-                                                              MainAxisAlignment
-                                                                  .spaceBetween,
-                                                          children: [
-                                                            Expanded(
-                                                              flex: 8,
-                                                              child: Align(
-                                                                alignment:
-                                                                    AlignmentDirectional(
-                                                                        -1.0,
-                                                                        0.0),
-                                                                child: Padding(
-                                                                  padding:
-                                                                      EdgeInsetsDirectional
-                                                                          .fromSTEB(
-                                                                              16.0,
-                                                                              0.0,
-                                                                              0.0,
-                                                                              0.0),
-                                                                  child: Text(
-                                                                    'Gestão de Passageiros',
+                                                    child: Container(
+                                                      width: 100.0,
+                                                      height: 50.0,
+                                                      decoration: BoxDecoration(
+                                                        color: FlutterFlowTheme
+                                                                .of(context)
+                                                            .secondaryBackground,
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(24.0),
+                                                      ),
+                                                      child: Row(
+                                                        mainAxisSize:
+                                                            MainAxisSize.max,
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .spaceBetween,
+                                                        children: [
+                                                          Expanded(
+                                                            flex: 8,
+                                                            child: Align(
+                                                              alignment:
+                                                                  AlignmentDirectional(
+                                                                      -1.0,
+                                                                      0.0),
+                                                              child: Padding(
+                                                                padding:
+                                                                    EdgeInsetsDirectional
+                                                                        .fromSTEB(
+                                                                            16.0,
+                                                                            0.0,
+                                                                            0.0,
+                                                                            0.0),
+                                                                child: Text(
+                                                                  'Clube CooperTransmig',
                                                                   style: FlutterFlowTheme.of(
                                                                           context)
                                                                       .bodyMedium
@@ -4500,7 +4515,6 @@ class _DashboardAssociadoMWidgetState extends State<DashboardAssociadoMWidget>
                                                         ],
                                                       ),
                                                     ),
-                                                  ),
                                                   ),
                                                 ),
                                               ],

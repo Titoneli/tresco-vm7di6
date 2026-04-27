@@ -3,14 +3,10 @@ import '/alunos/bts_aluno_exclusao/bts_aluno_exclusao_widget.dart';
 import '/alunos/bts_aluno_motorista/bts_aluno_motorista_widget.dart';
 import '/flutter_flow/flutter_flow_animations.dart';
 import '/flutter_flow/flutter_flow_util.dart';
-import '/flutter_flow/flutter_flow_widgets.dart';
-import 'dart:math';
-import 'dart:ui';
 import 'package:ff_theme/flutter_flow/flutter_flow_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'bts_nav_aluno_float_model.dart';
@@ -324,7 +320,7 @@ class _BtsNavAlunoFloatWidgetState extends State<BtsNavAlunoFloatWidget>
                         return Padding(
                           padding: MediaQuery.viewInsetsOf(context),
                           child: BtsAlunoEditarWidget(
-                            idAluno: widget!.idAluno,
+                            idAluno: widget.idAluno,
                           ),
                         );
                       },
@@ -395,8 +391,8 @@ class _BtsNavAlunoFloatWidgetState extends State<BtsNavAlunoFloatWidget>
                         return Padding(
                           padding: MediaQuery.viewInsetsOf(context),
                           child: BtsAlunoExclusaoWidget(
-                            nomeAluno: widget!.nomeAluno,
-                            idAlunoMotorista: widget!.idAluno!,
+                            nomeAluno: widget.nomeAluno,
+                            idAlunoMotorista: widget.idAluno!,
                           ),
                         );
                       },
@@ -467,13 +463,13 @@ class _BtsNavAlunoFloatWidgetState extends State<BtsNavAlunoFloatWidget>
                         return Padding(
                           padding: MediaQuery.viewInsetsOf(context),
                           child: BtsAlunoMotoristaWidget(
-                            idAlunoMotorista: widget!.idAluno!,
-                            nomeAluno: widget!.nomeAluno,
-                            idMotorista: widget!.idMotorista,
-                            idEscola: widget!.idEscola,
-                            idTurma: widget!.idTurma,
-                            domTurno: widget!.domTurno,
-                            domSerie: widget!.domSerie,
+                            idAlunoMotorista: widget.idAluno!,
+                            nomeAluno: widget.nomeAluno,
+                            idMotorista: widget.idMotorista,
+                            idEscola: widget.idEscola,
+                            idTurma: widget.idTurma,
+                            domTurno: widget.domTurno,
+                            domSerie: widget.domSerie,
                           ),
                         );
                       },
@@ -544,7 +540,7 @@ class _BtsNavAlunoFloatWidgetState extends State<BtsNavAlunoFloatWidget>
                         return Padding(
                           padding: MediaQuery.viewInsetsOf(context),
                           child: BtsAlunoEditarWidget(
-                            idAluno: widget!.idAluno,
+                            idAluno: widget.idAluno,
                           ),
                         );
                       },

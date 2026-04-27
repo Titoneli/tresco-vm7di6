@@ -814,7 +814,7 @@ class _BtsAlunoListaWidgetState extends State<BtsAlunoListaWidget>
                                                                         width:
                                                                             2,
                                                                         color: FlutterFlowTheme.of(context)
-                                                                            .alternate!,
+                                                                            .alternate,
                                                                       )
                                                                     : null,
                                                                 activeColor:
@@ -867,7 +867,7 @@ class _BtsAlunoListaWidgetState extends State<BtsAlunoListaWidget>
                                                                 getJsonField(
                                                                   alunosListaItem,
                                                                   r'''$.nomeAluno''',
-                                                                ).toString().toUpperCase(),
+                                                                ).toString(),
                                                                 style: FlutterFlowTheme.of(
                                                                         context)
                                                                     .bodyMedium

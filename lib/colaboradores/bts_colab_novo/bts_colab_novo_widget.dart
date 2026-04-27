@@ -3,7 +3,6 @@ import '/flutter_flow/flutter_flow_drop_down.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
 import '/flutter_flow/form_field_controller.dart';
-import 'dart:ui';
 import '/index.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:ff_theme/flutter_flow/flutter_flow_theme.dart';
@@ -1358,7 +1357,7 @@ class _BtsColabNovoWidgetState extends State<BtsColabNovoWidget>
                                                         (newValue) async {
                                                       safeSetState(() =>
                                                           _model.swcLoginValue =
-                                                              newValue!);
+                                                              newValue);
                                                     },
                                                     activeColor:
                                                         FlutterFlowTheme.of(
@@ -1422,7 +1421,7 @@ class _BtsColabNovoWidgetState extends State<BtsColabNovoWidget>
                                                           (newValue) async {
                                                         safeSetState(() => _model
                                                                 .swcAcessoValue =
-                                                            newValue!);
+                                                            newValue);
                                                       },
                                                       activeColor:
                                                           FlutterFlowTheme.of(
@@ -1926,9 +1925,6 @@ class _BtsColabNovoWidgetState extends State<BtsColabNovoWidget>
                                                                 }
                                                                 if (!(_model.confirmaSenhaTextController
                                                                             .text !=
-                                                                        null &&
-                                                                    _model.confirmaSenhaTextController
-                                                                            .text !=
                                                                         '')) {
                                                                   if (_shouldSetState)
                                                                     safeSetState(
@@ -1947,7 +1943,7 @@ class _BtsColabNovoWidgetState extends State<BtsColabNovoWidget>
                                                                       (rows) =>
                                                                           rows.eqOrNull(
                                                                     'idUsuario',
-                                                                    widget!
+                                                                    widget
                                                                         .idUsuario,
                                                                   ),
                                                                   returnRows:
@@ -2145,7 +2141,7 @@ class _BtsColabNovoWidgetState extends State<BtsColabNovoWidget>
                                                                           (rows) =>
                                                                               rows.eqOrNull(
                                                                         'idUsuario',
-                                                                        widget!
+                                                                        widget
                                                                             .idUsuario,
                                                                       ),
                                                                     );

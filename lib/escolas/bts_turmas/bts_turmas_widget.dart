@@ -3,12 +3,10 @@ import '/flutter_flow/flutter_flow_drop_down.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
 import '/flutter_flow/form_field_controller.dart';
-import 'dart:ui';
 import 'package:ff_theme/flutter_flow/flutter_flow_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/provider.dart';
 import 'bts_turmas_model.dart';
 export 'bts_turmas_model.dart';
 
@@ -454,7 +452,7 @@ class _BtsTurmasWidgetState extends State<BtsTurmasWidget> {
                             }
                             _model.apiResAdicionaTurno =
                                 await TurmaTable().insert({
-                              'idEscola': widget!.idEscola,
+                              'idEscola': widget.idEscola,
                               'nomeTurma': _model.nomeTextController.text,
                               'domTurno': _model.ddwTurnoValue,
                               'domSerie': _model.ddwSerieValue,

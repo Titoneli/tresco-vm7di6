@@ -9,8 +9,6 @@ import '/veiculos/bts_categoria_veiculo/bts_categoria_veiculo_widget.dart';
 import '/veiculos/bts_marca/bts_marca_widget.dart';
 import '/veiculos/bts_modelo/bts_modelo_widget.dart';
 import '/veiculos/bts_tipo_veiculo/bts_tipo_veiculo_widget.dart';
-import 'dart:convert';
-import 'dart:ui';
 import '/flutter_flow/custom_functions.dart' as functions;
 import 'package:ff_theme/flutter_flow/flutter_flow_theme.dart';
 import 'package:flutter/material.dart';
@@ -96,7 +94,7 @@ class _BtsVeiculoEditarWidgetState extends State<BtsVeiculoEditarWidget>
           future: VeiculoTable().querySingleRow(
             queryFn: (q) => q.eqOrNull(
               'idVeiculo',
-              widget!.idVeiculo,
+              widget.idVeiculo,
             ),
           ),
           builder: (context, snapshot) {
@@ -301,13 +299,13 @@ class _BtsVeiculoEditarWidgetState extends State<BtsVeiculoEditarWidget>
                                             functions.makeLatLon(
                                                 containerVeiculoRow!.lat!
                                                     .toString(),
-                                                containerVeiculoRow!.long!
+                                                containerVeiculoRow.long!
                                                     .toString());
                                         FFAppState().addToLstLatLongVeiculo(
                                             functions.makeLatLon(
-                                                containerVeiculoRow!.lat!
+                                                containerVeiculoRow.lat!
                                                     .toString(),
-                                                containerVeiculoRow!.long!
+                                                containerVeiculoRow.long!
                                                     .toString()));
                                         _model.updatePage(() {});
                                         await _model.googleMapsController.future
@@ -397,7 +395,7 @@ class _BtsVeiculoEditarWidgetState extends State<BtsVeiculoEditarWidget>
                                                           FormFieldController<
                                                               int>(
                                                         _model.ddwCargoValue ??=
-                                                            widget!.idMotorista,
+                                                            widget.idMotorista,
                                                       ),
                                                       options: List<int>.from(
                                                           ddwCargoUsuarioRowList
@@ -2984,7 +2982,7 @@ class _BtsVeiculoEditarWidgetState extends State<BtsVeiculoEditarWidget>
                                   },
                                   matchingRows: (rows) => rows.eqOrNull(
                                     'idVeiculo',
-                                    widget!.idVeiculo,
+                                    widget.idVeiculo,
                                   ),
                                   returnRows: true,
                                 );

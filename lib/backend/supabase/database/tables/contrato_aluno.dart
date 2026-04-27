@@ -74,8 +74,8 @@ class ContratoAlunoRow extends SupabaseDataRow {
   int? get idAluno => getField<int>('idAluno');
   set idAluno(int? value) => setField<int>('idAluno', value);
 
-  dynamic? get fotoAluno => getField<dynamic>('fotoAluno');
-  set fotoAluno(dynamic? value) => setField<dynamic>('fotoAluno', value);
+  dynamic get fotoAluno => getField<dynamic>('fotoAluno');
+  set fotoAluno(dynamic value) => setField<dynamic>('fotoAluno', value);
 
   String? get fotoAlunob => getField<String>('fotoAlunob');
   set fotoAlunob(String? value) => setField<String>('fotoAlunob', value);

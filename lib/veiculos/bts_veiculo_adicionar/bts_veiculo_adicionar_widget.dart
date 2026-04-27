@@ -7,7 +7,6 @@ import '/veiculos/bts_categoria_veiculo/bts_categoria_veiculo_widget.dart';
 import '/veiculos/bts_marca/bts_marca_widget.dart';
 import '/veiculos/bts_modelo/bts_modelo_widget.dart';
 import '/veiculos/bts_tipo_veiculo/bts_tipo_veiculo_widget.dart';
-import 'dart:ui';
 import 'package:ff_theme/flutter_flow/flutter_flow_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';

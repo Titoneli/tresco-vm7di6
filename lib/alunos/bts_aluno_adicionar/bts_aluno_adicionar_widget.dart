@@ -5,7 +5,6 @@ import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
 import '/flutter_flow/form_field_controller.dart';
-import 'dart:ui';
 import 'package:ff_theme/flutter_flow/flutter_flow_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -711,11 +710,8 @@ class _BtsAlunoAdicionarWidgetState extends State<BtsAlunoAdicionarWidget> {
                                                     .ddwEscolaValueController ??=
                                                 FormFieldController<int>(
                                               _model.ddwEscolaValue ??=
-                                                  FFAppState().idEscolaUsuario !=
-                                                          null
-                                                      ? FFAppState()
-                                                          .idEscolaUsuario
-                                                      : 0,
+                                                  FFAppState()
+                                                          .idEscolaUsuario,
                                             ),
                                             options: List<int>.from(
                                                 ddwEscolaEscolaRowList

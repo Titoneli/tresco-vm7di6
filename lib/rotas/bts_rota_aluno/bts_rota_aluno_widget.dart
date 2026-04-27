@@ -5,7 +5,6 @@ import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
 import '/flutter_flow/form_field_controller.dart';
-import 'dart:ui';
 import '/flutter_flow/custom_functions.dart' as functions;
 import 'package:ff_theme/flutter_flow/flutter_flow_theme.dart';
 import 'package:flutter/material.dart';
@@ -617,8 +616,7 @@ class _BtsRotaAlunoWidgetState extends State<BtsRotaAlunoWidget>
                                                                     .elementAtOrNull(
                                                                         FFAppState()
                                                                             .indexAluno)!
-                                                                    .nomeAluno!
-                                                                    .toUpperCase(),
+                                                                    .nomeAluno!,
                                                                 style:
                                                                     TextStyle(
                                                                   color: FlutterFlowTheme.of(
@@ -918,7 +916,7 @@ class _BtsRotaAlunoWidgetState extends State<BtsRotaAlunoWidget>
                                                                       containerEscolaRow!
                                                                           .lat!
                                                                           .toString(),
-                                                                      containerEscolaRow!
+                                                                      containerEscolaRow
                                                                           .long!
                                                                           .toString()));
                                                                   safeSetState(
@@ -931,8 +929,8 @@ class _BtsRotaAlunoWidgetState extends State<BtsRotaAlunoWidget>
                                                                         .animateCamera(
                                                                       CameraUpdate.newLatLng(functions
                                                                           .makeLatLon(
-                                                                              containerEscolaRow!.lat!.toString(),
-                                                                              containerEscolaRow!.long!.toString())
+                                                                              containerEscolaRow.lat!.toString(),
+                                                                              containerEscolaRow.long!.toString())
                                                                           .toGoogleMaps()),
                                                                     ),
                                                                   );
@@ -1004,7 +1002,7 @@ class _BtsRotaAlunoWidgetState extends State<BtsRotaAlunoWidget>
                                                                               valueOrDefault<String>(
                                                                                 listViewAlunoRow.nomeAluno,
                                                                                 '-',
-                                                                              ).toUpperCase(),
+                                                                              ),
                                                                               textAlign: TextAlign.start,
                                                                               style: FlutterFlowTheme.of(context).bodyMedium.override(
                                                                                     font: GoogleFonts.inter(

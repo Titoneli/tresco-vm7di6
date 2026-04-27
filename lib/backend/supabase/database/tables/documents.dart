@@ -23,6 +23,6 @@ class DocumentsRow extends SupabaseDataRow {
   String? get embedding => getField<String>('embedding');
   set embedding(String? value) => setField<String>('embedding', value);
 
-  dynamic? get metadata => getField<dynamic>('metadata');
-  set metadata(dynamic? value) => setField<dynamic>('metadata', value);
+  dynamic get metadata => getField<dynamic>('metadata');
+  set metadata(dynamic value) => setField<dynamic>('metadata', value);
 }

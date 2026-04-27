@@ -3,17 +3,13 @@ import '/backend/api_requests/api_calls.dart';
 import '/flutter_flow/flutter_flow_expanded_image_view.dart';
 import '/flutter_flow/flutter_flow_radio_button.dart';
 import '/flutter_flow/flutter_flow_util.dart';
-import '/flutter_flow/flutter_flow_widgets.dart';
 import '/flutter_flow/form_field_controller.dart';
-import 'dart:ui';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:easy_debounce/easy_debounce.dart';
 import 'package:ff_theme/flutter_flow/flutter_flow_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:page_transition/page_transition.dart';
-import 'package:provider/provider.dart';
 import 'bts_aluno_busca_motorista_model.dart';
 export 'bts_aluno_busca_motorista_model.dart';
 
@@ -447,7 +443,7 @@ class _BtsAlunoBuscaMotoristaWidgetState
                               future: SearchAlunoBuscaMotoristaCall.call(
                                 searchString:
                                     _model.filterAlunoTextController.text,
-                                searchMotorista: widget!.parUsuario,
+                                searchMotorista: widget.parUsuario,
                               ),
                               builder: (context, snapshot) {
                                 // Customize what your widget looks like when it's loading.
@@ -603,7 +599,7 @@ class _BtsAlunoBuscaMotoristaWidgetState
                                                           getJsonField(
                                                             alunosListaWrapItem,
                                                             r'''$.nomeAluno''',
-                                                          ).toString().toUpperCase(),
+                                                          ).toString(),
                                                           textAlign:
                                                               TextAlign.center,
                                                           minFontSize: 8.0,

@@ -1,22 +1,9 @@
-import '/atf/bts_a_t_f_adicionar_passageiro/bts_a_t_f_adicionar_passageiro_widget.dart';
-import '/backend/api_requests/api_calls.dart';
 import '/backend/supabase/supabase.dart';
-import '/flutter_flow/flutter_flow_drop_down.dart';
 import '/flutter_flow/flutter_flow_util.dart';
-import '/flutter_flow/flutter_flow_widgets.dart';
 import '/flutter_flow/form_field_controller.dart';
-import '/frame_work/bts_selecione/bts_selecione_widget.dart';
-import 'dart:convert';
-import 'dart:ui';
 import 'bts_a_t_f_adicionar_m_widget.dart' show BtsATFAdicionarMWidget;
-import 'package:ff_theme/flutter_flow/flutter_flow_theme.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
-import 'package:provider/provider.dart';
 
 class BtsATFAdicionarMModel extends FlutterFlowModel<BtsATFAdicionarMWidget> {
   ///  State fields for stateful widgets in this component.

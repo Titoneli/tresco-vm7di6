@@ -6,11 +6,8 @@ import '/flutter_flow/flutter_flow_animations.dart';
 import '/flutter_flow/flutter_flow_charts.dart';
 import '/flutter_flow/flutter_flow_radio_button.dart';
 import '/flutter_flow/flutter_flow_util.dart';
-import '/flutter_flow/flutter_flow_widgets.dart';
 import '/flutter_flow/form_field_controller.dart';
 import '/frame_work/menu_side_bar_expandido/menu_side_bar_expandido_widget.dart';
-import 'dart:math';
-import 'dart:ui';
 import '/index.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:easy_debounce/easy_debounce.dart';
@@ -334,7 +331,7 @@ class _DashboardAssociadoWidgetState extends State<DashboardAssociadoWidget>
                                             valueOrDefault<String>(
                                               textUsuarioRow?.nomeUsuario,
                                               'Olá Motorista!',
-                                            ).toUpperCase(),
+                                            ),
                                             style: FlutterFlowTheme.of(context)
                                                 .bodyMedium
                                                 .override(
@@ -1435,7 +1432,7 @@ class _DashboardAssociadoWidgetState extends State<DashboardAssociadoWidget>
                                                                           width:
                                                                               2,
                                                                           color:
-                                                                              FlutterFlowTheme.of(context).alternate!,
+                                                                              FlutterFlowTheme.of(context).alternate,
                                                                         )
                                                                       : null,
                                                                   activeColor:
@@ -1870,7 +1867,7 @@ class _DashboardAssociadoWidgetState extends State<DashboardAssociadoWidget>
                                                                                   side: (FlutterFlowTheme.of(context).alternate != null)
                                                                                       ? BorderSide(
                                                                                           width: 2,
-                                                                                          color: FlutterFlowTheme.of(context).alternate!,
+                                                                                          color: FlutterFlowTheme.of(context).alternate,
                                                                                         )
                                                                                       : null,
                                                                                   activeColor: FlutterFlowTheme.of(context).primary,
@@ -1885,7 +1882,7 @@ class _DashboardAssociadoWidgetState extends State<DashboardAssociadoWidget>
                                                                                     getJsonField(
                                                                                       alunosListaWrapItem,
                                                                                       r'''$.nomeAluno''',
-                                                                                    ).toString().toUpperCase(),
+                                                                                    ).toString(),
                                                                                     textAlign: TextAlign.start,
                                                                                     minFontSize: 8.0,
                                                                                     style: FlutterFlowTheme.of(context).bodyMedium.override(

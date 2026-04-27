@@ -9,7 +9,6 @@ import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
 import '/flutter_flow/form_field_controller.dart';
 import 'dart:async';
-import 'dart:ui';
 import '/custom_code/actions/index.dart' as actions;
 import 'package:easy_debounce/easy_debounce.dart';
 import 'package:ff_theme/flutter_flow/flutter_flow_theme.dart';
@@ -1241,7 +1240,7 @@ class _BtsAlunoBuscaWidgetState extends State<BtsAlunoBuscaWidget> {
                                                                       getJsonField(
                                                                         alunosListaItem,
                                                                         r'''$.nomeAluno''',
-                                                                      ).toString().toUpperCase(),
+                                                                      ).toString(),
                                                                       style: FlutterFlowTheme.of(
                                                                               context)
                                                                           .bodyMedium
@@ -1370,7 +1369,7 @@ class _BtsAlunoBuscaWidgetState extends State<BtsAlunoBuscaWidget> {
                                                                                 null)
                                                                             ? BorderSide(
                                                                                 width: 2,
-                                                                                color: FlutterFlowTheme.of(context).alternate!,
+                                                                                color: FlutterFlowTheme.of(context).alternate,
                                                                               )
                                                                             : null,
                                                                         activeColor:

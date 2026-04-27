@@ -1,13 +1,10 @@
 import '/backend/supabase/supabase.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
-import 'dart:ui';
 import 'package:ff_theme/flutter_flow/flutter_flow_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/provider.dart';
 import 'bts_a_t_f_adicionar_passageiro_model.dart';
 export 'bts_a_t_f_adicionar_passageiro_model.dart';
 
@@ -593,7 +590,7 @@ class _BtsATFAdicionarPassageiroWidgetState
                             }
                             _model.apiResAdicionaPassageiro =
                                 await AtfPassageiroTable().insert({
-                              'id_atf': widget!.idAtf,
+                              'id_atf': widget.idAtf,
                               'nome': _model.nomeLeadTextController.text,
                               'cpf': _model.cpfCNPJTextController.text,
                               'vinculo': _model.telefoneLeadTextController.text,

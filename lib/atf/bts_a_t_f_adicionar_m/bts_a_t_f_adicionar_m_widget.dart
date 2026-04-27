@@ -6,8 +6,6 @@ import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
 import '/flutter_flow/form_field_controller.dart';
 import '/frame_work/bts_selecione/bts_selecione_widget.dart';
-import 'dart:convert';
-import 'dart:ui';
 import 'package:ff_theme/flutter_flow/flutter_flow_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -56,7 +54,7 @@ class _BtsATFAdicionarMWidgetState extends State<BtsATFAdicionarMWidget>
       length: 3,
       initialIndex: min(
           valueOrDefault<int>(
-            widget!.tabindex,
+            widget.tabindex,
             0,
           ),
           2),
@@ -118,7 +116,7 @@ class _BtsATFAdicionarMWidgetState extends State<BtsATFAdicionarMWidget>
           future: UsuarioTable().querySingleRow(
             queryFn: (q) => q.eqOrNull(
               'idUsuario',
-              widget!.idUsuario,
+              widget.idUsuario,
             ),
           ),
           builder: (context, snapshot) {

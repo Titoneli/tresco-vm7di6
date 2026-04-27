@@ -1,25 +1,13 @@
 import '/backend/api_requests/api_calls.dart';
 import '/backend/supabase/supabase.dart';
-import '/flutter_flow/flutter_flow_drop_down.dart';
-import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_util.dart';
-import '/flutter_flow/flutter_flow_widgets.dart';
 import '/flutter_flow/form_field_controller.dart';
 import '/frame_work/menu_side_bar_expandido/menu_side_bar_expandido_widget.dart';
 import '/frame_work/menu_side_bar_reduzido/menu_side_bar_reduzido_widget.dart';
 import '/frame_work/menu_side_bar_tablet/menu_side_bar_tablet_widget.dart';
-import 'dart:convert';
-import 'dart:ui';
 import '/index.dart';
 import 'dashboard_mensagens_widget.dart' show DashboardMensagensWidget;
-import 'package:easy_debounce/easy_debounce.dart';
-import 'package:ff_theme/flutter_flow/flutter_flow_theme.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/provider.dart';
 
 class DashboardMensagensModel
     extends FlutterFlowModel<DashboardMensagensWidget> {

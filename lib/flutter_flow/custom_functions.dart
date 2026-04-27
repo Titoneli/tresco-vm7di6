@@ -39,28 +39,3 @@ String? getCurrentMonthYear() {
   final now = DateTime.now();
   return '${now.month.toString().padLeft(2, '0')}/${now.year}';
 }
-
-/// Formata um valor monetário para o padrão brasileiro R$ #.###,##
-/// Aceita String (ex: "2.312,4", "3190.8", "2898") ou num.
-/// Sempre retorna com 2 casas decimais: "R$ 2.312,40", "R$ 3.190,80".
-String formatBRL(dynamic value, {bool showSymbol = true}) {
-  if (value == null) return showSymbol ? 'R\$ 0,00' : '0,00';
-
-  double numValue;
-  if (value is num) {
-    numValue = value.toDouble();
-  } else {
-    String s = value.toString().trim();
-    if (s.isEmpty) return showSymbol ? 'R\$ 0,00' : '0,00';
-    // Detectar formato: se contém vírgula, é formato BR (1.234,56)
-    if (s.contains(',')) {
-      // Formato brasileiro: remover pontos de milhar, trocar vírgula por ponto
-      s = s.replaceAll('.', '').replaceAll(',', '.');
-    }
-    numValue = double.tryParse(s) ?? 0.0;
-  }
-
-  final formatter = NumberFormat('#,##0.00', 'pt_BR');
-  final formatted = formatter.format(numValue);
-  return showSymbol ? 'R\$ $formatted' : formatted;
-}

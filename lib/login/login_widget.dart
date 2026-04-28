@@ -637,7 +637,7 @@ class _LoginWidgetState extends State<LoginWidget> {
                                                                                       'MotoristaViaVan') {
                                                                                     if ((MediaQuery.sizeOf(context).width < 1040.0) && (MediaQuery.sizeOf(context).height < 1366.0)) {
                                                                                       if (FFAppState().nomeUsuario != '') {
-                                                                                        context.pushNamed(DashboardMotoristaViaVanMWidget.routeName);
+                                                                                        context.pushNamed(DashboardPassageirosMWidget.routeName);
                                                                                       } else {
                                                                                         await showModalBottomSheet(
                                                                                           isScrollControlled: true,
@@ -663,7 +663,7 @@ class _LoginWidgetState extends State<LoginWidget> {
                                                                                         ).then((value) => safeSetState(() {}));
                                                                                       }
                                                                                     } else {
-                                                                                      context.pushNamed(DashboardMotoristaViaVanMWidget.routeName);
+                                                                                      context.pushNamed(DashboardPassageirosMWidget.routeName);
                                                                                     }
                                                                                   } else {
                                                                                     context.pushNamed(DashboardWidget.routeName);
@@ -977,7 +977,7 @@ class _LoginWidgetState extends State<LoginWidget> {
                                                                                 'MotoristaViaVan') {
                                                                               if ((MediaQuery.sizeOf(context).width < 1040.0) && (MediaQuery.sizeOf(context).height < 1366.0)) {
                                                                                 if (FFAppState().nomeUsuario != '') {
-                                                                                  context.pushNamed(DashboardMotoristaViaVanMWidget.routeName);
+                                                                                  context.pushNamed(DashboardPassageirosMWidget.routeName);
                                                                                 } else {
                                                                                   await showModalBottomSheet(
                                                                                     isScrollControlled: true,
@@ -1003,7 +1003,7 @@ class _LoginWidgetState extends State<LoginWidget> {
                                                                                   ).then((value) => safeSetState(() {}));
                                                                                 }
                                                                               } else {
-                                                                                context.pushNamed(DashboardMotoristaViaVanMWidget.routeName);
+                                                                                context.pushNamed(DashboardPassageirosMWidget.routeName);
                                                                               }
                                                                             } else {
                                                                               if (WhvalidausuarioCall.domCargo(

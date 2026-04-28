@@ -100,7 +100,7 @@ class _DashboardPassageirosMWidgetState
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Image.asset(
-              'assets/images/Ativo_4.png',
+              'assets/images/vivan_logo_transparent.png',
               height: 40.0,
               fit: BoxFit.contain,
               errorBuilder: (context, error, stackTrace) => Text(

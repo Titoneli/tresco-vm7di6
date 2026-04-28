@@ -99,7 +99,18 @@ class _DashboardPassageirosMWidgetState
           mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Image.asset('assets/images/Ativo_4.png', height: 32.0, fit: BoxFit.contain),
+            Image.asset(
+              'assets/images/Ativo_4.png',
+              height: 40.0,
+              fit: BoxFit.contain,
+              errorBuilder: (context, error, stackTrace) => Text(
+                'VIVAN',
+                style: FlutterFlowTheme.of(context).headlineSmall.override(
+                  font: GoogleFonts.interTight(fontWeight: FontWeight.w800),
+                  color: Color(0xFF2D4739),
+                ),
+              ),
+            ),
             Row(
               mainAxisSize: MainAxisSize.min,
               children: [

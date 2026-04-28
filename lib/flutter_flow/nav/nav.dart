@@ -137,6 +137,11 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) {
         builder: (context, params) => DashboardMotoristaViaVanMWidget(),
       ),
       FFRoute(
+        name: DashboardPassageirosMWidget.routeName,
+        path: DashboardPassageirosMWidget.routePath,
+        builder: (context, params) => DashboardPassageirosMWidget(),
+      ),
+      FFRoute(
         name: DashboardRespViaVanMWidget.routeName,
         path: DashboardRespViaVanMWidget.routePath,
         builder: (context, params) => DashboardRespViaVanMWidget(),

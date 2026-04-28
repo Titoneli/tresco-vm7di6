@@ -4386,7 +4386,7 @@ class _DashboardAssociadoMWidgetState extends State<DashboardAssociadoMWidget>
                                                               .circular(24.0),
                                                       onTap: () async {
                                                         context.pushNamed(
-                                                            'dashboardMotoristaViaVanM');
+                                                            DashboardPassageirosMWidget.routeName);
                                                       },
                                                       child: Container(
                                                         width: 100.0,

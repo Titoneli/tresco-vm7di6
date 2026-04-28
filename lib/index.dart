@@ -18,6 +18,8 @@ export '/dashboard_mensagens/dashboard_mensagens_widget.dart'
     show DashboardMensagensWidget;
 export '/via_van/dashboard_motorista_via_van_m/dashboard_motorista_via_van_m_widget.dart'
     show DashboardMotoristaViaVanMWidget;
+export '/dashboard_passageiros_m/dashboard_passageiros_m_widget.dart'
+    show DashboardPassageirosMWidget;
 export '/via_van/dashboard_resp_via_van_m/dashboard_resp_via_van_m_widget.dart'
     show DashboardRespViaVanMWidget;
 export '/via_van/passageiros_lista_m/passageiros_lista_m_widget.dart'

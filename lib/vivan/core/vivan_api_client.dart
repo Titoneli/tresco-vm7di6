@@ -8,8 +8,7 @@ export 'package:ff_commons/api_requests/api_manager.dart' show ApiCallResponse;
 
 /// Cliente HTTP centralizado para o módulo ViVan.
 ///
-/// Gerencia autenticação JWT (cookie-based) e headers.
-/// Quando virar app separado, basta trocar a implementação do token store.
+/// Gerencia autenticação JWT e auto-login com credenciais do FFAppState.
 class VivanApiClient {
   final String _baseUrl;
   final String _vivanUrl;
@@ -18,12 +17,31 @@ class VivanApiClient {
       : _baseUrl = baseUrl ?? VivanConfig.baseUrl,
         _vivanUrl = (baseUrl ?? VivanConfig.baseUrl) + VivanConfig.vivanPrefix;
 
-  // Token storage — hoje usa FFAppState, futuro pode usar secure_storage
   static String? _accessToken;
+  static bool _isLoggingIn = false;
 
   /// Define o token de acesso (obtido após login)
   static void setAccessToken(String? token) {
     _accessToken = token;
+  }
+
+  static bool get isAuthenticated => _accessToken != null;
+
+  /// Auto-autentica com credenciais persistidas no FFAppState se token ausente.
+  Future<void> _ensureToken() async {
+    if (_accessToken != null) return;
+    if (_isLoggingIn) return;
+    final email = FFAppState().usuario;
+    final senha = FFAppState().senha;
+    if (email.isEmpty || senha.isEmpty) return;
+    _isLoggingIn = true;
+    try {
+      await login(email, senha);
+    } catch (e) {
+      debugPrint('VivanApiClient: auto-login failed: $e');
+    } finally {
+      _isLoggingIn = false;
+    }
   }
 
   /// Headers padrão com auth
@@ -64,6 +82,7 @@ class VivanApiClient {
     String endpoint, {
     Map<String, dynamic>? queryParams,
   }) async {
+    await _ensureToken();
     final response = await ApiManager.instance.makeApiCall(
       callName: 'ViVan_GET_$endpoint',
       apiUrl: '$_vivanUrl$endpoint',
@@ -89,6 +108,7 @@ class VivanApiClient {
     String endpoint, {
     dynamic body,
   }) async {
+    await _ensureToken();
     final response = await ApiManager.instance.makeApiCall(
       callName: 'ViVan_POST_$endpoint',
       apiUrl: '$_vivanUrl$endpoint',
@@ -116,6 +136,7 @@ class VivanApiClient {
     String endpoint, {
     dynamic body,
   }) async {
+    await _ensureToken();
     final response = await ApiManager.instance.makeApiCall(
       callName: 'ViVan_PUT_$endpoint',
       apiUrl: '$_vivanUrl$endpoint',
@@ -140,6 +161,7 @@ class VivanApiClient {
 
   /// DELETE request — returns parsed JSON body (may be null)
   Future<dynamic> delete(String endpoint) async {
+    await _ensureToken();
     final response = await ApiManager.instance.makeApiCall(
       callName: 'ViVan_DELETE_$endpoint',
       apiUrl: '$_vivanUrl$endpoint',

@@ -160,10 +160,13 @@ class PassageiroFormMModel extends FlutterFlowModel<PassageiroFormMWidget> {
 
   Future<void> loadEscolas(int motoristaId) async {
     try {
-      escolas = await VivanLocator.service.getEscolas(motoristaId);
+      escolas = await VivanLocator.service
+          .getEscolas(motoristaId)
+          .timeout(const Duration(seconds: 5));
     } catch (e) {
-      debugPrint('Erro ao carregar escolas: $e');
-      errorMessage = 'Erro ao carregar escolas: $e';
+      // Endpoint pode estar indisponível — continua sem escolas pré-carregadas
+      debugPrint('loadEscolas: $e');
+      escolas = [];
     }
   }
 

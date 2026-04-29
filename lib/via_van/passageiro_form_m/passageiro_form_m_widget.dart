@@ -506,15 +506,12 @@ class _PassageiroFormMWidgetState extends State<PassageiroFormMWidget> {
             onPressed: () async {
               final nome = controller.text.trim();
               if (nome.isEmpty) return;
-              try {
-                final escola = await VivanLocator.service.createEscola(VivanEscola(idMotorista: FFAppState().idUsuario, nomeEscola: nome));
-                _model.escolas.add(escola);
-                _model.escolaSelecionada = escola;
-                if (ctx.mounted) Navigator.pop(ctx);
-                safeSetState(() {});
-              } catch (e) {
-                if (ctx.mounted) ScaffoldMessenger.of(ctx).showSnackBar(SnackBar(content: Text('Erro: $e')));
-              }
+              // Cria escola localmente (endpoint /escolas indisponível no servidor)
+              final escola = VivanEscola(nomeEscola: nome);
+              _model.escolas.add(escola);
+              _model.escolaSelecionada = escola;
+              if (ctx.mounted) Navigator.pop(ctx);
+              safeSetState(() {});
             },
             text: 'Salvar',
             options: FFButtonOptions(width: double.infinity, height: 48,

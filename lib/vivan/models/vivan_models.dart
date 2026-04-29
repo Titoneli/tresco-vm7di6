@@ -158,6 +158,37 @@ class VivanPassageiro {
   String get inicial => nomePassageiro.isNotEmpty ? nomePassageiro[0].toUpperCase() : 'P';
 }
 
+
+// ============================================
+// ESCOLA
+// ============================================
+
+class VivanEscola {
+  final int? idEscola;
+  final int? idMotorista;
+  final String nomeEscola;
+
+  VivanEscola({
+    this.idEscola,
+    this.idMotorista,
+    required this.nomeEscola,
+  });
+
+  factory VivanEscola.fromJson(Map<String, dynamic> json) {
+    return VivanEscola(
+      idEscola: json['idEscola'] as int?,
+      idMotorista: json['idMotorista'] as int?,
+      nomeEscola: json['nomeEscola'] as String? ?? '',
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        if (idEscola != null) 'idEscola': idEscola,
+        'idMotorista': idMotorista,
+        'nomeEscola': nomeEscola,
+      };
+}
+
 // ============================================
 // RESPONSÁVEL
 // ============================================

@@ -88,6 +88,25 @@ class VivanService {
   }
 
   // --------------------------------------------------
+  // ESCOLAS
+  // --------------------------------------------------
+
+  Future<List<VivanEscola>> getEscolas(int motorista) async {
+    final json = await _client.get('/escolas', queryParams: {
+      'motorista': motorista.toString(),
+    });
+    final list = json as List;
+    return list
+        .map((e) => VivanEscola.fromJson(e as Map<String, dynamic>))
+        .toList();
+  }
+
+  Future<VivanEscola> createEscola(VivanEscola e) async {
+    final json = await _client.post('/escolas', body: e.toJson());
+    return VivanEscola.fromJson(json as Map<String, dynamic>);
+  }
+
+  // --------------------------------------------------
   // RESPONSÁVEIS
   // --------------------------------------------------
 

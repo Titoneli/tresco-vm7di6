@@ -35,7 +35,8 @@ class PassageiroFormMModel extends FlutterFlowModel<PassageiroFormMWidget> {
   // ── Step 3 — Responsável ─────────────────────────
   final respNomeCtrl = TextEditingController();
   final respSobrenomeCtrl = TextEditingController();
-  final respTelefoneCtrl = TextEditingController();
+  final respWhatsappCtrl = TextEditingController();
+  final respEmailCtrl = TextEditingController();
   final respCpfCtrl = TextEditingController();
   String? respParentesco;
 
@@ -113,21 +114,17 @@ class PassageiroFormMModel extends FlutterFlowModel<PassageiroFormMWidget> {
 
       final body = <String, dynamic>{
         'nomePassageiro': nome,
-        if (dataNascimento != null)
-          'dtNascimento': dataNascimento!.toIso8601String(),
+        'dtNascimento': (dataNascimento ?? DateTime(2000, 1, 1)).toIso8601String(),
+        'endPassageiro': endParts.isNotEmpty ? endParts.join(', ') : 'Não informado',
         if (sexoMasculino != null) 'sexo': sexoMasculino! ? 'M' : 'F',
         if (escolaNome?.isNotEmpty == true) 'nomeEscola': escolaNome,
         if (periodo != null) 'periodo': periodo,
-        if (cepCtrl.text.isNotEmpty) 'cep': cepCtrl.text.trim(),
-        if (endParts.isNotEmpty) 'endPassageiro': endParts.join(', '),
-        if (logradouroCtrl.text.isNotEmpty)
-          'logradouro': logradouroCtrl.text.trim(),
-        if (numeroCtrl.text.isNotEmpty) 'numero': numeroCtrl.text.trim(),
-        if (complementoCtrl.text.isNotEmpty)
-          'complemento': complementoCtrl.text.trim(),
-        if (bairroCtrl.text.isNotEmpty) 'bairro': bairroCtrl.text.trim(),
-        if (cidadeCtrl.text.isNotEmpty) 'cidade': cidadeCtrl.text.trim(),
-        if (ufCtrl.text.isNotEmpty) 'uf': ufCtrl.text.trim(),
+        if (cepCtrl.text.isNotEmpty) 'cepPassageiro': cepCtrl.text.trim(),
+        if (numeroCtrl.text.isNotEmpty) 'numPassageiro': numeroCtrl.text.trim(),
+        if (complementoCtrl.text.isNotEmpty) 'compPassageiro': complementoCtrl.text.trim(),
+        if (bairroCtrl.text.isNotEmpty) 'bairroPassageiro': bairroCtrl.text.trim(),
+        if (cidadeCtrl.text.isNotEmpty) 'cidadePassageiro': cidadeCtrl.text.trim(),
+        if (ufCtrl.text.isNotEmpty) 'ufPassageiro': ufCtrl.text.trim(),
       };
 
       dynamic savedP;
@@ -139,32 +136,43 @@ class PassageiroFormMModel extends FlutterFlowModel<PassageiroFormMWidget> {
             int.tryParse((savedP as Map)['idPassageiro']?.toString() ?? '');
       }
 
+      // Responsável — todos os 5 campos são obrigatórios na API
+      final respNome = '${respNomeCtrl.text.trim()} ${respSobrenomeCtrl.text.trim()}'.trim();
+      final respCpf = respCpfCtrl.text.trim();
+      final respWpp = respWhatsappCtrl.text.trim();
+      final respEmail = respEmailCtrl.text.trim();
       if (passageiroId != null &&
-          respNomeCtrl.text.trim().isNotEmpty &&
-          respCpfCtrl.text.trim().isNotEmpty) {
+          respNome.isNotEmpty &&
+          respCpf.isNotEmpty &&
+          respParentesco != null &&
+          respWpp.isNotEmpty &&
+          respEmail.isNotEmpty) {
         final rBody = <String, dynamic>{
-          'nomeResponsavel':
-              '${respNomeCtrl.text.trim()} ${respSobrenomeCtrl.text.trim()}'
-                  .trim(),
-          'cpfResponsavel': respCpfCtrl.text.trim(),
-          if (respTelefoneCtrl.text.isNotEmpty)
-            'telefone': respTelefoneCtrl.text.trim(),
-          if (respParentesco != null) 'parentesco': respParentesco,
+          'nomeResponsavel': respNome,
+          'cpfResponsavel': respCpf,
+          'parentesco': respParentesco,
+          'whatsAppResponsavel': respWpp,
+          'emailResponsavel': respEmail,
         };
-        if (_responsavelId != null) {
-          await VivanHttp.put(
-              '/passageiros/$passageiroId/responsaveis/$_responsavelId',
-              rBody);
-        } else {
-          final r = await VivanHttp.post(
-              '/passageiros/$passageiroId/responsaveis', rBody);
-          if (r is Map) {
-            _responsavelId =
-                int.tryParse(r['idResponsavel']?.toString() ?? '');
+        try {
+          if (_responsavelId != null) {
+            await VivanHttp.put(
+                '/passageiros/$passageiroId/responsaveis/$_responsavelId',
+                rBody);
+          } else {
+            final r = await VivanHttp.post(
+                '/passageiros/$passageiroId/responsaveis', rBody);
+            if (r is Map) {
+              _responsavelId =
+                  int.tryParse(r['idResponsavel']?.toString() ?? '');
+            }
           }
+        } catch (e) {
+          debugPrint('PassageiroForm.responsavel: $e');
         }
       }
 
+      // Contrato — endpoint pode estar indisponível no servidor
       if (passageiroId != null && valorCtrl.text.trim().isNotEmpty) {
         final valor =
             double.tryParse(valorCtrl.text.replaceAll(',', '.')) ?? 0;
@@ -176,15 +184,19 @@ class PassageiroFormMModel extends FlutterFlowModel<PassageiroFormMWidget> {
           if (vigenciaFim != null)
             'vigenciaFim': DateFormat('yyyy-MM').format(vigenciaFim!),
         };
-        if (_contratoId != null) {
-          await VivanHttp.put(
-              '/passageiros/$passageiroId/contratos/$_contratoId', cBody);
-        } else {
-          final c = await VivanHttp.post(
-              '/passageiros/$passageiroId/contratos', cBody);
-          if (c is Map) {
-            _contratoId = int.tryParse(c['idContrato']?.toString() ?? '');
+        try {
+          if (_contratoId != null) {
+            await VivanHttp.put(
+                '/passageiros/$passageiroId/contratos/$_contratoId', cBody);
+          } else {
+            final c = await VivanHttp.post(
+                '/passageiros/$passageiroId/contratos', cBody);
+            if (c is Map) {
+              _contratoId = int.tryParse(c['idContrato']?.toString() ?? '');
+            }
           }
+        } catch (e) {
+          debugPrint('PassageiroForm.contrato: $e');
         }
       }
 
@@ -217,7 +229,8 @@ class PassageiroFormMModel extends FlutterFlowModel<PassageiroFormMWidget> {
     ufCtrl.dispose();
     respNomeCtrl.dispose();
     respSobrenomeCtrl.dispose();
-    respTelefoneCtrl.dispose();
+    respWhatsappCtrl.dispose();
+    respEmailCtrl.dispose();
     respCpfCtrl.dispose();
     valorCtrl.dispose();
   }

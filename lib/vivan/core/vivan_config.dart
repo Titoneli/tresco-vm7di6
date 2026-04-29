@@ -17,6 +17,10 @@ class VivanConfig {
   static const String authRefreshUrl = '$baseUrl/auth/refresh';
   static const String authLogoutUrl = '$baseUrl/auth/logout';
 
+  /// Credenciais fixas do motorista para autenticação automática
+  static const String usuario = 'gustavo';
+  static const String senha = 'gustavo';
+
   /// Timeout padrão em segundos
   static const int timeoutSeconds = 30;
 

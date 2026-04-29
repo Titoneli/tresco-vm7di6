@@ -15,8 +15,8 @@ class VivanApiClient {
         _vivanUrl = (baseUrl ?? VivanConfig.baseUrl) + VivanConfig.vivanPrefix;
 
   static String? _accessToken;
+  static bool _isLoggingIn = false;
 
-  /// Define o token de acesso (obtido após login)
   static void setAccessToken(String? token) {
     _accessToken = token;
   }
@@ -28,15 +28,42 @@ class VivanApiClient {
         if (_accessToken != null) 'Authorization': 'Bearer $_accessToken',
       };
 
+  /// Auto-login com credenciais fixas do motorista ViVan.
+  Future<void> _ensureToken() async {
+    if (_accessToken != null) return;
+    if (_isLoggingIn) return;
+    _isLoggingIn = true;
+    try {
+      await login(VivanConfig.usuario, VivanConfig.senha);
+    } catch (e) {
+      debugPrint('VivanApiClient: auto-login failed: $e');
+    } finally {
+      _isLoggingIn = false;
+    }
+  }
+
+  /// Executa [call] e, se retornar 401, renova token e tenta uma vez mais.
+  Future<ApiCallResponse> _callWithRetry(
+      Future<ApiCallResponse> Function() call) async {
+    await _ensureToken();
+    var response = await call();
+    if (response.statusCode == 401 && !_isLoggingIn) {
+      _accessToken = null;
+      await _ensureToken();
+      response = await call();
+    }
+    return response;
+  }
+
   /// Login — obtém JWT e armazena. Retorna true se sucesso.
-  Future<bool> login(String email, String senha) async {
+  Future<bool> login(String usuario, String senha) async {
     final response = await ApiManager.instance.makeApiCall(
       callName: 'ViVan_Auth_Login',
       apiUrl: '$_baseUrl/auth/login',
       callType: ApiCallType.POST,
       headers: {'Content-Type': 'application/json'},
       params: {},
-      body: json.encode({'usuario': email, 'senha': senha}),
+      body: json.encode({'usuario': usuario, 'senha': senha}),
       bodyType: BodyType.JSON,
       returnBody: true,
       encodeBodyUtf8: false,
@@ -53,24 +80,24 @@ class VivanApiClient {
     return response.succeeded;
   }
 
-  /// GET request — returns parsed JSON body (Map or List)
+  /// GET request
   Future<dynamic> get(
     String endpoint, {
     Map<String, dynamic>? queryParams,
   }) async {
-    final response = await ApiManager.instance.makeApiCall(
-      callName: 'ViVan_GET_$endpoint',
-      apiUrl: '$_vivanUrl$endpoint',
-      callType: ApiCallType.GET,
-      headers: _headers,
-      params: queryParams ?? {},
-      returnBody: true,
-      encodeBodyUtf8: false,
-      decodeUtf8: true,
-      cache: false,
-      isStreamingApi: false,
-      alwaysAllowBody: false,
-    );
+    final response = await _callWithRetry(() => ApiManager.instance.makeApiCall(
+          callName: 'ViVan_GET_$endpoint',
+          apiUrl: '$_vivanUrl$endpoint',
+          callType: ApiCallType.GET,
+          headers: _headers,
+          params: queryParams ?? {},
+          returnBody: true,
+          encodeBodyUtf8: false,
+          decodeUtf8: true,
+          cache: false,
+          isStreamingApi: false,
+          alwaysAllowBody: false,
+        ));
     if (!response.succeeded) {
       throw Exception(
           'API GET $endpoint failed [${response.statusCode}]: ${response.bodyText}');
@@ -78,27 +105,27 @@ class VivanApiClient {
     return response.jsonBody;
   }
 
-  /// POST request — returns parsed JSON body
+  /// POST request
   Future<dynamic> post(
     String endpoint, {
     dynamic body,
   }) async {
     final encodedBody = body != null ? json.encode(body) : null;
-    final response = await ApiManager.instance.makeApiCall(
-      callName: 'ViVan_POST_$endpoint',
-      apiUrl: '$_vivanUrl$endpoint',
-      callType: ApiCallType.POST,
-      headers: _headers,
-      params: {},
-      body: encodedBody,
-      bodyType: BodyType.JSON,
-      returnBody: true,
-      encodeBodyUtf8: false,
-      decodeUtf8: true,
-      cache: false,
-      isStreamingApi: false,
-      alwaysAllowBody: false,
-    );
+    final response = await _callWithRetry(() => ApiManager.instance.makeApiCall(
+          callName: 'ViVan_POST_$endpoint',
+          apiUrl: '$_vivanUrl$endpoint',
+          callType: ApiCallType.POST,
+          headers: _headers,
+          params: {},
+          body: encodedBody,
+          bodyType: BodyType.JSON,
+          returnBody: true,
+          encodeBodyUtf8: false,
+          decodeUtf8: true,
+          cache: false,
+          isStreamingApi: false,
+          alwaysAllowBody: false,
+        ));
     if (!response.succeeded) {
       throw Exception(
           'API POST $endpoint failed [${response.statusCode}]: ${response.bodyText}');
@@ -106,27 +133,27 @@ class VivanApiClient {
     return response.jsonBody;
   }
 
-  /// PUT request — returns parsed JSON body
+  /// PUT request
   Future<dynamic> put(
     String endpoint, {
     dynamic body,
   }) async {
     final encodedBody = body != null ? json.encode(body) : null;
-    final response = await ApiManager.instance.makeApiCall(
-      callName: 'ViVan_PUT_$endpoint',
-      apiUrl: '$_vivanUrl$endpoint',
-      callType: ApiCallType.PUT,
-      headers: _headers,
-      params: {},
-      body: encodedBody,
-      bodyType: BodyType.JSON,
-      returnBody: true,
-      encodeBodyUtf8: false,
-      decodeUtf8: true,
-      cache: false,
-      isStreamingApi: false,
-      alwaysAllowBody: false,
-    );
+    final response = await _callWithRetry(() => ApiManager.instance.makeApiCall(
+          callName: 'ViVan_PUT_$endpoint',
+          apiUrl: '$_vivanUrl$endpoint',
+          callType: ApiCallType.PUT,
+          headers: _headers,
+          params: {},
+          body: encodedBody,
+          bodyType: BodyType.JSON,
+          returnBody: true,
+          encodeBodyUtf8: false,
+          decodeUtf8: true,
+          cache: false,
+          isStreamingApi: false,
+          alwaysAllowBody: false,
+        ));
     if (!response.succeeded) {
       throw Exception(
           'API PUT $endpoint failed [${response.statusCode}]: ${response.bodyText}');
@@ -134,21 +161,21 @@ class VivanApiClient {
     return response.jsonBody;
   }
 
-  /// DELETE request — returns parsed JSON body (may be null)
+  /// DELETE request
   Future<dynamic> delete(String endpoint) async {
-    final response = await ApiManager.instance.makeApiCall(
-      callName: 'ViVan_DELETE_$endpoint',
-      apiUrl: '$_vivanUrl$endpoint',
-      callType: ApiCallType.DELETE,
-      headers: _headers,
-      params: {},
-      returnBody: true,
-      encodeBodyUtf8: false,
-      decodeUtf8: true,
-      cache: false,
-      isStreamingApi: false,
-      alwaysAllowBody: false,
-    );
+    final response = await _callWithRetry(() => ApiManager.instance.makeApiCall(
+          callName: 'ViVan_DELETE_$endpoint',
+          apiUrl: '$_vivanUrl$endpoint',
+          callType: ApiCallType.DELETE,
+          headers: _headers,
+          params: {},
+          returnBody: true,
+          encodeBodyUtf8: false,
+          decodeUtf8: true,
+          cache: false,
+          isStreamingApi: false,
+          alwaysAllowBody: false,
+        ));
     if (!response.succeeded) {
       throw Exception(
           'API DELETE $endpoint failed [${response.statusCode}]: ${response.bodyText}');

@@ -149,4 +149,16 @@ class AlunoRow extends SupabaseDataRow {
   String? get domExclusaoEscola => getField<String>('domExclusaoEscola');
   set domExclusaoEscola(String? value) =>
       setField<String>('domExclusaoEscola', value);
+
+  String? get sexo => getField<String>('sexo');
+  set sexo(String? value) => setField<String>('sexo', value);
+
+  String? get cpfResponsavel => getField<String>('cpfResponsavel');
+  set cpfResponsavel(String? value) =>
+      setField<String>('cpfResponsavel', value);
+
+  double? get vlrMensalidade => getField<double>('vlrMensalidade');
+  set vlrMensalidade(double? value) =>
+      setField<double>('vlrMensalidade', value);
+
 }

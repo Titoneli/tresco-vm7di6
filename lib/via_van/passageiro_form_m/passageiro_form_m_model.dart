@@ -57,6 +57,10 @@ class PassageiroFormMModel extends FlutterFlowModel<PassageiroFormMWidget> {
   FocusNode? respCpfFocusNode;
   TextEditingController? respCpfTextController;
 
+  // IDs loaded in edit mode for update vs create
+  int? _loadedResponsavelId;
+  int? _loadedContratoId;
+
   // ══════════════════════════════════════════════════
   // STEP 3 — Mensalidade
   // ══════════════════════════════════════════════════
@@ -130,6 +134,7 @@ class PassageiroFormMModel extends FlutterFlowModel<PassageiroFormMWidget> {
       escolas = await VivanLocator.service.getEscolas(motoristaId);
     } catch (e) {
       debugPrint('Erro ao carregar escolas: $e');
+      errorMessage = 'Erro ao carregar escolas: $e';
     }
   }
 
@@ -149,10 +154,12 @@ class PassageiroFormMModel extends FlutterFlowModel<PassageiroFormMWidget> {
       }
       periodoSelecionado = p.domTurno;
 
+      // Load responsavel
       try {
         final resps = await VivanLocator.service.getResponsaveis(passageiroId);
         if (resps.isNotEmpty) {
           final r = resps.first;
+          _loadedResponsavelId = r.idResponsavel;
           final rNameParts = r.nomeResponsavel.split(' ');
           respNomeTextController?.text = rNameParts.first;
           respSobrenomeTextController?.text =
@@ -170,14 +177,15 @@ class PassageiroFormMModel extends FlutterFlowModel<PassageiroFormMWidget> {
         }
       } catch (_) {}
 
+      // Load contrato
       try {
         final contratos = await VivanLocator.service.getContratos(
           motorista: p.idMotorista!, passageiro: passageiroId);
         if (contratos.data.isNotEmpty) {
           final c = contratos.data.first;
+          _loadedContratoId = c.idContrato;
           if (c.valMensal != null) {
-            valorTextController?.text =
-                NumberFormat.currency(locale: 'pt_BR', symbol: 'R\$').format(c.valMensal);
+            valorTextController?.text = c.valMensal!.toStringAsFixed(2).replaceAll('.', ',');
           }
           diaPagamento = c.diaVencimento;
           if (c.dtInicio != null) { try { vigenciaInicio = DateTime.parse(c.dtInicio!); } catch (_) {} }
@@ -186,6 +194,7 @@ class PassageiroFormMModel extends FlutterFlowModel<PassageiroFormMWidget> {
       } catch (_) {}
     } catch (e) {
       debugPrint('Erro ao carregar passageiro: $e');
+      errorMessage = 'Erro ao carregar passageiro';
     }
     isLoading = false;
   }
@@ -225,6 +234,7 @@ class PassageiroFormMModel extends FlutterFlowModel<PassageiroFormMWidget> {
       }
       final pId = savedP.idPassageiro!;
 
+      // Save responsavel — update if editing, create if new
       final respNome =
           '${respNomeTextController?.text ?? ''} ${respSobrenomeTextController?.text ?? ''}'.trim();
       int? savedRespId;
@@ -239,10 +249,16 @@ class PassageiroFormMModel extends FlutterFlowModel<PassageiroFormMWidget> {
           whatsAppResponsavel: tel,
           emailResponsavel: '',
         );
-        final savedR = await VivanLocator.service.createResponsavel(pId, r);
-        savedRespId = savedR.idResponsavel;
+        if (_loadedResponsavelId != null) {
+          final savedR = await VivanLocator.service.updateResponsavel(pId, _loadedResponsavelId!, r);
+          savedRespId = savedR.idResponsavel;
+        } else {
+          final savedR = await VivanLocator.service.createResponsavel(pId, r);
+          savedRespId = savedR.idResponsavel;
+        }
       }
 
+      // Save contrato — update if editing, create if new
       final valor = _parseValor(valorTextController?.text);
       if (valor > 0) {
         final c = VivanContrato(
@@ -257,7 +273,11 @@ class PassageiroFormMModel extends FlutterFlowModel<PassageiroFormMWidget> {
           dtTermino: vigenciaFinal?.toIso8601String(),
           status: 'ATIVO',
         );
-        await VivanLocator.service.createContrato(c);
+        if (_loadedContratoId != null) {
+          await VivanLocator.service.updateContrato(_loadedContratoId!, c);
+        } else {
+          await VivanLocator.service.createContrato(c);
+        }
       }
 
       isSaving = false;

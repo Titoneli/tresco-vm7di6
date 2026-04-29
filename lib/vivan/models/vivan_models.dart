@@ -498,6 +498,11 @@ class VivanDespesa {
   final String? comprovanteUrl;
   final String? mesReferencia;
   final String? observacoes;
+  final String tipoLancamento;
+  final bool recorrente;
+  final int? diaVencimento;
+  final String? mesInicial;
+  final String? mesFinal;
 
   VivanDespesa({
     this.idDespesa,
@@ -513,6 +518,11 @@ class VivanDespesa {
     this.comprovanteUrl,
     this.mesReferencia,
     this.observacoes,
+    this.tipoLancamento = 'DESPESA',
+    this.recorrente = false,
+    this.diaVencimento,
+    this.mesInicial,
+    this.mesFinal,
   });
 
   factory VivanDespesa.fromJson(Map<String, dynamic> json) {
@@ -530,6 +540,11 @@ class VivanDespesa {
       comprovanteUrl: json['comprovanteUrl'] as String?,
       mesReferencia: json['mesReferencia'] as String?,
       observacoes: json['observacoes'] as String?,
+      tipoLancamento: json['tipoLancamento'] as String? ?? 'DESPESA',
+      recorrente: json['recorrente'] as bool? ?? false,
+      diaVencimento: json['diaVencimento'] as int?,
+      mesInicial: json['mesInicial'] as String?,
+      mesFinal: json['mesFinal'] as String?,
     );
   }
 
@@ -546,6 +561,11 @@ class VivanDespesa {
         'comprovanteUrl': comprovanteUrl,
         'mesReferencia': mesReferencia,
         'observacoes': observacoes,
+        'tipoLancamento': tipoLancamento,
+        'recorrente': recorrente,
+        'diaVencimento': diaVencimento,
+        'mesInicial': mesInicial,
+        'mesFinal': mesFinal,
       };
 }
 

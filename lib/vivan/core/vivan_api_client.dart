@@ -59,12 +59,12 @@ class VivanApiClient {
     return response.succeeded;
   }
 
-  /// GET request
-  Future<ApiCallResponse> get(
+  /// GET request — returns parsed JSON body (Map or List)
+  Future<dynamic> get(
     String endpoint, {
     Map<String, dynamic>? queryParams,
   }) async {
-    return ApiManager.instance.makeApiCall(
+    final response = await ApiManager.instance.makeApiCall(
       callName: 'ViVan_GET_$endpoint',
       apiUrl: '$_vivanUrl$endpoint',
       callType: ApiCallType.GET,
@@ -77,14 +77,19 @@ class VivanApiClient {
       isStreamingApi: false,
       alwaysAllowBody: false,
     );
+    if (!response.succeeded) {
+      throw Exception(
+          'API GET $endpoint failed [${response.statusCode}]: ${response.bodyText}');
+    }
+    return response.jsonBody;
   }
 
-  /// POST request
-  Future<ApiCallResponse> post(
+  /// POST request — returns parsed JSON body
+  Future<dynamic> post(
     String endpoint, {
     dynamic body,
   }) async {
-    return ApiManager.instance.makeApiCall(
+    final response = await ApiManager.instance.makeApiCall(
       callName: 'ViVan_POST_$endpoint',
       apiUrl: '$_vivanUrl$endpoint',
       callType: ApiCallType.POST,
@@ -99,14 +104,19 @@ class VivanApiClient {
       isStreamingApi: false,
       alwaysAllowBody: false,
     );
+    if (!response.succeeded) {
+      throw Exception(
+          'API POST $endpoint failed [${response.statusCode}]: ${response.bodyText}');
+    }
+    return response.jsonBody;
   }
 
-  /// PUT request
-  Future<ApiCallResponse> put(
+  /// PUT request — returns parsed JSON body
+  Future<dynamic> put(
     String endpoint, {
     dynamic body,
   }) async {
-    return ApiManager.instance.makeApiCall(
+    final response = await ApiManager.instance.makeApiCall(
       callName: 'ViVan_PUT_$endpoint',
       apiUrl: '$_vivanUrl$endpoint',
       callType: ApiCallType.PUT,
@@ -121,11 +131,16 @@ class VivanApiClient {
       isStreamingApi: false,
       alwaysAllowBody: false,
     );
+    if (!response.succeeded) {
+      throw Exception(
+          'API PUT $endpoint failed [${response.statusCode}]: ${response.bodyText}');
+    }
+    return response.jsonBody;
   }
 
-  /// DELETE request
-  Future<ApiCallResponse> delete(String endpoint) async {
-    return ApiManager.instance.makeApiCall(
+  /// DELETE request — returns parsed JSON body (may be null)
+  Future<dynamic> delete(String endpoint) async {
+    final response = await ApiManager.instance.makeApiCall(
       callName: 'ViVan_DELETE_$endpoint',
       apiUrl: '$_vivanUrl$endpoint',
       callType: ApiCallType.DELETE,
@@ -138,5 +153,10 @@ class VivanApiClient {
       isStreamingApi: false,
       alwaysAllowBody: false,
     );
+    if (!response.succeeded) {
+      throw Exception(
+          'API DELETE $endpoint failed [${response.statusCode}]: ${response.bodyText}');
+    }
+    return response.jsonBody;
   }
 }

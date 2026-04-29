@@ -1,342 +1,213 @@
-import '/flutter_flow/flutter_flow_util.dart';
-import '/vivan/vivan.dart';
-import 'passageiro_form_m_widget.dart' show PassageiroFormMWidget;
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import '/flutter_flow/flutter_flow_util.dart';
+import '../_vivan_http.dart';
+import 'passageiro_form_m_widget.dart' show PassageiroFormMWidget;
 
 class PassageiroFormMModel extends FlutterFlowModel<PassageiroFormMWidget> {
-  // ── Page controller ──────────────────────────────
-  late PageController pageController;
-  int currentStep = 0;
-
-  // ── Loading / saving state ───────────────────────
-  bool isLoading = true;
+  final pageCtrl = PageController();
+  int step = 0;
   bool isSaving = false;
-  String? errorMessage;
+  String? erro;
 
-  // ── Form keys ────────────────────────────────────
-  final formKeyStep1 = GlobalKey<FormState>();
-  final formKeyStep2 = GlobalKey<FormState>();
-  final formKeyStep3 = GlobalKey<FormState>();
-
-  // ══════════════════════════════════════════════════
-  // STEP 1 — Passageiro + Informações Escolares
-  // ══════════════════════════════════════════════════
-
-  FocusNode? nomeFocusNode;
-  TextEditingController? nomeTextController;
-  FocusNode? sobrenomeFocusNode;
-  TextEditingController? sobrenomeTextController;
-
+  // ── Step 1 — Passageiro ──────────────────────────
+  final nomeCtrl = TextEditingController();
+  final sobrenomeCtrl = TextEditingController();
   DateTime? dataNascimento;
-  String get dataNascimentoFormatted =>
-      dataNascimento != null
-          ? DateFormat('dd/MM/yyyy').format(dataNascimento!)
-          : '';
-
   bool? sexoMasculino;
+  String? escolaNome;
+  String? periodo;
 
-  List<VivanEscola> escolas = [];
-  VivanEscola? escolaSelecionada;
+  static const periodos = ['Integral', 'Manhã', 'Almoço', 'Tarde', 'Noite'];
 
-  final List<String> periodos = ['Integral', 'Manhã', 'Almoço', 'Tarde', 'Noite'];
-  String? periodoSelecionado;
+  String get dataNascimentoFmt => dataNascimento != null
+      ? DateFormat('dd/MM/yyyy').format(dataNascimento!)
+      : '';
 
-  // ── Endereço ─────────────────────────────────────
-  FocusNode? cepFocusNode;
-  TextEditingController? cepTextController;
-  FocusNode? endFocusNode;
-  TextEditingController? endTextController;
-  FocusNode? numFocusNode;
-  TextEditingController? numTextController;
-  FocusNode? compFocusNode;
-  TextEditingController? compTextController;
-  FocusNode? bairroFocusNode;
-  TextEditingController? bairroTextController;
-  FocusNode? cidadeFocusNode;
-  TextEditingController? cidadeTextController;
-  FocusNode? ufFocusNode;
-  TextEditingController? ufTextController;
+  // ── Step 2 — Endereço ────────────────────────────
+  final cepCtrl = TextEditingController();
+  final logradouroCtrl = TextEditingController();
+  final numeroCtrl = TextEditingController();
+  final complementoCtrl = TextEditingController();
+  final bairroCtrl = TextEditingController();
+  final cidadeCtrl = TextEditingController();
+  final ufCtrl = TextEditingController();
 
-  // ══════════════════════════════════════════════════
-  // STEP 2 — Responsável
-  // ══════════════════════════════════════════════════
+  // ── Step 3 — Responsável ─────────────────────────
+  final respNomeCtrl = TextEditingController();
+  final respSobrenomeCtrl = TextEditingController();
+  final respTelefoneCtrl = TextEditingController();
+  final respCpfCtrl = TextEditingController();
+  String? respParentesco;
 
-  FocusNode? respNomeFocusNode;
-  TextEditingController? respNomeTextController;
-  FocusNode? respSobrenomeFocusNode;
-  TextEditingController? respSobrenomeTextController;
-  FocusNode? respDddFocusNode;
-  TextEditingController? respDddTextController;
-  FocusNode? respTelefoneFocusNode;
-  TextEditingController? respTelefoneTextController;
-  FocusNode? respCpfFocusNode;
-  TextEditingController? respCpfTextController;
+  static const parentescos = [
+    'Pai', 'Mãe', 'Avô', 'Avó', 'Tio(a)',
+    'Irmão(ã)', 'Padrasto', 'Madrasta', 'Responsável Legal', 'Outro',
+  ];
 
-  int? _loadedResponsavelId;
-  int? _loadedContratoId;
-
-  // ══════════════════════════════════════════════════
-  // STEP 3 — Mensalidade
-  // ══════════════════════════════════════════════════
-
-  FocusNode? valorFocusNode;
-  TextEditingController? valorTextController;
+  // ── Step 4 — Contrato ────────────────────────────
+  final valorCtrl = TextEditingController();
   int? diaPagamento;
   DateTime? vigenciaInicio;
-  DateTime? vigenciaFinal;
-  String get vigenciaInicioFormatted =>
-      vigenciaInicio != null ? DateFormat('MM/yyyy').format(vigenciaInicio!) : '';
-  String get vigenciaFinalFormatted =>
-      vigenciaFinal != null ? DateFormat('MM/yyyy').format(vigenciaFinal!) : '';
+  DateTime? vigenciaFim;
 
-  // ══════════════════════════════════════════════════
-  // LIFECYCLE
-  // ══════════════════════════════════════════════════
+  String get vigenciaInicioFmt => vigenciaInicio != null
+      ? DateFormat('MM/yyyy').format(vigenciaInicio!)
+      : '';
+  String get vigenciaFimFmt =>
+      vigenciaFim != null ? DateFormat('MM/yyyy').format(vigenciaFim!) : '';
 
-  @override
-  void initState(BuildContext context) {
-    pageController = PageController(initialPage: 0);
-  }
+  // ── IDs modo edição ──────────────────────────────
+  int? passageiroId;
+  int? _responsavelId;
+  int? _contratoId;
 
-  @override
-  void dispose() {
-    pageController.dispose();
-    nomeFocusNode?.dispose();
-    nomeTextController?.dispose();
-    sobrenomeFocusNode?.dispose();
-    sobrenomeTextController?.dispose();
-    cepFocusNode?.dispose();
-    cepTextController?.dispose();
-    endFocusNode?.dispose();
-    endTextController?.dispose();
-    numFocusNode?.dispose();
-    numTextController?.dispose();
-    compFocusNode?.dispose();
-    compTextController?.dispose();
-    bairroFocusNode?.dispose();
-    bairroTextController?.dispose();
-    cidadeFocusNode?.dispose();
-    cidadeTextController?.dispose();
-    ufFocusNode?.dispose();
-    ufTextController?.dispose();
-    respNomeFocusNode?.dispose();
-    respNomeTextController?.dispose();
-    respSobrenomeFocusNode?.dispose();
-    respSobrenomeTextController?.dispose();
-    respDddFocusNode?.dispose();
-    respDddTextController?.dispose();
-    respTelefoneFocusNode?.dispose();
-    respTelefoneTextController?.dispose();
-    respCpfFocusNode?.dispose();
-    respCpfTextController?.dispose();
-    valorFocusNode?.dispose();
-    valorTextController?.dispose();
-  }
+  bool get isEdit => passageiroId != null;
 
-  // ══════════════════════════════════════════════════
-  // NAVIGATION
-  // ══════════════════════════════════════════════════
-
-  void nextStep() {
-    if (currentStep < 2) {
-      currentStep++;
-      pageController.animateToPage(currentStep,
-          duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
-    }
-  }
-
-  void previousStep() {
-    if (currentStep > 0) {
-      currentStep--;
-      pageController.animateToPage(currentStep,
-          duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
-    }
-  }
-
-  // ══════════════════════════════════════════════════
-  // DATA LOADING
-  // ══════════════════════════════════════════════════
-
-  Future<void> loadEscolas(int motoristaId) async {
+  // ── Carregar para edição ─────────────────────────
+  Future<void> carregar(int id) async {
+    passageiroId = id;
     try {
-      escolas = await VivanLocator.service
-          .getEscolas(motoristaId)
-          .timeout(const Duration(seconds: 5));
+      final json = await VivanHttp.get('/passageiros/$id');
+      final p = json as Map<String, dynamic>;
+      final partes = (p['nomePassageiro'] as String? ?? '').split(' ');
+      nomeCtrl.text = partes.first;
+      sobrenomeCtrl.text =
+          partes.length > 1 ? partes.sublist(1).join(' ') : '';
+      final dtn = p['dtNascimento'] as String?;
+      if (dtn != null && dtn.isNotEmpty) {
+        try { dataNascimento = DateTime.parse(dtn); } catch (_) {}
+      }
+      final sexo = p['sexo'] as String?;
+      if (sexo == 'M') sexoMasculino = true;
+      if (sexo == 'F') sexoMasculino = false;
+      escolaNome = p['nomeEscola'] as String?;
+      periodo = p['periodo'] as String?;
+      cepCtrl.text = p['cep'] as String? ?? '';
+      logradouroCtrl.text = p['logradouro'] as String? ?? '';
+      numeroCtrl.text = p['numero'] as String? ?? '';
+      complementoCtrl.text = p['complemento'] as String? ?? '';
+      bairroCtrl.text = p['bairro'] as String? ?? '';
+      cidadeCtrl.text = p['cidade'] as String? ?? '';
+      ufCtrl.text = p['uf'] as String? ?? '';
     } catch (e) {
-      // Endpoint pode estar indisponível — continua sem escolas pré-carregadas
-      debugPrint('loadEscolas: $e');
-      escolas = [];
+      debugPrint('PassageiroForm.carregar: $e');
     }
   }
 
-  Future<void> loadPassageiro(int passageiroId) async {
-    isLoading = true;
-    try {
-      final p = await VivanLocator.service.getPassageiro(passageiroId);
-      final nameParts = p.nomePassageiro.split(' ');
-      nomeTextController?.text = nameParts.first;
-      sobrenomeTextController?.text =
-          nameParts.length > 1 ? nameParts.sublist(1).join(' ') : '';
-      if (p.dtNascimento != null && p.dtNascimento!.isNotEmpty) {
-        try { dataNascimento = DateTime.parse(p.dtNascimento!); } catch (_) {}
-      }
-      if (p.domSexo != null) {
-        sexoMasculino = p.domSexo == 'M';
-      }
-      if (p.idEscola != null) {
-        escolaSelecionada = escolas.where((e) => e.idEscola == p.idEscola).firstOrNull;
-      }
-      periodoSelecionado = p.domTurno;
-
-      // Endereço
-      cepTextController?.text = p.cepPassageiro ?? '';
-      endTextController?.text = p.endPassageiro;
-      numTextController?.text = p.numPassageiro ?? '';
-      compTextController?.text = p.compPassageiro ?? '';
-      bairroTextController?.text = p.bairroPassageiro ?? '';
-      cidadeTextController?.text = p.cidadePassageiro ?? '';
-      ufTextController?.text = p.ufPassageiro ?? '';
-
-      // Responsável
-      try {
-        final resps = await VivanLocator.service.getResponsaveis(passageiroId);
-        if (resps.isNotEmpty) {
-          final r = resps.first;
-          _loadedResponsavelId = r.idResponsavel;
-          final rNameParts = r.nomeResponsavel.split(' ');
-          respNomeTextController?.text = rNameParts.first;
-          respSobrenomeTextController?.text =
-              rNameParts.length > 1 ? rNameParts.sublist(1).join(' ') : '';
-          respCpfTextController?.text = r.cpfResponsavel;
-          final tel = r.telResponsavel ?? r.whatsAppResponsavel;
-          if (tel.isNotEmpty) {
-            if (tel.length > 2) {
-              respDddTextController?.text = tel.substring(0, 2);
-              respTelefoneTextController?.text = tel.substring(2);
-            } else {
-              respTelefoneTextController?.text = tel;
-            }
-          }
-        }
-      } catch (_) {}
-
-      // Contrato
-      try {
-        final contratos = await VivanLocator.service.getContratos(
-          motorista: p.idMotorista!, passageiro: passageiroId);
-        if (contratos.data.isNotEmpty) {
-          final c = contratos.data.first;
-          _loadedContratoId = c.idContrato;
-          if (c.valMensal != null) {
-            valorTextController?.text = c.valMensal!.toStringAsFixed(2).replaceAll('.', ',');
-          }
-          diaPagamento = c.diaVencimento;
-          if (c.dtInicio != null) { try { vigenciaInicio = DateTime.parse(c.dtInicio!); } catch (_) {} }
-          if (c.dtTermino != null) { try { vigenciaFinal = DateTime.parse(c.dtTermino!); } catch (_) {} }
-        }
-      } catch (_) {}
-    } catch (e) {
-      debugPrint('Erro ao carregar passageiro: $e');
-      errorMessage = 'Erro ao carregar passageiro';
-    }
-    isLoading = false;
-  }
-
-  // ══════════════════════════════════════════════════
-  // SAVE ALL
-  // ══════════════════════════════════════════════════
-
-  double _parseValor(String? text) {
-    if (text == null || text.isEmpty) return 0;
-    String clean = text.replaceAll('R\$', '').replaceAll('.', '').replaceAll(',', '.').trim();
-    return double.tryParse(clean) ?? 0;
-  }
-
-  Future<bool> saveAll(int motoristaId, int? passageiroId) async {
+  // ── Salvar ───────────────────────────────────────
+  Future<bool> salvar() async {
     isSaving = true;
-    errorMessage = null;
+    erro = null;
     try {
-      final nomeCompleto =
-          '${nomeTextController?.text ?? ''} ${sobrenomeTextController?.text ?? ''}'.trim();
+      final nome =
+          '${nomeCtrl.text.trim()} ${sobrenomeCtrl.text.trim()}'.trim();
 
-      final p = VivanPassageiro(
-        idMotorista: motoristaId,
-        nomePassageiro: nomeCompleto,
-        dtNascimento: dataNascimento?.toIso8601String(),
-        domSexo: sexoMasculino == true ? 'M' : sexoMasculino == false ? 'F' : null,
-        idEscola: escolaSelecionada?.idEscola,
-        nomeEscola: escolaSelecionada?.nomeEscola,
-        domTurno: periodoSelecionado,
-        cepPassageiro: cepTextController?.text.trim().isEmpty == true ? null : cepTextController?.text.trim(),
-        endPassageiro: endTextController?.text.trim() ?? '',
-        numPassageiro: numTextController?.text.trim().isEmpty == true ? null : numTextController?.text.trim(),
-        compPassageiro: compTextController?.text.trim().isEmpty == true ? null : compTextController?.text.trim(),
-        bairroPassageiro: bairroTextController?.text.trim().isEmpty == true ? null : bairroTextController?.text.trim(),
-        cidadePassageiro: cidadeTextController?.text.trim().isEmpty == true ? null : cidadeTextController?.text.trim(),
-        ufPassageiro: ufTextController?.text.trim().isEmpty == true ? null : ufTextController?.text.trim().toUpperCase(),
-      );
+      final body = <String, dynamic>{
+        'nomePassageiro': nome,
+        if (dataNascimento != null)
+          'dtNascimento': dataNascimento!.toIso8601String(),
+        if (sexoMasculino != null) 'sexo': sexoMasculino! ? 'M' : 'F',
+        if (escolaNome?.isNotEmpty == true) 'nomeEscola': escolaNome,
+        if (periodo != null) 'periodo': periodo,
+        if (cepCtrl.text.isNotEmpty) 'cep': cepCtrl.text.trim(),
+        if (logradouroCtrl.text.isNotEmpty)
+          'logradouro': logradouroCtrl.text.trim(),
+        if (numeroCtrl.text.isNotEmpty) 'numero': numeroCtrl.text.trim(),
+        if (complementoCtrl.text.isNotEmpty)
+          'complemento': complementoCtrl.text.trim(),
+        if (bairroCtrl.text.isNotEmpty) 'bairro': bairroCtrl.text.trim(),
+        if (cidadeCtrl.text.isNotEmpty) 'cidade': cidadeCtrl.text.trim(),
+        if (ufCtrl.text.isNotEmpty) 'uf': ufCtrl.text.trim(),
+      };
 
-      VivanPassageiro savedP;
-      if (passageiroId != null) {
-        savedP = await VivanLocator.service.updatePassageiro(passageiroId, p);
+      dynamic savedP;
+      if (isEdit) {
+        savedP = await VivanHttp.put('/passageiros/$passageiroId', body);
       } else {
-        savedP = await VivanLocator.service.createPassageiro(p);
+        savedP = await VivanHttp.post('/passageiros', body);
+        passageiroId =
+            int.tryParse((savedP as Map)['idPassageiro']?.toString() ?? '');
       }
-      final pId = savedP.idPassageiro!;
 
-      // Responsável
-      final respNome =
-          '${respNomeTextController?.text ?? ''} ${respSobrenomeTextController?.text ?? ''}'.trim();
-      int? savedRespId;
-      if (respNome.isNotEmpty) {
-        final tel = '${respDddTextController?.text ?? ''}${respTelefoneTextController?.text ?? ''}';
-        final r = VivanResponsavel(
-          idPassageiro: pId,
-          nomeResponsavel: respNome,
-          cpfResponsavel: respCpfTextController?.text ?? '',
-          parentesco: 'Responsável',
-          telResponsavel: tel,
-          whatsAppResponsavel: tel,
-          emailResponsavel: '',
-        );
-        if (_loadedResponsavelId != null) {
-          final savedR = await VivanLocator.service.updateResponsavel(pId, _loadedResponsavelId!, r);
-          savedRespId = savedR.idResponsavel;
+      if (passageiroId != null && respNomeCtrl.text.trim().isNotEmpty) {
+        final rBody = <String, dynamic>{
+          'nomeResponsavel':
+              '${respNomeCtrl.text.trim()} ${respSobrenomeCtrl.text.trim()}'
+                  .trim(),
+          if (respTelefoneCtrl.text.isNotEmpty)
+            'telefone': respTelefoneCtrl.text.trim(),
+          if (respCpfCtrl.text.isNotEmpty) 'cpf': respCpfCtrl.text.trim(),
+          if (respParentesco != null) 'parentesco': respParentesco,
+        };
+        if (_responsavelId != null) {
+          await VivanHttp.put(
+              '/passageiros/$passageiroId/responsaveis/$_responsavelId',
+              rBody);
         } else {
-          final savedR = await VivanLocator.service.createResponsavel(pId, r);
-          savedRespId = savedR.idResponsavel;
+          final r = await VivanHttp.post(
+              '/passageiros/$passageiroId/responsaveis', rBody);
+          if (r is Map) {
+            _responsavelId =
+                int.tryParse(r['idResponsavel']?.toString() ?? '');
+          }
         }
       }
 
-      // Contrato
-      final valor = _parseValor(valorTextController?.text);
-      if (valor > 0) {
-        final c = VivanContrato(
-          idMotorista: motoristaId,
-          idPassageiro: pId,
-          idResponsavel: savedRespId,
-          idEscola: escolaSelecionada?.idEscola,
-          domTurno: periodoSelecionado,
-          valMensal: valor,
-          diaVencimento: diaPagamento,
-          dtInicio: vigenciaInicio?.toIso8601String(),
-          dtTermino: vigenciaFinal?.toIso8601String(),
-          status: 'ATIVO',
-        );
-        if (_loadedContratoId != null) {
-          await VivanLocator.service.updateContrato(_loadedContratoId!, c);
+      if (passageiroId != null && valorCtrl.text.trim().isNotEmpty) {
+        final valor =
+            double.tryParse(valorCtrl.text.replaceAll(',', '.')) ?? 0;
+        final cBody = <String, dynamic>{
+          'valorMensalidade': valor,
+          if (diaPagamento != null) 'diaPagamento': diaPagamento,
+          if (vigenciaInicio != null)
+            'vigenciaInicio': DateFormat('yyyy-MM').format(vigenciaInicio!),
+          if (vigenciaFim != null)
+            'vigenciaFim': DateFormat('yyyy-MM').format(vigenciaFim!),
+        };
+        if (_contratoId != null) {
+          await VivanHttp.put(
+              '/passageiros/$passageiroId/contratos/$_contratoId', cBody);
         } else {
-          await VivanLocator.service.createContrato(c);
+          final c = await VivanHttp.post(
+              '/passageiros/$passageiroId/contratos', cBody);
+          if (c is Map) {
+            _contratoId = int.tryParse(c['idContrato']?.toString() ?? '');
+          }
         }
       }
 
       isSaving = false;
       return true;
     } catch (e) {
-      errorMessage = e.toString();
+      debugPrint('PassageiroForm.salvar: $e');
+      erro = e.toString();
       isSaving = false;
       return false;
     }
+  }
+
+  @override
+  void initState(BuildContext context) {
+    // pageCtrl inicializado inline no widget
+  }
+
+  @override
+  void dispose() {
+    pageCtrl.dispose();
+    nomeCtrl.dispose();
+    sobrenomeCtrl.dispose();
+    cepCtrl.dispose();
+    logradouroCtrl.dispose();
+    numeroCtrl.dispose();
+    complementoCtrl.dispose();
+    bairroCtrl.dispose();
+    cidadeCtrl.dispose();
+    ufCtrl.dispose();
+    respNomeCtrl.dispose();
+    respSobrenomeCtrl.dispose();
+    respTelefoneCtrl.dispose();
+    respCpfCtrl.dispose();
+    valorCtrl.dispose();
   }
 }

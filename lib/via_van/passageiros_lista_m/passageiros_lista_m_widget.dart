@@ -109,7 +109,11 @@ class _PassageirosListaMWidgetState extends State<PassageirosListaMWidget> {
                   size: 24.0,
                 ),
                 onPressed: () async {
-                  context.pushNamed('passageiroFormM');
+                  await context.pushNamed('passageiroFormM');
+                  if (mounted) {
+                    await _model.fetchPassageiros(FFAppState().idUsuario);
+                    safeSetState(() {});
+                  }
                 },
               ),
             ),
@@ -245,7 +249,7 @@ class _PassageirosListaMWidgetState extends State<PassageirosListaMWidget> {
                                   child: InkWell(
                                     borderRadius: BorderRadius.circular(12.0),
                                     onTap: () async {
-                                      context.pushNamed(
+                                      await context.pushNamed(
                                         'passageiroDetalheM',
                                         queryParameters: {
                                           'passageiroId': serializeParam(
@@ -254,6 +258,10 @@ class _PassageirosListaMWidgetState extends State<PassageirosListaMWidget> {
                                           ),
                                         }.withoutNulls,
                                       );
+                                      if (mounted) {
+                                        await _model.fetchPassageiros(FFAppState().idUsuario);
+                                        safeSetState(() {});
+                                      }
                                     },
                                     child: Container(
                                       width: double.infinity,

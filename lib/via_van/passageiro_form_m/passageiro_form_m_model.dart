@@ -10,7 +10,7 @@ class PassageiroFormMModel extends FlutterFlowModel<PassageiroFormMWidget> {
   int currentStep = 0;
 
   // ── Loading / saving state ───────────────────────
-  bool isLoading = false;
+  bool isLoading = true;
   bool isSaving = false;
   String? errorMessage;
 
@@ -42,6 +42,22 @@ class PassageiroFormMModel extends FlutterFlowModel<PassageiroFormMWidget> {
   final List<String> periodos = ['Integral', 'Manhã', 'Almoço', 'Tarde', 'Noite'];
   String? periodoSelecionado;
 
+  // ── Endereço ─────────────────────────────────────
+  FocusNode? cepFocusNode;
+  TextEditingController? cepTextController;
+  FocusNode? endFocusNode;
+  TextEditingController? endTextController;
+  FocusNode? numFocusNode;
+  TextEditingController? numTextController;
+  FocusNode? compFocusNode;
+  TextEditingController? compTextController;
+  FocusNode? bairroFocusNode;
+  TextEditingController? bairroTextController;
+  FocusNode? cidadeFocusNode;
+  TextEditingController? cidadeTextController;
+  FocusNode? ufFocusNode;
+  TextEditingController? ufTextController;
+
   // ══════════════════════════════════════════════════
   // STEP 2 — Responsável
   // ══════════════════════════════════════════════════
@@ -57,7 +73,6 @@ class PassageiroFormMModel extends FlutterFlowModel<PassageiroFormMWidget> {
   FocusNode? respCpfFocusNode;
   TextEditingController? respCpfTextController;
 
-  // IDs loaded in edit mode for update vs create
   int? _loadedResponsavelId;
   int? _loadedContratoId;
 
@@ -91,6 +106,20 @@ class PassageiroFormMModel extends FlutterFlowModel<PassageiroFormMWidget> {
     nomeTextController?.dispose();
     sobrenomeFocusNode?.dispose();
     sobrenomeTextController?.dispose();
+    cepFocusNode?.dispose();
+    cepTextController?.dispose();
+    endFocusNode?.dispose();
+    endTextController?.dispose();
+    numFocusNode?.dispose();
+    numTextController?.dispose();
+    compFocusNode?.dispose();
+    compTextController?.dispose();
+    bairroFocusNode?.dispose();
+    bairroTextController?.dispose();
+    cidadeFocusNode?.dispose();
+    cidadeTextController?.dispose();
+    ufFocusNode?.dispose();
+    ufTextController?.dispose();
     respNomeFocusNode?.dispose();
     respNomeTextController?.dispose();
     respSobrenomeFocusNode?.dispose();
@@ -149,12 +178,24 @@ class PassageiroFormMModel extends FlutterFlowModel<PassageiroFormMWidget> {
       if (p.dtNascimento != null && p.dtNascimento!.isNotEmpty) {
         try { dataNascimento = DateTime.parse(p.dtNascimento!); } catch (_) {}
       }
+      if (p.domSexo != null) {
+        sexoMasculino = p.domSexo == 'M';
+      }
       if (p.idEscola != null) {
         escolaSelecionada = escolas.where((e) => e.idEscola == p.idEscola).firstOrNull;
       }
       periodoSelecionado = p.domTurno;
 
-      // Load responsavel
+      // Endereço
+      cepTextController?.text = p.cepPassageiro ?? '';
+      endTextController?.text = p.endPassageiro;
+      numTextController?.text = p.numPassageiro ?? '';
+      compTextController?.text = p.compPassageiro ?? '';
+      bairroTextController?.text = p.bairroPassageiro ?? '';
+      cidadeTextController?.text = p.cidadePassageiro ?? '';
+      ufTextController?.text = p.ufPassageiro ?? '';
+
+      // Responsável
       try {
         final resps = await VivanLocator.service.getResponsaveis(passageiroId);
         if (resps.isNotEmpty) {
@@ -177,7 +218,7 @@ class PassageiroFormMModel extends FlutterFlowModel<PassageiroFormMWidget> {
         }
       } catch (_) {}
 
-      // Load contrato
+      // Contrato
       try {
         final contratos = await VivanLocator.service.getContratos(
           motorista: p.idMotorista!, passageiro: passageiroId);
@@ -220,10 +261,17 @@ class PassageiroFormMModel extends FlutterFlowModel<PassageiroFormMWidget> {
         idMotorista: motoristaId,
         nomePassageiro: nomeCompleto,
         dtNascimento: dataNascimento?.toIso8601String(),
+        domSexo: sexoMasculino == true ? 'M' : sexoMasculino == false ? 'F' : null,
         idEscola: escolaSelecionada?.idEscola,
         nomeEscola: escolaSelecionada?.nomeEscola,
         domTurno: periodoSelecionado,
-        endPassageiro: '',
+        cepPassageiro: cepTextController?.text.trim().isEmpty == true ? null : cepTextController?.text.trim(),
+        endPassageiro: endTextController?.text.trim() ?? '',
+        numPassageiro: numTextController?.text.trim().isEmpty == true ? null : numTextController?.text.trim(),
+        compPassageiro: compTextController?.text.trim().isEmpty == true ? null : compTextController?.text.trim(),
+        bairroPassageiro: bairroTextController?.text.trim().isEmpty == true ? null : bairroTextController?.text.trim(),
+        cidadePassageiro: cidadeTextController?.text.trim().isEmpty == true ? null : cidadeTextController?.text.trim(),
+        ufPassageiro: ufTextController?.text.trim().isEmpty == true ? null : ufTextController?.text.trim().toUpperCase(),
       );
 
       VivanPassageiro savedP;
@@ -234,7 +282,7 @@ class PassageiroFormMModel extends FlutterFlowModel<PassageiroFormMWidget> {
       }
       final pId = savedP.idPassageiro!;
 
-      // Save responsavel — update if editing, create if new
+      // Responsável
       final respNome =
           '${respNomeTextController?.text ?? ''} ${respSobrenomeTextController?.text ?? ''}'.trim();
       int? savedRespId;
@@ -258,7 +306,7 @@ class PassageiroFormMModel extends FlutterFlowModel<PassageiroFormMWidget> {
         }
       }
 
-      // Save contrato — update if editing, create if new
+      // Contrato
       final valor = _parseValor(valorTextController?.text);
       if (valor > 0) {
         final c = VivanContrato(

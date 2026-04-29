@@ -34,6 +34,20 @@ class _PassageiroFormMWidgetState extends State<PassageiroFormMWidget> {
     _model.nomeFocusNode ??= FocusNode();
     _model.sobrenomeTextController ??= TextEditingController();
     _model.sobrenomeFocusNode ??= FocusNode();
+    _model.cepTextController ??= TextEditingController();
+    _model.cepFocusNode ??= FocusNode();
+    _model.endTextController ??= TextEditingController();
+    _model.endFocusNode ??= FocusNode();
+    _model.numTextController ??= TextEditingController();
+    _model.numFocusNode ??= FocusNode();
+    _model.compTextController ??= TextEditingController();
+    _model.compFocusNode ??= FocusNode();
+    _model.bairroTextController ??= TextEditingController();
+    _model.bairroFocusNode ??= FocusNode();
+    _model.cidadeTextController ??= TextEditingController();
+    _model.cidadeFocusNode ??= FocusNode();
+    _model.ufTextController ??= TextEditingController();
+    _model.ufFocusNode ??= FocusNode();
     _model.respNomeTextController ??= TextEditingController();
     _model.respNomeFocusNode ??= FocusNode();
     _model.respSobrenomeTextController ??= TextEditingController();
@@ -49,7 +63,11 @@ class _PassageiroFormMWidgetState extends State<PassageiroFormMWidget> {
 
     SchedulerBinding.instance.addPostFrameCallback((_) async {
       await _model.loadEscolas(FFAppState().idUsuario);
-      if (isEditing) await _model.loadPassageiro(widget.passageiroId!);
+      if (isEditing) {
+        await _model.loadPassageiro(widget.passageiroId!);
+      } else {
+        _model.isLoading = false;
+      }
       safeSetState(() {});
       if (_model.errorMessage != null && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -157,6 +175,41 @@ class _PassageiroFormMWidgetState extends State<PassageiroFormMWidget> {
           const SizedBox(height: 12),
           _buildPickerButton(label: _model.periodoSelecionado ?? 'Período',
               isPlaceholder: _model.periodoSelecionado == null, onTap: () => _showPeriodoPicker()),
+          const SizedBox(height: 24),
+          Text('Endereço', style: FlutterFlowTheme.of(context).titleMedium.override(
+              font: GoogleFonts.inter(fontWeight: FontWeight.w700), letterSpacing: 0.0)),
+          const SizedBox(height: 16),
+          _buildTextField(
+              controller: _model.cepTextController!, focusNode: _model.cepFocusNode!,
+              hint: 'CEP*', keyboardType: TextInputType.number, maxLength: 8),
+          const SizedBox(height: 12),
+          _buildTextField(
+              controller: _model.endTextController!, focusNode: _model.endFocusNode!,
+              hint: 'Logradouro*'),
+          const SizedBox(height: 12),
+          Row(children: [
+            SizedBox(width: 100, child: _buildTextField(
+                controller: _model.numTextController!, focusNode: _model.numFocusNode!,
+                hint: 'Número*')),
+            const SizedBox(width: 12),
+            Expanded(child: _buildTextField(
+                controller: _model.compTextController!, focusNode: _model.compFocusNode!,
+                hint: 'Complemento*')),
+          ]),
+          const SizedBox(height: 12),
+          _buildTextField(
+              controller: _model.bairroTextController!, focusNode: _model.bairroFocusNode!,
+              hint: 'Bairro*'),
+          const SizedBox(height: 12),
+          Row(children: [
+            Expanded(child: _buildTextField(
+                controller: _model.cidadeTextController!, focusNode: _model.cidadeFocusNode!,
+                hint: 'Cidade*')),
+            const SizedBox(width: 12),
+            SizedBox(width: 70, child: _buildTextField(
+                controller: _model.ufTextController!, focusNode: _model.ufFocusNode!,
+                hint: 'UF*', maxLength: 2)),
+          ]),
           const SizedBox(height: 24),
           FFButtonWidget(
             onPressed: () {

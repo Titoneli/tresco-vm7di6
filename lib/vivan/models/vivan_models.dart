@@ -39,6 +39,7 @@ class VivanPassageiro {
   final String? periodoLetivo;
   final String? necessidadesEspeciais;
   final String? observacoes;
+  final String? domSexo;
   final bool ativo;
 
   VivanPassageiro({
@@ -71,6 +72,7 @@ class VivanPassageiro {
     this.periodoLetivo,
     this.necessidadesEspeciais,
     this.observacoes,
+    this.domSexo,
     this.ativo = true,
   });
 
@@ -105,6 +107,7 @@ class VivanPassageiro {
       periodoLetivo: json['periodoLetivo'] as String?,
       necessidadesEspeciais: json['necessidadesEspeciais'] as String?,
       observacoes: json['observacoes'] as String?,
+      domSexo: json['domSexo'] as String?,
       ativo: json['ativo'] as bool? ?? true,
     );
   }
@@ -138,6 +141,7 @@ class VivanPassageiro {
         'periodoLetivo': periodoLetivo,
         'necessidadesEspeciais': necessidadesEspeciais,
         'observacoes': observacoes,
+        'domSexo': domSexo,
         'ativo': ativo,
       };
 

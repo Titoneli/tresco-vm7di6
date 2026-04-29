@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '../_vivan_http.dart';
 import 'passageiro_form_m_widget.dart' show PassageiroFormMWidget;
@@ -103,6 +102,15 @@ class PassageiroFormMModel extends FlutterFlowModel<PassageiroFormMWidget> {
       final nome =
           '${nomeCtrl.text.trim()} ${sobrenomeCtrl.text.trim()}'.trim();
 
+      final endParts = <String>[
+        if (logradouroCtrl.text.isNotEmpty) logradouroCtrl.text.trim(),
+        if (numeroCtrl.text.isNotEmpty) numeroCtrl.text.trim(),
+        if (complementoCtrl.text.isNotEmpty) complementoCtrl.text.trim(),
+        if (bairroCtrl.text.isNotEmpty) bairroCtrl.text.trim(),
+        if (cidadeCtrl.text.isNotEmpty) cidadeCtrl.text.trim(),
+        if (ufCtrl.text.isNotEmpty) ufCtrl.text.trim(),
+      ];
+
       final body = <String, dynamic>{
         'nomePassageiro': nome,
         if (dataNascimento != null)
@@ -111,6 +119,7 @@ class PassageiroFormMModel extends FlutterFlowModel<PassageiroFormMWidget> {
         if (escolaNome?.isNotEmpty == true) 'nomeEscola': escolaNome,
         if (periodo != null) 'periodo': periodo,
         if (cepCtrl.text.isNotEmpty) 'cep': cepCtrl.text.trim(),
+        if (endParts.isNotEmpty) 'endPassageiro': endParts.join(', '),
         if (logradouroCtrl.text.isNotEmpty)
           'logradouro': logradouroCtrl.text.trim(),
         if (numeroCtrl.text.isNotEmpty) 'numero': numeroCtrl.text.trim(),

@@ -1,4 +1,5 @@
 import 'package:ff_theme/flutter_flow/flutter_flow_theme.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
@@ -840,19 +841,65 @@ class _PassageiroFormMWidgetState extends State<PassageiroFormMWidget> {
     required DateTime last,
     required void Function(DateTime) onPicked,
   }) async {
-    final picked = await showDatePicker(
+    DateTime temp = initial ?? DateTime(2010, 1, 1);
+    if (temp.isAfter(last)) temp = last;
+    if (temp.isBefore(first)) temp = first;
+
+    await showModalBottomSheet(
       context: context,
-      initialDate: initial ?? DateTime.now(),
-      firstDate: first,
-      lastDate: last,
-      builder: (ctx, child) => Theme(
-        data: Theme.of(ctx).copyWith(
-          colorScheme: ColorScheme.light(primary: _primary),
-        ),
-        child: child!,
+      backgroundColor: _bg,
+      shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      builder: (ctx) => Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                GestureDetector(
+                  onTap: () => Navigator.pop(ctx),
+                  child: Text('Cancelar',
+                      style: TextStyle(
+                          color: _primary,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500)),
+                ),
+                Text('Data de Nascimento',
+                    style: TextStyle(
+                        color: _primaryText,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600)),
+                GestureDetector(
+                  onTap: () {
+                    onPicked(temp);
+                    Navigator.pop(ctx);
+                  },
+                  child: Text('Selecionar',
+                      style: TextStyle(
+                          color: _primary,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700)),
+                ),
+              ],
+            ),
+          ),
+          Divider(height: 1, color: Colors.grey.shade200),
+          SizedBox(
+            height: 220,
+            child: CupertinoDatePicker(
+              mode: CupertinoDatePickerMode.date,
+              initialDateTime: temp,
+              minimumDate: first,
+              maximumDate: last,
+              onDateTimeChanged: (d) => temp = d,
+            ),
+          ),
+          const SizedBox(height: 16),
+        ],
       ),
     );
-    if (picked != null) onPicked(picked);
   }
 
   Future<void> _pickMonthYear({
@@ -860,71 +907,102 @@ class _PassageiroFormMWidgetState extends State<PassageiroFormMWidget> {
     required DateTime? initial,
     required void Function(DateTime) onPicked,
   }) async {
-    DateTime temp = initial ?? DateTime.now();
+    const firstYear = 2020;
+    const lastYear = 2040;
+    const months = [
+      'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+      'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
+    ];
+
+    final now = DateTime.now();
+    final init = initial ?? now;
+    int selMonth = init.month - 1; // 0-based index
+    int selYear = init.year.clamp(firstYear, lastYear);
+
     await showModalBottomSheet(
       context: context,
       backgroundColor: _bg,
       shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
-      builder: (_) => StatefulBuilder(
-        builder: (ctx, setS) => Padding(
-          padding: const EdgeInsets.fromLTRB(24, 20, 24, 32),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(title,
-                  style: FlutterFlowTheme.of(context).titleMedium.override(
-                        font: GoogleFonts.interTight(
-                            fontWeight: FontWeight.w700),
-                        color: _primaryText)),
-              const SizedBox(height: 12),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+      builder: (ctx) => StatefulBuilder(
+        builder: (_, setS) => Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  IconButton(
-                    onPressed: () =>
-                        setS(() => temp = DateTime(temp.year, temp.month - 1)),
-                    icon: Icon(Icons.chevron_left_rounded, color: _primary)),
-                  Text(
-                    '${_monthName(temp.month)} ${temp.year}',
-                    style: FlutterFlowTheme.of(context).titleSmall.override(
-                          font: GoogleFonts.interTight(
-                              fontWeight: FontWeight.w600),
-                          color: _primaryText),
+                  GestureDetector(
+                    onTap: () => Navigator.pop(ctx),
+                    child: Text('Cancelar',
+                        style: TextStyle(
+                            color: _primary,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500)),
                   ),
-                  IconButton(
-                    onPressed: () =>
-                        setS(() => temp = DateTime(temp.year, temp.month + 1)),
-                    icon: Icon(Icons.chevron_right_rounded, color: _primary)),
+                  Text(title,
+                      style: TextStyle(
+                          color: _primaryText,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600)),
+                  GestureDetector(
+                    onTap: () {
+                      onPicked(DateTime(selYear, selMonth + 1));
+                      Navigator.pop(ctx);
+                    },
+                    child: Text('Selecionar',
+                        style: TextStyle(
+                            color: _primary,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700)),
+                  ),
                 ],
               ),
-              const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: () {
-                  onPicked(temp);
-                  Navigator.pop(ctx);
-                },
-                style: ElevatedButton.styleFrom(
-                    backgroundColor: _primary,
-                    minimumSize: const Size(double.infinity, 48),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12))),
-                child: const Text('Confirmar',
-                    style: TextStyle(
-                        color: Colors.white, fontWeight: FontWeight.w600)),
+            ),
+            Divider(height: 1, color: Colors.grey.shade200),
+            SizedBox(
+              height: 220,
+              child: Row(
+                children: [
+                  Expanded(
+                    flex: 2,
+                    child: CupertinoPicker(
+                      scrollController: FixedExtentScrollController(
+                          initialItem: selMonth),
+                      itemExtent: 44,
+                      onSelectedItemChanged: (i) => setS(() => selMonth = i),
+                      children: months
+                          .map((m) => Center(
+                              child: Text(m,
+                                  style: TextStyle(
+                                      color: _primaryText, fontSize: 18))))
+                          .toList(),
+                    ),
+                  ),
+                  Expanded(
+                    child: CupertinoPicker(
+                      scrollController: FixedExtentScrollController(
+                          initialItem: selYear - firstYear),
+                      itemExtent: 44,
+                      onSelectedItemChanged: (i) =>
+                          setS(() => selYear = firstYear + i),
+                      children: List.generate(
+                        lastYear - firstYear + 1,
+                        (i) => Center(
+                            child: Text('${firstYear + i}',
+                                style: TextStyle(
+                                    color: _primaryText, fontSize: 18))),
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            ],
-          ),
+            ),
+            const SizedBox(height: 16),
+          ],
         ),
       ),
     );
-  }
-
-  String _monthName(int m) {
-    const meses = [
-      '', 'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
-      'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
-    ];
-    return meses[((m - 1) % 12) + 1];
   }
 }

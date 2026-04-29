@@ -27,10 +27,28 @@ class ContratoDetalheMModel extends FlutterFlowModel<ContratoDetalheMWidget> {
   TextEditingController? dataInicioTextController;
   FocusNode? dataFimFocusNode;
   TextEditingController? dataFimTextController;
-  int? selectedPassageiroId;
+  List<VivanPassageiro> passageiros = [];
+  VivanPassageiro? passageiroSelecionado;
+  bool isLoadingPassageiros = false;
+
+  int? get selectedPassageiroId => passageiroSelecionado?.idPassageiro;
 
   @override
   void initState(BuildContext context) {}
+
+  Future<void> fetchPassageiros(int motoristaId) async {
+    isLoadingPassageiros = true;
+    try {
+      final result = await VivanLocator.service.getPassageiros(
+        motorista: motoristaId,
+        limit: 100,
+      );
+      passageiros = result.data;
+    } catch (e) {
+      debugPrint('Erro ao buscar passageiros: $e');
+    }
+    isLoadingPassageiros = false;
+  }
 
   @override
   void dispose() {

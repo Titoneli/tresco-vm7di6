@@ -98,6 +98,18 @@ class _PassageirosListaMWidgetState extends State<PassageirosListaMWidget> {
                 ),
           ),
           actions: [
+            FlutterFlowIconButton(
+              borderRadius: 8.0,
+              buttonSize: 40.0,
+              icon: Icon(
+                Icons.description_outlined,
+                color: FlutterFlowTheme.of(context).info,
+                size: 24.0,
+              ),
+              onPressed: () async {
+                context.pushNamed('contratosListaM');
+              },
+            ),
             Padding(
               padding: EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 12.0, 0.0),
               child: FlutterFlowIconButton(

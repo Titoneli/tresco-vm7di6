@@ -4,6 +4,7 @@ import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
 import '/index.dart';
 import 'package:ff_theme/flutter_flow/flutter_flow_theme.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -49,6 +50,8 @@ class _ContratoDetalheMWidgetState extends State<ContratoDetalheMWidget> {
         safeSetState(() {});
       } else {
         _model.isLoading = false;
+        safeSetState(() {});
+        await _model.fetchPassageiros(FFAppState().idUsuario);
         safeSetState(() {});
       }
     });
@@ -114,39 +117,92 @@ class _ContratoDetalheMWidgetState extends State<ContratoDetalheMWidget> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Selecione um passageiro, defina valor e condições do contrato.',
+            Text('Defina o passageiro, valor e condições do contrato.',
               style: FlutterFlowTheme.of(context).bodyMedium.override(
                 font: GoogleFonts.inter(fontWeight: FontWeight.normal),
                 color: FlutterFlowTheme.of(context).secondaryText, letterSpacing: 0.0,
               ),
             ),
             SizedBox(height: 24.0),
+            // Passageiro picker
+            Text('Passageiro',
+              style: FlutterFlowTheme.of(context).bodySmall.override(
+                font: GoogleFonts.inter(fontWeight: FontWeight.w500),
+                color: FlutterFlowTheme.of(context).secondaryText, letterSpacing: 0.0,
+              ),
+            ),
+            SizedBox(height: 6.0),
+            _model.isLoadingPassageiros
+                ? SizedBox(height: 48.0,
+                    child: Center(child: SizedBox(width: 20.0, height: 20.0,
+                      child: CircularProgressIndicator(strokeWidth: 2.0,
+                          color: FlutterFlowTheme.of(context).primary))))
+                : GestureDetector(
+                    onTap: () => _showPassageiroPicker(context),
+                    child: Container(
+                      height: 48.0,
+                      padding: EdgeInsets.symmetric(horizontal: 16.0),
+                      decoration: BoxDecoration(
+                        color: FlutterFlowTheme.of(context).primaryBackground,
+                        borderRadius: BorderRadius.circular(12.0),
+                        border: Border.all(color: Colors.grey.shade300),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            _model.passageiroSelecionado?.nomePassageiro
+                                ?? 'Selecionar passageiro',
+                            style: FlutterFlowTheme.of(context).bodyMedium.override(
+                              font: GoogleFonts.inter(fontWeight: FontWeight.w500),
+                              color: _model.passageiroSelecionado == null
+                                  ? FlutterFlowTheme.of(context).secondaryText
+                                  : FlutterFlowTheme.of(context).primaryText,
+                              letterSpacing: 0.0,
+                            ),
+                          ),
+                          Icon(Icons.keyboard_arrow_down,
+                              color: FlutterFlowTheme.of(context).secondaryText),
+                        ],
+                      ),
+                    ),
+                  ),
+            SizedBox(height: 16.0),
             _buildField(context, 'Valor Mensal (R\$)', _model.valorTextController!, _model.valorFocusNode!,
                 keyboardType: TextInputType.numberWithOptions(decimal: true)),
             SizedBox(height: 16.0),
-            _buildField(context, 'Data Início (YYYY-MM-DD)', _model.dataInicioTextController!, _model.dataInicioFocusNode!),
+            _buildField(context, 'Data Início (AAAA-MM-DD)', _model.dataInicioTextController!, _model.dataInicioFocusNode!),
             SizedBox(height: 16.0),
-            _buildField(context, 'Data Fim (YYYY-MM-DD)', _model.dataFimTextController!, _model.dataFimFocusNode!),
+            _buildField(context, 'Data Fim (AAAA-MM-DD) — opcional', _model.dataFimTextController!, _model.dataFimFocusNode!),
             SizedBox(height: 16.0),
             _buildField(context, 'Condições', _model.condicoesTextController!, _model.condicoesFocusNode!, maxLines: 4),
             SizedBox(height: 32.0),
             FFButtonWidget(
               onPressed: () async {
+                if (_model.passageiroSelecionado == null) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Selecione um passageiro')));
+                  return;
+                }
                 try {
+                  final valor = double.tryParse(
+                      _model.valorTextController!.text.replaceAll(',', '.'));
                   final c = VivanContrato(
                     idMotorista: FFAppState().idUsuario,
                     idPassageiro: _model.selectedPassageiroId,
-                    valMensal: double.tryParse(_model.valorTextController!.text),
-                    dtInicio: _model.dataInicioTextController!.text,
-                    dtTermino: _model.dataFimTextController!.text,
+                    valMensal: valor,
+                    dtInicio: _model.dataInicioTextController!.text.trim().isEmpty
+                        ? null : _model.dataInicioTextController!.text.trim(),
+                    dtTermino: _model.dataFimTextController!.text.trim().isEmpty
+                        ? null : _model.dataFimTextController!.text.trim(),
                     observacoes: _model.condicoesTextController!.text,
+                    status: 'RASCUNHO',
                   );
                   await VivanLocator.service.createContrato(c);
                   context.safePop();
                 } catch (e) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Erro ao criar contrato')),
-                  );
+                    SnackBar(content: Text('Erro ao criar contrato')));
                 }
               },
               text: 'Criar Contrato',
@@ -162,6 +218,74 @@ class _ContratoDetalheMWidgetState extends State<ContratoDetalheMWidget> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  void _showPassageiroPicker(BuildContext context) {
+    if (_model.passageiros.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Nenhum passageiro cadastrado')));
+      return;
+    }
+    int selectedIndex = _model.passageiroSelecionado != null
+        ? _model.passageiros.indexWhere(
+            (p) => p.idPassageiro == _model.passageiroSelecionado!.idPassageiro)
+        : 0;
+    if (selectedIndex < 0) selectedIndex = 0;
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(16.0))),
+      builder: (_) => Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16.0),
+            child: SizedBox(
+              height: 44.0,
+              child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  GestureDetector(
+                    onTap: () => Navigator.pop(context),
+                    child: Text('Cancelar',
+                      style: GoogleFonts.inter(fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                          color: FlutterFlowTheme.of(context).error)),
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      _model.passageiroSelecionado =
+                          _model.passageiros[selectedIndex];
+                      Navigator.pop(context);
+                      safeSetState(() {});
+                    },
+                    child: Text('Selecionar',
+                      style: GoogleFonts.inter(fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: FlutterFlowTheme.of(context).primary)),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          SizedBox(
+            height: 220.0,
+            child: CupertinoPicker(
+              scrollController:
+                  FixedExtentScrollController(initialItem: selectedIndex),
+              itemExtent: 40.0,
+              onSelectedItemChanged: (i) => selectedIndex = i,
+              children: _model.passageiros
+                  .map((p) => Center(
+                      child: Text(p.nomePassageiro,
+                          style: GoogleFonts.inter(fontSize: 16))))
+                  .toList(),
+            ),
+          ),
+        ],
       ),
     );
   }

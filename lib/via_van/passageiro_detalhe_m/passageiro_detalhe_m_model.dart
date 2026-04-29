@@ -5,11 +5,11 @@ import 'package:flutter/material.dart';
 
 class PassageiroDetalheMModel
     extends FlutterFlowModel<PassageiroDetalheMWidget> {
-  ///  Local state fields for this page.
-
   bool isLoading = true;
   VivanPassageiro? passageiro;
   List<VivanResponsavel> responsaveis = [];
+  List<VivanContrato> contratos = [];
+  bool isLoadingContratos = false;
 
   // Computed fields
   String get nome => passageiro?.nomePassageiro ?? '';
@@ -34,6 +34,21 @@ class PassageiroDetalheMModel
       debugPrint('Erro ao buscar passageiro: $e');
     }
     isLoading = false;
+  }
+
+  Future<void> fetchContratos(int motoristaId, int passageiroId) async {
+    isLoadingContratos = true;
+    try {
+      final result = await VivanLocator.service.getContratos(
+        motorista: motoristaId,
+        passageiro: passageiroId,
+        limit: 50,
+      );
+      contratos = result.data;
+    } catch (e) {
+      debugPrint('Erro ao buscar contratos: $e');
+    }
+    isLoadingContratos = false;
   }
 
   Future<void> deleteResponsavel(int passageiroId, int responsavelId) async {

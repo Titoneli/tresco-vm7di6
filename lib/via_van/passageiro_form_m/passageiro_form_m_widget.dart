@@ -364,7 +364,7 @@ class _PassageiroFormMWidgetState extends State<PassageiroFormMWidget> {
           const SizedBox(height: 12),
           _field(
             ctrl: _model.respCpfCtrl,
-            hint: 'CPF*',
+            hint: 'CPF (obrigatório se preencher responsável)',
             kb: TextInputType.number,
             fmt: [FilteringTextInputFormatter.digitsOnly],
             maxLen: 11,

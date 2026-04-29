@@ -139,14 +139,16 @@ class PassageiroFormMModel extends FlutterFlowModel<PassageiroFormMWidget> {
             int.tryParse((savedP as Map)['idPassageiro']?.toString() ?? '');
       }
 
-      if (passageiroId != null && respNomeCtrl.text.trim().isNotEmpty) {
+      if (passageiroId != null &&
+          respNomeCtrl.text.trim().isNotEmpty &&
+          respCpfCtrl.text.trim().isNotEmpty) {
         final rBody = <String, dynamic>{
           'nomeResponsavel':
               '${respNomeCtrl.text.trim()} ${respSobrenomeCtrl.text.trim()}'
                   .trim(),
+          'cpfResponsavel': respCpfCtrl.text.trim(),
           if (respTelefoneCtrl.text.isNotEmpty)
             'telefone': respTelefoneCtrl.text.trim(),
-          if (respCpfCtrl.text.isNotEmpty) 'cpf': respCpfCtrl.text.trim(),
           if (respParentesco != null) 'parentesco': respParentesco,
         };
         if (_responsavelId != null) {

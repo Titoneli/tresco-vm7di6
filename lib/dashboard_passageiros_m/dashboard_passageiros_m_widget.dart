@@ -2,6 +2,8 @@ import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
 import '/index.dart';
+import '/via_van/financeiro_tab/financeiro_tab_widget.dart';
+import '/via_van/mensalidades_tab/mensalidades_tab_widget.dart';
 import 'package:ff_theme/flutter_flow/flutter_flow_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -69,9 +71,9 @@ class _DashboardPassageirosMWidgetState
                   children: [
                     _buildHomePage(context),
                     _buildPlaceholderPage(context, 'Passageiros'),
-                    _buildPlaceholderPage(context, 'Financeiro'),
-                    _buildPlaceholderPage(context, 'Veiculos'),
-                    _buildPlaceholderPage(context, 'Mais'),
+                    MensalidadesTabWidget(),
+                    FinanceiroTabWidget(),
+                    _buildMaisPage(context),
                   ],
                 ),
               ),
@@ -301,9 +303,78 @@ class _DashboardPassageirosMWidgetState
         children: [
           _buildNavItem(context, 0, Icons.home_rounded, 'Inicio'),
           _buildNavItem(context, 1, Icons.people_rounded, 'Passageiros'),
-          _buildNavItem(context, 2, Icons.account_balance_wallet_rounded, 'Financeiro'),
-          _buildNavItem(context, 3, Icons.directions_bus_rounded, 'Veiculos'),
+          _buildNavItem(context, 2, Icons.receipt_long_rounded, 'Mensalidades'),
+          _buildNavItem(context, 3, Icons.account_balance_wallet_rounded, 'Financeiro'),
           _buildNavItem(context, 4, Icons.more_horiz_rounded, 'Mais'),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMaisPage(BuildContext context) {
+    return SingleChildScrollView(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: EdgeInsetsDirectional.fromSTEB(16.0, 24.0, 16.0, 8.0),
+            child: Text(
+              'Menu',
+              style: FlutterFlowTheme.of(context).titleMedium.override(
+                    font: GoogleFonts.interTight(fontWeight: FontWeight.w700),
+                    color: FlutterFlowTheme.of(context).primaryText),
+            ),
+          ),
+          Padding(
+            padding: EdgeInsetsDirectional.fromSTEB(16.0, 0.0, 16.0, 0.0),
+            child: Container(
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: FlutterFlowTheme.of(context).secondaryBackground,
+                borderRadius: BorderRadius.circular(12.0),
+                boxShadow: [BoxShadow(blurRadius: 4.0, color: Color(0x0D000000), offset: Offset(0.0, 2.0))],
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  InkWell(
+                    onTap: () => context.pushNamed(PassageirosListaMWidget.routeName),
+                    borderRadius: BorderRadius.circular(12.0),
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 14.0),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.max,
+                        children: [
+                          Container(
+                            width: 40.0,
+                            height: 40.0,
+                            decoration: BoxDecoration(
+                              color: FlutterFlowTheme.of(context).primary.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                            child: Icon(Icons.people_rounded,
+                                color: FlutterFlowTheme.of(context).primary, size: 22.0),
+                          ),
+                          SizedBox(width: 14.0),
+                          Expanded(
+                            child: Text(
+                              'Gestão de Passageiros',
+                              style: FlutterFlowTheme.of(context).bodyMedium.override(
+                                    font: GoogleFonts.inter(fontWeight: FontWeight.w500),
+                                    color: FlutterFlowTheme.of(context).primaryText),
+                            ),
+                          ),
+                          Icon(Icons.arrow_forward_ios_rounded,
+                              color: FlutterFlowTheme.of(context).secondaryText, size: 16.0),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
         ],
       ),
     );

@@ -150,7 +150,8 @@ class _PassageiroFormMWidgetState extends State<PassageiroFormMWidget> {
             Expanded(child: _buildTextField(controller: _model.nomeTextController!, focusNode: _model.nomeFocusNode!, hint: 'Nome',
                 validator: (val) { if (val == null || val.isEmpty) return 'Obrigatório'; return null; })),
             const SizedBox(width: 12),
-            Expanded(child: _buildTextField(controller: _model.sobrenomeTextController!, focusNode: _model.sobrenomeFocusNode!, hint: 'Sobrenome*')),
+            Expanded(child: _buildTextField(controller: _model.sobrenomeTextController!, focusNode: _model.sobrenomeFocusNode!, hint: 'Sobrenome',
+                validator: (val) { if (val == null || val.isEmpty) return 'Obrigatório'; return null; })),
           ]),
           const SizedBox(height: 12),
           _buildPickerButton(
@@ -181,34 +182,34 @@ class _PassageiroFormMWidgetState extends State<PassageiroFormMWidget> {
           const SizedBox(height: 16),
           _buildTextField(
               controller: _model.cepTextController!, focusNode: _model.cepFocusNode!,
-              hint: 'CEP*', keyboardType: TextInputType.number, maxLength: 8),
+              hint: 'CEP', keyboardType: TextInputType.number, maxLength: 8),
           const SizedBox(height: 12),
           _buildTextField(
               controller: _model.endTextController!, focusNode: _model.endFocusNode!,
-              hint: 'Logradouro*'),
+              hint: 'Logradouro'),
           const SizedBox(height: 12),
           Row(children: [
             SizedBox(width: 100, child: _buildTextField(
                 controller: _model.numTextController!, focusNode: _model.numFocusNode!,
-                hint: 'Número*')),
+                hint: 'Número')),
             const SizedBox(width: 12),
             Expanded(child: _buildTextField(
                 controller: _model.compTextController!, focusNode: _model.compFocusNode!,
-                hint: 'Complemento*')),
+                hint: 'Complemento')),
           ]),
           const SizedBox(height: 12),
           _buildTextField(
               controller: _model.bairroTextController!, focusNode: _model.bairroFocusNode!,
-              hint: 'Bairro*'),
+              hint: 'Bairro'),
           const SizedBox(height: 12),
           Row(children: [
             Expanded(child: _buildTextField(
                 controller: _model.cidadeTextController!, focusNode: _model.cidadeFocusNode!,
-                hint: 'Cidade*')),
+                hint: 'Cidade')),
             const SizedBox(width: 12),
             SizedBox(width: 70, child: _buildTextField(
                 controller: _model.ufTextController!, focusNode: _model.ufFocusNode!,
-                hint: 'UF*', maxLength: 2)),
+                hint: 'UF', maxLength: 2)),
           ]),
           const SizedBox(height: 24),
           FFButtonWidget(

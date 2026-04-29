@@ -315,6 +315,11 @@ class _DashboardPassageirosMWidgetState
     final inactiveColor = FlutterFlowTheme.of(context).secondaryText;
     return InkWell(
       onTap: () {
+        // Passageiros (1) → navega para tela dedicada
+        if (index == 1) {
+          context.pushNamed(PassageirosListaMWidget.routeName);
+          return;
+        }
         setState(() {
           _model.paginaAtiva = index;
           _model.pageViewController?.animateToPage(index,

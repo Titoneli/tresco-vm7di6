@@ -1,16 +1,14 @@
 import 'package:flutter/material.dart';
-import '/flutter_flow/flutter_flow_util.dart';
-import '../_vivan_http.dart';
-import 'passageiros_lista_m_widget.dart' show PassageirosListaMWidget;
+import '/via_van/_vivan_http.dart';
 
-class PassageiroItem {
+class PassageiroTabItem {
   final int id;
   final String nome;
   final String? escola;
   final String? periodo;
   final String? foto;
 
-  PassageiroItem({
+  PassageiroTabItem({
     required this.id,
     required this.nome,
     this.escola,
@@ -18,7 +16,8 @@ class PassageiroItem {
     this.foto,
   });
 
-  factory PassageiroItem.fromJson(Map<String, dynamic> j) => PassageiroItem(
+  factory PassageiroTabItem.fromJson(Map<String, dynamic> j) =>
+      PassageiroTabItem(
         id: int.tryParse(j['idPassageiro']?.toString() ?? '0') ?? 0,
         nome: j['nomePassageiro']?.toString() ?? '',
         escola: j['nomeEscola']?.toString(),
@@ -27,20 +26,19 @@ class PassageiroItem {
       );
 
   String get iniciais {
-    final partes = nome.trim().split(RegExp(r'\s+')).where((s) => s.isNotEmpty).toList();
+    final partes =
+        nome.trim().split(RegExp(r'\s+')).where((s) => s.isNotEmpty).toList();
     if (partes.isEmpty) return '?';
     if (partes.length == 1) return partes[0][0].toUpperCase();
     return '${partes[0][0]}${partes[partes.length - 1][0]}'.toUpperCase();
   }
 }
 
-class PassageirosListaMModel
-    extends FlutterFlowModel<PassageirosListaMWidget> {
+class PassageirosTabModel extends ChangeNotifier {
   bool isLoading = false;
   String? erro;
 
-  List<PassageiroItem> _todos = [];
-
+  List<PassageiroTabItem> _todos = [];
   String _busca = '';
   String? periodoFiltro;
   String? escolaFiltro;
@@ -48,7 +46,7 @@ class PassageirosListaMModel
   final searchCtrl = TextEditingController();
   final searchFocus = FocusNode();
 
-  List<PassageiroItem> get lista {
+  List<PassageiroTabItem> get lista {
     var result = _todos;
     if (_busca.isNotEmpty) {
       final q = _busca.toLowerCase();
@@ -71,37 +69,51 @@ class PassageirosListaMModel
   List<String> get escolasDisponiveis =>
       _todos.map((p) => p.escola).whereType<String>().toSet().toList()..sort();
 
-  void setBusca(String v) => _busca = v;
-
   bool get temFiltroAtivo => periodoFiltro != null || escolaFiltro != null;
+
+  void setBusca(String v) {
+    _busca = v;
+    notifyListeners();
+  }
+
+  void setFiltroPeriodo(String? v) {
+    periodoFiltro = v;
+    notifyListeners();
+  }
+
+  void setFiltroEscola(String? v) {
+    escolaFiltro = v;
+    notifyListeners();
+  }
 
   void limparFiltros() {
     periodoFiltro = null;
     escolaFiltro = null;
+    notifyListeners();
   }
 
   Future<void> carregar() async {
     isLoading = true;
     erro = null;
+    notifyListeners();
     try {
       final json = await VivanHttp.get('/passageiros');
       final data = (json is Map ? json['data'] : json) as List? ?? [];
       _todos = data
-          .map((e) => PassageiroItem.fromJson(e as Map<String, dynamic>))
+          .map((e) => PassageiroTabItem.fromJson(e as Map<String, dynamic>))
           .toList();
     } catch (e) {
-      debugPrint('PassageirosLista.carregar: $e');
+      debugPrint('PassageirosTab.carregar: $e');
       erro = 'Erro ao carregar passageiros';
     }
     isLoading = false;
+    notifyListeners();
   }
-
-  @override
-  void initState(BuildContext context) {}
 
   @override
   void dispose() {
     searchCtrl.dispose();
     searchFocus.dispose();
+    super.dispose();
   }
 }

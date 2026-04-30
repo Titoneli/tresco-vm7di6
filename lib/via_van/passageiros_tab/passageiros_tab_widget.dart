@@ -1,36 +1,26 @@
 import 'package:ff_theme/flutter_flow/flutter_flow_theme.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/provider.dart';
 import '/flutter_flow/flutter_flow_util.dart';
-import '/index.dart';
-import 'passageiros_lista_m_model.dart';
-export 'passageiros_lista_m_model.dart';
+import '/via_van/passageiro_form_m/passageiro_form_m_widget.dart';
+import 'passageiros_tab_model.dart';
+export 'passageiros_tab_model.dart';
 
-class PassageirosListaMWidget extends StatefulWidget {
-  const PassageirosListaMWidget({super.key});
-
-  static String routeName = 'passageirosListaM';
-  static String routePath = '/passageirosLista';
+class PassageirosTabWidget extends StatefulWidget {
+  const PassageirosTabWidget({super.key});
 
   @override
-  State<PassageirosListaMWidget> createState() =>
-      _PassageirosListaMWidgetState();
+  State<PassageirosTabWidget> createState() => _PassageirosTabWidgetState();
 }
 
-class _PassageirosListaMWidgetState extends State<PassageirosListaMWidget> {
-  late PassageirosListaMModel _model;
+class _PassageirosTabWidgetState extends State<PassageirosTabWidget> {
+  late PassageirosTabModel _model;
 
   @override
   void initState() {
     super.initState();
-    _model = createModel(context, () => PassageirosListaMModel());
-    SchedulerBinding.instance.addPostFrameCallback((_) async {
-      safeSetState(() => _model.isLoading = true);
-      await _model.carregar();
-      safeSetState(() {});
-    });
+    _model = PassageirosTabModel();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _model.carregar());
   }
 
   @override
@@ -47,40 +37,22 @@ class _PassageirosListaMWidgetState extends State<PassageirosListaMWidget> {
 
   @override
   Widget build(BuildContext context) {
-    context.watch<FFAppState>();
-    return GestureDetector(
-      onTap: () => FocusScope.of(context).unfocus(),
-      child: Scaffold(
-        backgroundColor: _bg,
-        body: SafeArea(
-          top: true,
-          child: Column(
-            children: [
-              _buildHeader(),
-              _buildSearch(),
-              _buildFilterRow(),
-              Expanded(child: _buildBody()),
-            ],
-          ),
-        ),
+    return ListenableBuilder(
+      listenable: _model,
+      builder: (context, _) => Column(
+        children: [
+          _buildHeader(),
+          _buildSearch(),
+          _buildFilterRow(),
+          Expanded(child: _buildBody()),
+        ],
       ),
     );
   }
 
   Widget _buildHeader() {
-    return Container(
-      width: double.infinity,
-      height: 56,
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      decoration: BoxDecoration(
-        color: _bg,
-        boxShadow: [
-          BoxShadow(
-              color: Colors.black.withValues(alpha: 0.06),
-              blurRadius: 4,
-              offset: const Offset(0, 2))
-        ],
-      ),
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -96,9 +68,10 @@ class _PassageirosListaMWidgetState extends State<PassageirosListaMWidget> {
             child: Container(
               width: 40,
               height: 40,
-              decoration: BoxDecoration(color: _primary, shape: BoxShape.circle),
-              child:
-                  const Icon(Icons.person_add_rounded, color: Colors.white, size: 20),
+              decoration:
+                  BoxDecoration(color: _primary, shape: BoxShape.circle),
+              child: const Icon(Icons.person_add_rounded,
+                  color: Colors.white, size: 20),
             ),
           ),
         ],
@@ -108,35 +81,34 @@ class _PassageirosListaMWidgetState extends State<PassageirosListaMWidget> {
 
   Widget _buildSearch() {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-      child: Container(
-        height: 44,
-        decoration: BoxDecoration(
-          color: _secondBg,
-          borderRadius: BorderRadius.circular(22),
-          border: Border.all(color: Colors.grey.shade200),
-        ),
-        child: TextField(
-          controller: _model.searchCtrl,
-          focusNode: _model.searchFocus,
-          onChanged: (v) {
-            _model.setBusca(v);
-            safeSetState(() {});
-          },
-          style: FlutterFlowTheme.of(context)
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
+      child: TextField(
+        controller: _model.searchCtrl,
+        focusNode: _model.searchFocus,
+        onChanged: _model.setBusca,
+        style: FlutterFlowTheme.of(context)
+            .bodyMedium
+            .override(font: GoogleFonts.inter(), color: _primaryText),
+        decoration: InputDecoration(
+          hintText: 'Buscar passageiro',
+          hintStyle: FlutterFlowTheme.of(context)
               .bodyMedium
-              .override(font: GoogleFonts.inter(), color: _primaryText),
-          decoration: InputDecoration(
-            hintText: 'Buscar passageiro',
-            hintStyle: FlutterFlowTheme.of(context)
-                .bodyMedium
-                .override(font: GoogleFonts.inter(), color: _secondaryText),
-            prefixIcon:
-                Icon(Icons.search_rounded, color: _secondaryText, size: 20),
-            border: InputBorder.none,
-            contentPadding:
-                const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
-          ),
+              .override(font: GoogleFonts.inter(), color: _secondaryText),
+          prefixIcon:
+              Icon(Icons.search_rounded, color: _secondaryText, size: 20),
+          filled: true,
+          fillColor: _secondBg,
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: Colors.grey.shade300)),
+          enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: Colors.grey.shade300)),
+          focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: _primary, width: 1.5)),
         ),
       ),
     );
@@ -147,51 +119,46 @@ class _PassageirosListaMWidgetState extends State<PassageirosListaMWidget> {
       padding: const EdgeInsets.fromLTRB(16, 10, 16, 4),
       child: Row(
         children: [
-          _filterChip(
+          Expanded(
+            child: _filterButton(
               label: 'Período',
               active: _model.periodoFiltro != null,
-              onTap: _showFiltroPeriodo),
-          const SizedBox(width: 8),
-          _filterChip(
+              onTap: _showFiltroPeriodo,
+            ),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: _filterButton(
               label: 'Escola',
               active: _model.escolaFiltro != null,
-              onTap: _showFiltroEscola),
-          const Spacer(),
-          if (_model.temFiltroAtivo)
-            GestureDetector(
-              onTap: () {
-                _model.limparFiltros();
-                safeSetState(() {});
-              },
-              child: Text('Limpar',
-                  style: FlutterFlowTheme.of(context).bodySmall.override(
-                        font: GoogleFonts.inter(fontWeight: FontWeight.w600),
-                        color: _primary)),
+              onTap: _showFiltroEscola,
             ),
-          const SizedBox(width: 8),
+          ),
+          const SizedBox(width: 10),
           _countBadge(),
         ],
       ),
     );
   }
 
-  Widget _filterChip(
+  Widget _filterButton(
       {required String label,
       required bool active,
       required VoidCallback onTap}) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        height: 42,
+        alignment: Alignment.center,
         decoration: BoxDecoration(
           color: active ? _primary : Colors.transparent,
-          borderRadius: BorderRadius.circular(20),
-          border:
-              Border.all(color: active ? _primary : Colors.grey.shade300, width: 1.5),
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(
+              color: active ? _primary : Colors.grey.shade400, width: 1.5),
         ),
         child: Text(
           label,
-          style: FlutterFlowTheme.of(context).bodySmall.override(
+          style: FlutterFlowTheme.of(context).bodyMedium.override(
                 font: GoogleFonts.inter(fontWeight: FontWeight.w600),
                 color: active ? Colors.white : _primaryText),
         ),
@@ -201,18 +168,18 @@ class _PassageirosListaMWidgetState extends State<PassageirosListaMWidget> {
 
   Widget _countBadge() {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-      decoration:
-          BoxDecoration(color: _primary, borderRadius: BorderRadius.circular(16)),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+          color: _primary, borderRadius: BorderRadius.circular(20)),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           Text('${_model.total}',
-              style: FlutterFlowTheme.of(context).bodySmall.override(
+              style: FlutterFlowTheme.of(context).bodyMedium.override(
                     font: GoogleFonts.inter(fontWeight: FontWeight.w700),
                     color: Colors.white)),
           const SizedBox(width: 4),
-          const Icon(Icons.person_rounded, color: Colors.white, size: 14),
+          const Icon(Icons.people_rounded, color: Colors.white, size: 16),
         ],
       ),
     );
@@ -232,30 +199,27 @@ class _PassageirosListaMWidgetState extends State<PassageirosListaMWidget> {
     }
     return RefreshIndicator(
       color: _primary,
-      onRefresh: () async {
-        await _model.carregar();
-        safeSetState(() {});
-      },
+      onRefresh: _model.carregar,
       child: ListView.separated(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         itemCount: _model.lista.length,
         separatorBuilder: (_, __) =>
-            Divider(height: 1, color: Colors.grey.shade100, indent: 72),
+            Divider(height: 1, color: Colors.grey.shade200, indent: 72),
         itemBuilder: (_, i) => _buildItem(_model.lista[i]),
       ),
     );
   }
 
-  Widget _buildItem(PassageiroItem p) {
+  Widget _buildItem(PassageiroTabItem p) {
     return InkWell(
       onTap: () => _abrirForm(p.id),
       borderRadius: BorderRadius.circular(8),
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 10),
+        padding: const EdgeInsets.symmetric(vertical: 12),
         child: Row(
           children: [
             _avatar(p),
-            const SizedBox(width: 12),
+            const SizedBox(width: 14),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -263,7 +227,8 @@ class _PassageirosListaMWidgetState extends State<PassageirosListaMWidget> {
                   Text(
                     p.nome,
                     style: FlutterFlowTheme.of(context).bodyMedium.override(
-                          font: GoogleFonts.inter(fontWeight: FontWeight.w600),
+                          font:
+                              GoogleFonts.inter(fontWeight: FontWeight.w600),
                           color: _primaryText),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -281,15 +246,15 @@ class _PassageirosListaMWidgetState extends State<PassageirosListaMWidget> {
                 ],
               ),
             ),
-            if (p.periodo != null)
-              Padding(
-                padding: const EdgeInsets.only(right: 4),
-                child: Text(
-                  p.periodo!,
-                  style: FlutterFlowTheme.of(context).bodySmall.override(
-                        font: GoogleFonts.inter(), color: _secondaryText),
-                ),
+            if (p.periodo != null) ...[
+              const SizedBox(width: 8),
+              Text(
+                p.periodo!,
+                style: FlutterFlowTheme.of(context).bodySmall.override(
+                      font: GoogleFonts.inter(), color: _secondaryText),
               ),
+            ],
+            const SizedBox(width: 4),
             Icon(Icons.chevron_right_rounded, color: _secondaryText, size: 20),
           ],
         ),
@@ -297,12 +262,13 @@ class _PassageirosListaMWidgetState extends State<PassageirosListaMWidget> {
     );
   }
 
-  Widget _avatar(PassageiroItem p) {
+  Widget _avatar(PassageiroTabItem p) {
     if (p.foto != null && p.foto!.isNotEmpty) {
-      return CircleAvatar(radius: 24, backgroundImage: NetworkImage(p.foto!));
+      return CircleAvatar(
+          radius: 26, backgroundImage: NetworkImage(p.foto!));
     }
     return CircleAvatar(
-      radius: 24,
+      radius: 26,
       backgroundColor: _primary.withValues(alpha: 0.12),
       child: Text(
         p.iniciais,
@@ -343,10 +309,7 @@ class _PassageirosListaMWidgetState extends State<PassageirosListaMWidget> {
                     font: GoogleFonts.interTight(), color: _primaryText)),
           const SizedBox(height: 16),
           ElevatedButton(
-            onPressed: () async {
-              await _model.carregar();
-              safeSetState(() {});
-            },
+            onPressed: _model.carregar,
             style: ElevatedButton.styleFrom(
                 backgroundColor: _primary,
                 shape: RoundedRectangleBorder(
@@ -359,17 +322,15 @@ class _PassageirosListaMWidgetState extends State<PassageirosListaMWidget> {
     );
   }
 
-  // ── Filter sheets ────────────────────────────────
+  // ── Filter sheets ───────────────────────────────────────────
+
   void _showFiltroPeriodo() {
     _showFilterSheet(
       titulo: 'Período',
       opcoes: _model.periodosDisponiveis,
       labelTodos: 'Todos os períodos',
       selecionado: _model.periodoFiltro,
-      onConfirm: (v) {
-        _model.periodoFiltro = v;
-        safeSetState(() {});
-      },
+      onConfirm: _model.setFiltroPeriodo,
     );
   }
 
@@ -379,10 +340,7 @@ class _PassageirosListaMWidgetState extends State<PassageirosListaMWidget> {
       opcoes: _model.escolasDisponiveis,
       labelTodos: 'Todas as escolas',
       selecionado: _model.escolaFiltro,
-      onConfirm: (v) {
-        _model.escolaFiltro = v;
-        safeSetState(() {});
-      },
+      onConfirm: _model.setFiltroEscola,
     );
   }
 
@@ -402,20 +360,31 @@ class _PassageirosListaMWidgetState extends State<PassageirosListaMWidget> {
           borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
       builder: (_) => StatefulBuilder(
         builder: (ctx, setS) => Padding(
-          padding: const EdgeInsets.fromLTRB(24, 20, 24, 32),
+          padding: const EdgeInsets.fromLTRB(24, 20, 24, 40),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
+              Container(
+                width: 40,
+                height: 4,
+                margin: const EdgeInsets.only(bottom: 16),
+                decoration: BoxDecoration(
+                    color: Colors.grey.shade300,
+                    borderRadius: BorderRadius.circular(2)),
+              ),
               Text(titulo,
                   style: FlutterFlowTheme.of(context).titleMedium.override(
-                        font: GoogleFonts.interTight(fontWeight: FontWeight.w700),
+                        font: GoogleFonts.interTight(
+                            fontWeight: FontWeight.w700),
                         color: _primaryText)),
-              const SizedBox(height: 20),
+              const SizedBox(height: 16),
               _filterOption(
+                  ctx: context,
                   label: labelTodos,
                   active: temp == null,
                   onTap: () => setS(() => temp = null)),
               ...opcoes.map((o) => _filterOption(
+                    ctx: context,
                     label: o,
                     active: temp == o,
                     onTap: () => setS(() => temp = o),
@@ -433,7 +402,7 @@ class _PassageirosListaMWidgetState extends State<PassageirosListaMWidget> {
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12)),
                         padding: const EdgeInsets.symmetric(vertical: 14)),
-                    child: Text('Limpar filtros',
+                    child: Text('Limpar',
                         style: TextStyle(
                             color: _primary, fontWeight: FontWeight.w600)),
                   ),
@@ -452,7 +421,8 @@ class _PassageirosListaMWidgetState extends State<PassageirosListaMWidget> {
                         padding: const EdgeInsets.symmetric(vertical: 14)),
                     child: const Text('Confirmar',
                         style: TextStyle(
-                            color: Colors.white, fontWeight: FontWeight.w600)),
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600)),
                   ),
                 ),
               ]),
@@ -463,10 +433,12 @@ class _PassageirosListaMWidgetState extends State<PassageirosListaMWidget> {
     );
   }
 
-  Widget _filterOption(
-      {required String label,
-      required bool active,
-      required VoidCallback onTap}) {
+  Widget _filterOption({
+    required BuildContext ctx,
+    required String label,
+    required bool active,
+    required VoidCallback onTap,
+  }) {
     return InkWell(
       onTap: onTap,
       child: Padding(
@@ -476,7 +448,7 @@ class _PassageirosListaMWidgetState extends State<PassageirosListaMWidget> {
             Expanded(
               child: Text(
                 label,
-                style: FlutterFlowTheme.of(context).bodyMedium.override(
+                style: FlutterFlowTheme.of(ctx).bodyMedium.override(
                       font: GoogleFonts.inter(
                           fontWeight:
                               active ? FontWeight.w700 : FontWeight.normal),
@@ -490,14 +462,13 @@ class _PassageirosListaMWidgetState extends State<PassageirosListaMWidget> {
     );
   }
 
-  void _abrirForm(int? passageiroId) async {
+  Future<void> _abrirForm(int? passageiroId) async {
     await context.pushNamed(
       PassageiroFormMWidget.routeName,
       queryParameters: passageiroId != null
           ? {'passageiroId': passageiroId.toString()}
           : {},
     );
-    await _model.carregar();
-    safeSetState(() {});
+    _model.carregar();
   }
 }

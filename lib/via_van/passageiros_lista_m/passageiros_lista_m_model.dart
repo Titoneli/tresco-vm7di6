@@ -20,14 +20,14 @@ class PassageiroItem {
 
   factory PassageiroItem.fromJson(Map<String, dynamic> j) => PassageiroItem(
         id: int.tryParse(j['idPassageiro']?.toString() ?? '0') ?? 0,
-        nome: j['nomePassageiro'] as String? ?? '',
-        escola: j['nomeEscola'] as String?,
-        periodo: j['periodo'] as String?,
-        foto: j['fotoPassageiro'] as String?,
+        nome: j['nomePassageiro']?.toString() ?? '',
+        escola: j['nomeEscola']?.toString(),
+        periodo: j['periodo']?.toString(),
+        foto: j['fotoPassageiro']?.toString(),
       );
 
   String get iniciais {
-    final partes = nome.trim().split(RegExp(r'\s+'));
+    final partes = nome.trim().split(RegExp(r'\s+')).where((s) => s.isNotEmpty).toList();
     if (partes.isEmpty) return '?';
     if (partes.length == 1) return partes[0][0].toUpperCase();
     return '${partes[0][0]}${partes[partes.length - 1][0]}'.toUpperCase();

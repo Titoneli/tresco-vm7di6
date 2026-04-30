@@ -27,6 +27,7 @@ class _PassageirosListaMWidgetState extends State<PassageirosListaMWidget> {
     super.initState();
     _model = createModel(context, () => PassageirosListaMModel());
     SchedulerBinding.instance.addPostFrameCallback((_) async {
+      safeSetState(() => _model.isLoading = true);
       await _model.carregar();
       safeSetState(() {});
     });

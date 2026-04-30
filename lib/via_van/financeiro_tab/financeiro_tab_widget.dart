@@ -249,6 +249,9 @@ class _FinanceiroTabWidgetState extends State<FinanceiroTabWidget> {
       ('Outros', Icons.account_balance_wallet),
     ];
 
+    bool isSaving = false;
+    String? erroSalvar;
+
     showModalBottomSheet(context: context, isScrollControlled: true, backgroundColor: _bg,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(_r * 2))),
       builder: (ctx) => StatefulBuilder(builder: (ctx, setSheetState) {
@@ -387,48 +390,78 @@ class _FinanceiroTabWidgetState extends State<FinanceiroTabWidget> {
                   enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(_r), borderSide: BorderSide(color: Colors.grey.shade300)),
                 ),
               ),
-              const SizedBox(height: 24),
-              FFButtonWidget(
-                onPressed: (selectedCategoria == null || valorCtrl.text.isEmpty) ? null : () async {
-                  final valor = double.tryParse(valorCtrl.text.replaceAll(',', '.')) ?? 0;
-                  final tipo = isDespesa ? 'DESPESA' : 'ENTRADA';
-                  try {
-                    if (isRecorrente) {
-                      for (int m = mesInicial; m <= mesFinal; m++) {
-                        final mesRef = '${_model.selectedYear}-${m.toString().padLeft(2, '0')}';
-                        final dtVenc = DateTime(_model.selectedYear, m, diaVencimento);
-                        await VivanLocator.service.createDespesa(VivanDespesa(
-                          idMotorista: FFAppState().idUsuario, tipoLancamento: tipo, categoria: selectedCategoria!,
-                          descricao: descricaoCtrl.text, valor: valor, mesReferencia: mesRef,
-                          dtVencimento: dtVenc.toIso8601String().substring(0, 10),
-                          dtDespesa: DateTime.now().toIso8601String().substring(0, 10),
-                          recorrente: true, diaVencimento: diaVencimento,
-                        ));
-                      }
-                    } else {
-                      final mesRef = '${_model.selectedYear}-${_model.selectedMonth.toString().padLeft(2, '0')}';
-                      await VivanLocator.service.createDespesa(VivanDespesa(
-                        idMotorista: FFAppState().idUsuario, tipoLancamento: tipo, categoria: selectedCategoria!,
-                        descricao: descricaoCtrl.text, valor: valor, mesReferencia: mesRef,
-                        dtVencimento: dataPagamento.toIso8601String().substring(0, 10),
-                        dtDespesa: DateTime.now().toIso8601String().substring(0, 10),
-                      ));
-                    }
-                    if (ctx.mounted) Navigator.pop(ctx);
-                    _reload();
-                    if (mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: const Text('Lançamento salvo!'), backgroundColor: FlutterFlowTheme.of(context).success));
-                    }
-                  } catch (e) {
-                    if (ctx.mounted) ScaffoldMessenger.of(ctx).showSnackBar(SnackBar(content: Text('Erro: $e')));
-                  }
-                },
-                text: 'Salvar',
-                options: FFButtonOptions(width: double.infinity, height: 48,
-                  color: (selectedCategoria != null && valorCtrl.text.isNotEmpty) ? _primary : _primary.withOpacity(0.4),
-                  textStyle: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.white),
-                  elevation: 0, borderRadius: BorderRadius.circular(_r)),
+              const SizedBox(height: 16),
+              if (erroSalvar != null)
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(12),
+                  margin: const EdgeInsets.only(bottom: 12),
+                  decoration: BoxDecoration(
+                    color: Colors.red.shade50,
+                    borderRadius: BorderRadius.circular(_r),
+                    border: Border.all(color: Colors.red.shade200),
+                  ),
+                  child: Text(erroSalvar!, style: GoogleFonts.inter(fontSize: 13, color: Colors.red.shade800)),
+                ),
+              const SizedBox(height: 8),
+              SizedBox(
+                width: double.infinity,
+                height: 48,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: (selectedCategoria != null && valorCtrl.text.isNotEmpty && !isSaving)
+                        ? _primary
+                        : _primary.withOpacity(0.4),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(_r)),
+                    elevation: 0,
+                  ),
+                  onPressed: (selectedCategoria == null || valorCtrl.text.isEmpty || isSaving)
+                      ? null
+                      : () async {
+                          final rawValor = valorCtrl.text.replaceAll('.', '').replaceAll(',', '.');
+                          final valor = double.tryParse(rawValor) ?? 0;
+                          final tipo = isDespesa ? 'DESPESA' : 'ENTRADA';
+                          setSheetState(() { isSaving = true; erroSalvar = null; });
+                          try {
+                            if (isRecorrente) {
+                              for (int m = mesInicial; m <= mesFinal; m++) {
+                                final mesRef = '${_model.selectedYear}-${m.toString().padLeft(2, '0')}';
+                                final dtVenc = DateTime(_model.selectedYear, m, diaVencimento);
+                                await VivanLocator.service.createDespesa(VivanDespesa(
+                                  idMotorista: FFAppState().idUsuario, tipoLancamento: tipo, categoria: selectedCategoria!,
+                                  descricao: descricaoCtrl.text, valor: valor, mesReferencia: mesRef,
+                                  dtVencimento: dtVenc.toIso8601String().substring(0, 10),
+                                  dtDespesa: DateTime.now().toIso8601String().substring(0, 10),
+                                  recorrente: true, diaVencimento: diaVencimento,
+                                ));
+                              }
+                            } else {
+                              final mesRef = '${_model.selectedYear}-${_model.selectedMonth.toString().padLeft(2, '0')}';
+                              await VivanLocator.service.createDespesa(VivanDespesa(
+                                idMotorista: FFAppState().idUsuario, tipoLancamento: tipo, categoria: selectedCategoria!,
+                                descricao: descricaoCtrl.text, valor: valor, mesReferencia: mesRef,
+                                dtVencimento: dataPagamento.toIso8601String().substring(0, 10),
+                                dtDespesa: DateTime.now().toIso8601String().substring(0, 10),
+                              ));
+                            }
+                            if (ctx.mounted) Navigator.pop(ctx);
+                            _reload();
+                            if (mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                content: const Text('Lançamento salvo!'),
+                                backgroundColor: FlutterFlowTheme.of(context).success));
+                            }
+                          } catch (e) {
+                            final msg = e.toString().replaceFirst('Exception: ', '');
+                            setSheetState(() { isSaving = false; erroSalvar = msg; });
+                          }
+                        },
+                  child: isSaving
+                      ? const SizedBox(
+                          width: 22, height: 22,
+                          child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                      : Text('Salvar', style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.white)),
+                ),
               ),
             ]),
           ),

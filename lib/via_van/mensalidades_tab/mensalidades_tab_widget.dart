@@ -5,7 +5,6 @@ import 'package:ff_theme/flutter_flow/flutter_flow_theme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'mensalidades_tab_model.dart';
 export 'mensalidades_tab_model.dart';
@@ -283,8 +282,7 @@ class _MensalidadesTabWidgetState extends State<MensalidadesTabWidget> {
 
   // ── LEMBRETE ───────────────────────────────────────
   void _showLembreteOptions(VivanMensalidade m) {
-    final tel = m.nomeResponsavel != null ? '' : ''; // telefone would come from responsavel
-    final msg = 'Olá! Lembrete de mensalidade do transporte escolar.\n'
+    final msg ='Olá! Lembrete de mensalidade do transporte escolar.\n'
         'Passageiro: ${m.nomePassageiro}\n'
         'Valor: ${_model.formatCurrency(m.valOriginal ?? 0)}\n'
         'Vencimento: ${_model.formatDate(m.dtVencimento)}';

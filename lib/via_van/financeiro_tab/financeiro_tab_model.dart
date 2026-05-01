@@ -32,11 +32,11 @@ class FinanceiroTabModel extends ChangeNotifier {
 
   double get totalOutrasEntradas => lancamentos
       .where((d) => d.tipoLancamento.toUpperCase() == 'ENTRADA')
-      .fold(0.0, (sum, d) => sum + (d.valor ?? 0));
+      .fold(0.0, (sum, d) => sum + d.valor);
 
   double get totalDespesas => lancamentos
       .where((d) => d.tipoLancamento.toUpperCase() == 'DESPESA')
-      .fold(0.0, (sum, d) => sum + (d.valor ?? 0));
+      .fold(0.0, (sum, d) => sum + d.valor);
 
   double get saldo =>
       totalMensalidadesRecebidas + totalOutrasEntradas - totalDespesas;

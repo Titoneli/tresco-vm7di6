@@ -1,14 +1,16 @@
 import '/vivan/vivan.dart';
-import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_util.dart';
-import '/flutter_flow/flutter_flow_widgets.dart';
-import '/index.dart';
+import '/via_van/passageiro_form_m/passageiro_form_m_widget.dart';
+import '/via_van/extrato_passageiro_m/extrato_passageiro_m_widget.dart';
+import '/via_van/gestao_mensalidades_m/gestao_mensalidades_m_widget.dart';
+import '/via_van/renovar_mensalidades_m/renovar_mensalidades_m_widget.dart';
 import 'package:ff_theme/flutter_flow/flutter_flow_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'passageiro_detalhe_m_model.dart';
 export 'passageiro_detalhe_m_model.dart';
 
@@ -30,13 +32,11 @@ class PassageiroDetalheMWidget extends StatefulWidget {
 
 class _PassageiroDetalheMWidgetState extends State<PassageiroDetalheMWidget> {
   late PassageiroDetalheMModel _model;
-  final scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
     super.initState();
     _model = createModel(context, () => PassageiroDetalheMModel());
-
     SchedulerBinding.instance.addPostFrameCallback((_) async {
       if (widget.passageiroId != null) {
         await _model.fetchPassageiro(widget.passageiroId!);
@@ -54,827 +54,374 @@ class _PassageiroDetalheMWidgetState extends State<PassageiroDetalheMWidget> {
     super.dispose();
   }
 
+  Color get _primary => FlutterFlowTheme.of(context).primary;
+  Color get _bg => FlutterFlowTheme.of(context).primaryBackground;
+  Color get _primaryText => FlutterFlowTheme.of(context).primaryText;
+  Color get _secondaryText => FlutterFlowTheme.of(context).secondaryText;
+
   @override
   Widget build(BuildContext context) {
+    context.watch<FFAppState>();
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
-        key: scaffoldKey,
-        backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
-        appBar: AppBar(
-          backgroundColor: FlutterFlowTheme.of(context).primary,
-          automaticallyImplyLeading: true,
-          leading: FlutterFlowIconButton(
-            borderRadius: 8.0,
-            buttonSize: 40.0,
-            icon: Icon(Icons.arrow_back,
-                color: FlutterFlowTheme.of(context).info, size: 24.0),
-            onPressed: () async => context.safePop(),
-          ),
-          title: Text(
-            'Passageiro',
-            style: FlutterFlowTheme.of(context).headlineMedium.override(
-                  font: GoogleFonts.interTight(fontWeight: FontWeight.w600),
-                  color: FlutterFlowTheme.of(context).info,
-                  fontSize: 20.0,
-                  letterSpacing: 0.0,
-                ),
-          ),
-          actions: [
-            Padding(
-              padding: EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 12.0, 0.0),
-              child: FlutterFlowIconButton(
-                borderRadius: 8.0,
-                buttonSize: 40.0,
-                icon: Icon(Icons.edit,
-                    color: FlutterFlowTheme.of(context).info, size: 24.0),
-                onPressed: () async {
-                  context.pushNamed(
-                    'passageiroFormM',
-                    queryParameters: {
-                      'passageiroId': serializeParam(
-                          widget.passageiroId, ParamType.int),
-                    }.withoutNulls,
-                  );
-                },
-              ),
-            ),
-          ],
-          centerTitle: true,
-          elevation: 0.0,
-        ),
+        backgroundColor: _bg,
         body: SafeArea(
-          top: true,
           child: _model.isLoading
               ? Center(
-                  child: SpinKitPulse(
-                    color: FlutterFlowTheme.of(context).primary,
-                    size: 50.0,
-                  ),
+                  child: SpinKitPulse(color: _primary, size: 50.0),
                 )
-              : SingleChildScrollView(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.max,
-                    children: [
-                      // Header com avatar e status
-                      Container(
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                          color: FlutterFlowTheme.of(context)
-                              .secondaryBackground,
-                        ),
-                        child: Padding(
-                          padding: EdgeInsets.all(24.0),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Container(
-                                width: 80.0,
-                                height: 80.0,
-                                decoration: BoxDecoration(
-                                  color: FlutterFlowTheme.of(context)
-                                      .primary
-                                      .withOpacity(0.1),
-                                  borderRadius: BorderRadius.circular(40.0),
-                                ),
-                                child: _model.foto.isNotEmpty
-                                    ? ClipRRect(
-                                        borderRadius:
-                                            BorderRadius.circular(40.0),
-                                        child: Image.network(
-                                          _model.foto,
-                                          fit: BoxFit.cover,
-                                          errorBuilder:
-                                              (context, error, stackTrace) =>
-                                                  Icon(Icons.person,
-                                                      size: 40.0,
-                                                      color: FlutterFlowTheme
-                                                              .of(context)
-                                                          .primary),
-                                        ),
-                                      )
-                                    : Icon(Icons.person,
-                                        size: 40.0,
-                                        color: FlutterFlowTheme.of(context)
-                                            .primary),
-                              ),
-                              SizedBox(height: 12.0),
-                              Text(
-                                _model.nome,
-                                style: FlutterFlowTheme.of(context)
-                                    .headlineSmall
-                                    .override(
-                                      font: GoogleFonts.interTight(
-                                          fontWeight: FontWeight.w600),
-                                      letterSpacing: 0.0,
-                                    ),
-                              ),
-                              SizedBox(height: 8.0),
-                              Container(
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: 12.0, vertical: 4.0),
-                                decoration: BoxDecoration(
-                                  color: _model.status == 'ATIVO'
-                                      ? Color(0xFF39D2C0).withOpacity(0.2)
-                                      : FlutterFlowTheme.of(context)
-                                          .alternate
-                                          .withOpacity(0.3),
-                                  borderRadius: BorderRadius.circular(12.0),
-                                ),
-                                child: Text(
-                                  _model.status,
-                                  style: FlutterFlowTheme.of(context)
-                                      .bodySmall
-                                      .override(
-                                        font: GoogleFonts.inter(
-                                            fontWeight: FontWeight.w600),
-                                        color: _model.status == 'ATIVO'
-                                            ? Color(0xFF39D2C0)
-                                            : FlutterFlowTheme.of(context)
-                                                .secondaryText,
-                                        letterSpacing: 0.0,
-                                      ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: 8.0),
-                      // Info cards
-                      _buildInfoCard(
-                          context, 'CPF', _model.cpf, Icons.badge_outlined),
-                      _buildInfoCard(context, 'Escola', _model.escola,
-                          Icons.school_outlined),
-                      _buildInfoCard(context, 'Endereço', _model.endereco,
-                          Icons.location_on_outlined),
-                      SizedBox(height: 16.0),
-                      // Responsáveis
-                      Padding(
-                        padding: EdgeInsetsDirectional.fromSTEB(
-                            16.0, 0.0, 16.0, 0.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              : Column(
+                  children: [
+                    _buildHeader(),
+                    Expanded(
+                      child: SingleChildScrollView(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              'Responsáveis',
-                              style: FlutterFlowTheme.of(context)
-                                  .titleMedium
-                                  .override(
-                                    font: GoogleFonts.interTight(
-                                        fontWeight: FontWeight.w600),
-                                    letterSpacing: 0.0,
-                                  ),
-                            ),
-                            FlutterFlowIconButton(
-                              borderRadius: 8.0,
-                              buttonSize: 40.0,
-                              icon: Icon(Icons.add,
-                                  color:
-                                      FlutterFlowTheme.of(context).primary,
-                                  size: 24.0),
-                              onPressed: () async {
-                                await _showResponsavelForm(context);
-                              },
-                            ),
+                            _buildDarkCard(),
+                            const SizedBox(height: 24),
+                            _buildResponsaveisSection(),
+                            const SizedBox(height: 24),
+                            _buildActionButtons(),
+                            const SizedBox(height: 24),
                           ],
                         ),
                       ),
-                      if (_model.responsaveis.isEmpty)
-                        Padding(
-                          padding: EdgeInsets.all(16.0),
-                          child: Text(
-                            'Nenhum responsável cadastrado',
-                            style: FlutterFlowTheme.of(context)
-                                .bodyMedium
-                                .override(
-                                  font: GoogleFonts.inter(
-                                      fontWeight: FontWeight.normal),
-                                  color: FlutterFlowTheme.of(context)
-                                      .secondaryText,
-                                  letterSpacing: 0.0,
-                                ),
-                          ),
-                        )
-                      else
-                        ...List.generate(_model.responsaveis.length, (index) {
-                          final resp = _model.responsaveis[index];
-                          return Padding(
-                            padding: EdgeInsetsDirectional.fromSTEB(
-                                16.0, 4.0, 16.0, 4.0),
-                            child: Container(
-                              width: double.infinity,
-                              decoration: BoxDecoration(
-                                color: FlutterFlowTheme.of(context)
-                                    .secondaryBackground,
-                                borderRadius: BorderRadius.circular(12.0),
-                              ),
-                              child: Padding(
-                                padding: EdgeInsets.all(12.0),
-                                child: Row(
-                                  children: [
-                                    Icon(Icons.person_outline,
-                                        color: FlutterFlowTheme.of(context)
-                                            .primary,
-                                        size: 24.0),
-                                    SizedBox(width: 12.0),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            resp.nomeResponsavel,
-                                            style: FlutterFlowTheme.of(context)
-                                                .bodyLarge
-                                                .override(
-                                                  font: GoogleFonts.inter(
-                                                      fontWeight:
-                                                          FontWeight.w600),
-                                                  letterSpacing: 0.0,
-                                                ),
-                                          ),
-                                          Text(
-                                            '${resp.parentesco} • ${resp.whatsAppResponsavel}',
-                                            style: FlutterFlowTheme.of(context)
-                                                .bodySmall
-                                                .override(
-                                                  font: GoogleFonts.inter(
-                                                      fontWeight:
-                                                          FontWeight.normal),
-                                                  color: FlutterFlowTheme.of(
-                                                          context)
-                                                      .secondaryText,
-                                                  letterSpacing: 0.0,
-                                                ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    PopupMenuButton<String>(
-                                      onSelected: (value) async {
-                                        if (value == 'editar') {
-                                          await _showResponsavelForm(context,
-                                              responsavel: resp);
-                                        } else if (value == 'excluir') {
-                                          await _model.deleteResponsavel(
-                                              widget.passageiroId!, resp.idResponsavel!);
-                                          await _model.fetchPassageiro(
-                                              widget.passageiroId!);
-                                          safeSetState(() {});
-                                        }
-                                      },
-                                      itemBuilder: (context) => [
-                                        PopupMenuItem(
-                                            value: 'editar',
-                                            child: Text('Editar')),
-                                        PopupMenuItem(
-                                            value: 'excluir',
-                                            child: Text('Excluir')),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          );
-                        }),
-                      SizedBox(height: 24.0),
-                      // Contratos
-                      Padding(
-                        padding: EdgeInsetsDirectional.fromSTEB(
-                            16.0, 0.0, 16.0, 0.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              'Contratos',
-                              style: FlutterFlowTheme.of(context)
-                                  .titleMedium
-                                  .override(
-                                    font: GoogleFonts.interTight(
-                                        fontWeight: FontWeight.w600),
-                                    letterSpacing: 0.0,
-                                  ),
-                            ),
-                            FlutterFlowIconButton(
-                              borderRadius: 8.0,
-                              buttonSize: 40.0,
-                              icon: Icon(Icons.add,
-                                  color:
-                                      FlutterFlowTheme.of(context).primary,
-                                  size: 24.0),
-                              onPressed: () async {
-                                await _showNovoContratoBottomSheet(context);
-                              },
-                            ),
-                          ],
-                        ),
-                      ),
-                      if (_model.isLoadingContratos)
-                        Padding(
-                          padding: EdgeInsets.all(16.0),
-                          child: Center(
-                            child: SizedBox(
-                              width: 24.0,
-                              height: 24.0,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2.0,
-                                color: FlutterFlowTheme.of(context).primary,
-                              ),
-                            ),
-                          ),
-                        )
-                      else if (_model.contratos.isEmpty)
-                        Padding(
-                          padding: EdgeInsets.all(16.0),
-                          child: Text(
-                            'Nenhum contrato cadastrado',
-                            style: FlutterFlowTheme.of(context)
-                                .bodyMedium
-                                .override(
-                                  font: GoogleFonts.inter(
-                                      fontWeight: FontWeight.normal),
-                                  color: FlutterFlowTheme.of(context)
-                                      .secondaryText,
-                                  letterSpacing: 0.0,
-                                ),
-                          ),
-                        )
-                      else
-                        ...List.generate(_model.contratos.length, (index) {
-                          final contrato = _model.contratos[index];
-                          final statusColor = _contratoStatusColor(
-                              contrato.status);
-                          return Padding(
-                            padding: EdgeInsetsDirectional.fromSTEB(
-                                16.0, 4.0, 16.0, 4.0),
-                            child: InkWell(
-                              borderRadius: BorderRadius.circular(12.0),
-                              onTap: () async {
-                                await context.pushNamed(
-                                  'contratoDetalheM',
-                                  queryParameters: {
-                                    'contratoId': serializeParam(
-                                        contrato.idContrato, ParamType.int),
-                                  }.withoutNulls,
-                                );
-                                if (mounted) {
-                                  await _model.fetchContratos(
-                                      FFAppState().idUsuario,
-                                      widget.passageiroId!);
-                                  safeSetState(() {});
-                                }
-                              },
-                              child: Container(
-                                width: double.infinity,
-                                decoration: BoxDecoration(
-                                  color: FlutterFlowTheme.of(context)
-                                      .secondaryBackground,
-                                  borderRadius: BorderRadius.circular(12.0),
-                                  border: Border(
-                                    left: BorderSide(
-                                        color: statusColor, width: 4.0),
-                                  ),
-                                ),
-                                child: Padding(
-                                  padding: EdgeInsets.all(12.0),
-                                  child: Row(
-                                    children: [
-                                      Expanded(
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Row(
-                                              children: [
-                                                Container(
-                                                  padding: EdgeInsets.symmetric(
-                                                      horizontal: 6.0,
-                                                      vertical: 2.0),
-                                                  decoration: BoxDecoration(
-                                                    color: statusColor
-                                                        .withOpacity(0.2),
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            6.0),
-                                                  ),
-                                                  child: Text(
-                                                    contrato.status ?? '',
-                                                    style: FlutterFlowTheme.of(
-                                                            context)
-                                                        .bodySmall
-                                                        .override(
-                                                          font: GoogleFonts.inter(
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w600),
-                                                          color: statusColor,
-                                                          fontSize: 11.0,
-                                                          letterSpacing: 0.0,
-                                                        ),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                            SizedBox(height: 4.0),
-                                            Text(
-                                              'R\$ ${contrato.valMensal?.toStringAsFixed(2) ?? '0,00'}/mês',
-                                              style: FlutterFlowTheme.of(
-                                                      context)
-                                                  .bodyLarge
-                                                  .override(
-                                                    font: GoogleFonts.inter(
-                                                        fontWeight:
-                                                            FontWeight.w600),
-                                                    color: FlutterFlowTheme.of(
-                                                            context)
-                                                        .primary,
-                                                    letterSpacing: 0.0,
-                                                  ),
-                                            ),
-                                            if (contrato.dtInicio != null)
-                                              Text(
-                                                '${contrato.dtInicio} - ${contrato.dtTermino ?? 'Indeterminado'}',
-                                                style: FlutterFlowTheme.of(
-                                                        context)
-                                                    .bodySmall
-                                                    .override(
-                                                      font: GoogleFonts.inter(
-                                                          fontWeight:
-                                                              FontWeight.normal),
-                                                      color: FlutterFlowTheme
-                                                              .of(context)
-                                                          .secondaryText,
-                                                      letterSpacing: 0.0,
-                                                    ),
-                                              ),
-                                          ],
-                                        ),
-                                      ),
-                                      Icon(Icons.chevron_right,
-                                          color: FlutterFlowTheme.of(context)
-                                              .secondaryText,
-                                          size: 20.0),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                          );
-                        }),
-                      SizedBox(height: 24.0),
-                      // Botão excluir passageiro
-                      Padding(
-                        padding: EdgeInsetsDirectional.fromSTEB(
-                            16.0, 0.0, 16.0, 24.0),
-                        child: FFButtonWidget(
-                          onPressed: () async {
-                            final confirm = await showDialog<bool>(
-                              context: context,
-                              builder: (ctx) => AlertDialog(
-                                title: Text('Excluir Passageiro'),
-                                content: Text(
-                                    'Tem certeza que deseja excluir este passageiro?'),
-                                actions: [
-                                  TextButton(
-                                      onPressed: () =>
-                                          Navigator.of(ctx).pop(false),
-                                      child: Text('Cancelar')),
-                                  TextButton(
-                                      onPressed: () =>
-                                          Navigator.of(ctx).pop(true),
-                                      child: Text('Excluir')),
-                                ],
-                              ),
-                            );
-                            if (confirm == true) {
-                              await VivanLocator.service.deletePassageiro(widget.passageiroId!);
-                              context.safePop();
-                            }
-                          },
-                          text: 'Excluir Passageiro',
-                          options: FFButtonOptions(
-                            width: double.infinity,
-                            height: 48.0,
-                            color: FlutterFlowTheme.of(context).error,
-                            textStyle: FlutterFlowTheme.of(context)
-                                .titleSmall
-                                .override(
-                                  font: GoogleFonts.inter(
-                                      fontWeight: FontWeight.w600),
-                                  color: Colors.white,
-                                  letterSpacing: 0.0,
-                                ),
-                            elevation: 0.0,
-                            borderRadius: BorderRadius.circular(12.0),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
         ),
       ),
     );
   }
 
-  Color _contratoStatusColor(String? status) {
-    switch (status?.toUpperCase()) {
-      case 'ATIVO': return Color(0xFF39D2C0);
-      case 'RASCUNHO': return Color(0xFF9E9E9E);
-      case 'SUSPENSO': return Color(0xFFF9CF58);
-      case 'CANCELADO': return Color(0xFFFF5963);
-      default: return Color(0xFF9E9E9E);
-    }
-  }
-
-  Future<void> _showNovoContratoBottomSheet(BuildContext context) async {
-    final valorController = TextEditingController();
-    final inicioController = TextEditingController();
-    final fimController = TextEditingController();
-    bool isSaving = false;
-
-    await showModalBottomSheet(
-      isScrollControlled: true,
-      backgroundColor: FlutterFlowTheme.of(context).secondaryBackground,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24.0)),
+  // ── Header ───────────────────────────────────────
+  Widget _buildHeader() {
+    return Container(
+      height: 56,
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      decoration: BoxDecoration(
+        color: _bg,
+        border: Border(bottom: BorderSide(color: Colors.grey.shade100)),
       ),
-      context: context,
-      builder: (ctx) => StatefulBuilder(
-        builder: (ctx, setModalState) => Padding(
-          padding: EdgeInsets.only(
-            bottom: MediaQuery.of(ctx).viewInsets.bottom,
+      child: Row(
+        children: [
+          GestureDetector(
+            onTap: () => Navigator.pop(context),
+            child: Text('Fechar',
+                style: FlutterFlowTheme.of(context).bodyMedium.override(
+                      font: GoogleFonts.inter(fontWeight: FontWeight.w500),
+                      color: _primary)),
           ),
-          child: Container(
-            padding: EdgeInsets.all(24.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Center(
-                  child: Container(
-                    width: 40.0, height: 4.0,
-                    decoration: BoxDecoration(
-                      color: FlutterFlowTheme.of(context).alternate,
-                      borderRadius: BorderRadius.circular(2.0),
-                    ),
-                  ),
-                ),
-                SizedBox(height: 16.0),
-                Text('Novo Contrato',
-                    style: FlutterFlowTheme.of(context).titleLarge.override(
-                      font: GoogleFonts.interTight(fontWeight: FontWeight.w600),
-                      letterSpacing: 0.0,
-                    )),
-                SizedBox(height: 4.0),
-                Text('Passageiro: ${_model.nome}',
-                    style: FlutterFlowTheme.of(context).bodySmall.override(
-                      font: GoogleFonts.inter(fontWeight: FontWeight.normal),
-                      color: FlutterFlowTheme.of(context).secondaryText,
-                      letterSpacing: 0.0,
-                    )),
-                SizedBox(height: 16.0),
-                _buildTextField(ctx, valorController, 'Valor Mensal (R\$)',
-                    keyboardType: TextInputType.numberWithOptions(decimal: true)),
-                SizedBox(height: 12.0),
-                _buildTextField(ctx, inicioController, 'Data Início (AAAA-MM-DD)'),
-                SizedBox(height: 12.0),
-                _buildTextField(ctx, fimController, 'Data Fim (AAAA-MM-DD) — opcional'),
-                SizedBox(height: 24.0),
-                FFButtonWidget(
-                  onPressed: isSaving ? null : () async {
-                    setModalState(() => isSaving = true);
-                    try {
-                      final valor = double.tryParse(
-                          valorController.text.replaceAll(',', '.')) ?? 0;
-                      await VivanLocator.service.createContrato(VivanContrato(
-                        idMotorista: FFAppState().idUsuario,
-                        idPassageiro: widget.passageiroId,
-                        valMensal: valor,
-                        dtInicio: inicioController.text.trim().isEmpty
-                            ? null : inicioController.text.trim(),
-                        dtTermino: fimController.text.trim().isEmpty
-                            ? null : fimController.text.trim(),
-                        status: 'RASCUNHO',
-                      ));
-                      if (ctx.mounted) Navigator.pop(ctx);
-                      await _model.fetchContratos(
-                          FFAppState().idUsuario, widget.passageiroId!);
-                      safeSetState(() {});
-                    } catch (e) {
-                      setModalState(() => isSaving = false);
-                      if (ctx.mounted) {
-                        ScaffoldMessenger.of(ctx).showSnackBar(
-                          SnackBar(content: Text('Erro ao criar contrato')));
-                      }
-                    }
-                  },
-                  text: isSaving ? 'Salvando...' : 'Criar Contrato',
-                  options: FFButtonOptions(
-                    width: double.infinity, height: 48.0,
-                    color: isSaving
-                        ? FlutterFlowTheme.of(context).primary.withOpacity(0.5)
-                        : FlutterFlowTheme.of(context).primary,
-                    textStyle: FlutterFlowTheme.of(context).titleSmall.override(
-                      font: GoogleFonts.inter(fontWeight: FontWeight.w600),
-                      color: Colors.white, letterSpacing: 0.0,
-                    ),
-                    elevation: 0.0, borderRadius: BorderRadius.circular(12.0),
-                  ),
-                ),
-              ],
+          Expanded(
+            child: Center(
+              child: Text('Passageiro',
+                  style: FlutterFlowTheme.of(context).titleMedium.override(
+                        font: GoogleFonts.interTight(
+                            fontWeight: FontWeight.w700),
+                        color: _primaryText)),
             ),
           ),
-        ),
+          GestureDetector(
+            onTap: _openEditForm,
+            child: Text('Editar',
+                style: FlutterFlowTheme.of(context).bodyMedium.override(
+                      font: GoogleFonts.inter(fontWeight: FontWeight.w600),
+                      color: _primary)),
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildInfoCard(
-      BuildContext context, String label, String value, IconData icon) {
+  // ── Dark info card ────────────────────────────────
+  Widget _buildDarkCard() {
+    final p = _model.passageiro;
+    String dtNasc = '';
+    if (p?.dtNascimento != null && p!.dtNascimento!.isNotEmpty) {
+      try {
+        dtNasc =
+            DateFormat('dd/MM/yyyy').format(DateTime.parse(p.dtNascimento!));
+      } catch (_) {
+        dtNasc = p.dtNascimento!;
+      }
+    }
+
+    return Container(
+      width: double.infinity,
+      color: const Color(0xFF4A5568),
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Container(
+            width: 72,
+            height: 72,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: Colors.white.withValues(alpha: 0.15),
+            ),
+            child: _model.foto.isNotEmpty
+                ? ClipRRect(
+                    borderRadius: BorderRadius.circular(36),
+                    child: Image.network(_model.foto,
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, __, ___) => const Icon(Icons.person,
+                            size: 36, color: Colors.white70)),
+                  )
+                : const Icon(Icons.person, size: 36, color: Colors.white70),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            p?.nomePassageiro ?? '',
+            textAlign: TextAlign.center,
+            style: GoogleFonts.interTight(
+                fontSize: 20,
+                fontWeight: FontWeight.w700,
+                color: Colors.white),
+          ),
+          if (dtNasc.isNotEmpty) ...[
+            const SizedBox(height: 6),
+            Text(dtNasc,
+                style: GoogleFonts.inter(fontSize: 14, color: Colors.white70)),
+          ],
+          if ((p?.domTurno ?? '').isNotEmpty) ...[
+            const SizedBox(height: 4),
+            Text(p!.domTurno!,
+                style:
+                    GoogleFonts.inter(fontSize: 14, color: Colors.white70)),
+          ],
+          if ((p?.nomeEscola ?? '').isNotEmpty) ...[
+            const SizedBox(height: 4),
+            Text(
+              p!.nomeEscola!,
+              textAlign: TextAlign.center,
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
+              style: GoogleFonts.inter(fontSize: 13, color: Colors.white54),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  // ── Responsáveis ──────────────────────────────────
+  Widget _buildResponsaveisSection() {
     return Padding(
-      padding: EdgeInsetsDirectional.fromSTEB(16.0, 4.0, 16.0, 4.0),
-      child: Container(
-        width: double.infinity,
-        decoration: BoxDecoration(
-          color: FlutterFlowTheme.of(context).secondaryBackground,
-          borderRadius: BorderRadius.circular(12.0),
-        ),
-        child: Padding(
-          padding: EdgeInsets.all(16.0),
-          child: Row(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('RESPONSÁVEIS ADICIONADOS',
+              style: GoogleFonts.inter(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: 0.8,
+                  color: _secondaryText)),
+          const SizedBox(height: 12),
+          if (_model.responsaveis.isEmpty)
+            Text('Nenhum responsável cadastrado',
+                style: FlutterFlowTheme.of(context).bodyMedium.override(
+                      font: GoogleFonts.inter(),
+                      color: _secondaryText)),
+          ..._model.responsaveis.map((resp) => _buildResponsavelCard(resp)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildResponsavelCard(VivanResponsavel resp) {
+    final tel =
+        resp.whatsAppResponsavel.replaceAll(' ', '').replaceAll('-', '');
+    final numero55 = tel.startsWith('+') ? tel : '+55$tel';
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: FlutterFlowTheme.of(context).secondaryBackground,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(resp.nomeResponsavel,
+              style: GoogleFonts.inter(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                  color: _primaryText)),
+          if (resp.whatsAppResponsavel.isNotEmpty) ...[
+            const SizedBox(height: 4),
+            Text(resp.whatsAppResponsavel,
+                style:
+                    GoogleFonts.inter(fontSize: 13, color: _secondaryText)),
+          ],
+          const SizedBox(height: 12),
+          Row(
             children: [
-              Icon(icon,
-                  color: FlutterFlowTheme.of(context).secondaryText,
-                  size: 24.0),
-              SizedBox(width: 12.0),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    label,
-                    style: FlutterFlowTheme.of(context).bodySmall.override(
-                          font: GoogleFonts.inter(fontWeight: FontWeight.normal),
-                          color:
-                              FlutterFlowTheme.of(context).secondaryText,
-                          letterSpacing: 0.0,
-                        ),
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed: () => launchUrl(Uri.parse('tel:$numero55')),
+                  icon: const Icon(Icons.phone_outlined, size: 16),
+                  label: const Text('Ligar'),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: _primary,
+                    side: BorderSide(color: _primary),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8)),
+                    padding: const EdgeInsets.symmetric(vertical: 8),
                   ),
-                  SizedBox(height: 2.0),
-                  Text(
-                    value.isNotEmpty ? value : '-',
-                    style: FlutterFlowTheme.of(context).bodyMedium.override(
-                          font: GoogleFonts.inter(fontWeight: FontWeight.w500),
-                          letterSpacing: 0.0,
-                        ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed: () => launchUrl(
+                      Uri.parse('https://wa.me/$numero55'),
+                      mode: LaunchMode.externalApplication),
+                  icon: const Icon(Icons.chat_outlined, size: 16),
+                  label: const Text('WhatsApp'),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: const Color(0xFF25D366),
+                    side: const BorderSide(color: Color(0xFF25D366)),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8)),
+                    padding: const EdgeInsets.symmetric(vertical: 8),
                   ),
-                ],
+                ),
               ),
             ],
           ),
+        ],
+      ),
+    );
+  }
+
+  // ── 4 action buttons ──────────────────────────────
+  Widget _buildActionButtons() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Column(
+        children: [
+          _actionButton(
+            label: 'Extrato Financeiro',
+            icon: Icons.receipt_long_outlined,
+            onTap: _openExtrato,
+          ),
+          const SizedBox(height: 10),
+          _actionButton(
+            label: 'Contratos',
+            icon: Icons.description_outlined,
+            onTap: _openContratos,
+          ),
+          const SizedBox(height: 10),
+          _actionButton(
+            label: 'Editar Mensalidades',
+            icon: Icons.edit_calendar_outlined,
+            onTap: _openGestaoMensalidades,
+          ),
+          const SizedBox(height: 10),
+          _actionButton(
+            label: 'Renovar Mensalidades',
+            icon: Icons.autorenew_rounded,
+            onTap: _openRenovarMensalidades,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _actionButton(
+      {required String label,
+      required IconData icon,
+      required VoidCallback onTap}) {
+    return OutlinedButton.icon(
+      onPressed: onTap,
+      icon: Icon(icon, size: 20, color: _primary),
+      label: Text(label,
+          style: GoogleFonts.inter(
+              fontWeight: FontWeight.w600, color: _primaryText)),
+      style: OutlinedButton.styleFrom(
+        alignment: Alignment.centerLeft,
+        side: BorderSide(color: Colors.grey.shade300),
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        minimumSize: const Size(double.infinity, 52),
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+      ),
+    );
+  }
+
+  // ── Navigation ────────────────────────────────────
+  Future<void> _openEditForm() async {
+    final result = await Navigator.push<dynamic>(
+      context,
+      MaterialPageRoute(
+        builder: (_) =>
+            PassageiroFormMWidget(passageiroId: widget.passageiroId),
+      ),
+    );
+    if (result != null && mounted) {
+      if (result == 'deleted') {
+        Navigator.pop(context);
+      } else {
+        await _model.fetchPassageiro(widget.passageiroId!);
+        safeSetState(() {});
+      }
+    }
+  }
+
+  void _openExtrato() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ExtratoPassageiroMWidget(
+          passageiroId: widget.passageiroId!,
+          nomePassageiro: _model.nome,
+          urlFoto: _model.foto.isNotEmpty ? _model.foto : null,
         ),
       ),
     );
   }
 
-  Future<void> _showResponsavelForm(BuildContext context,
-      {dynamic responsavel}) async {
-    final nomeController = TextEditingController(
-        text: responsavel != null
-            ? responsavel.nomeResponsavel
-            : '');
-    final cpfController = TextEditingController(
-        text: '');
-    final telefoneController = TextEditingController(
-        text: responsavel != null
-            ? responsavel.whatsAppResponsavel
-            : '');
-    final parentescoController = TextEditingController(
-        text: responsavel != null
-            ? responsavel.parentesco
-            : '');
+  void _openContratos() {
+    if (_model.contratos.isNotEmpty) {
+      context.pushNamed(
+        'contratoDetalheM',
+        queryParameters: {
+          'contratoId': serializeParam(
+              _model.contratos.first.idContrato, ParamType.int),
+        }.withoutNulls,
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Nenhum contrato encontrado')));
+    }
+  }
 
-    await showModalBottomSheet(
-      isScrollControlled: true,
-      backgroundColor: FlutterFlowTheme.of(context).secondaryBackground,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24.0)),
+  void _openGestaoMensalidades() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => GestaoMensalidadesMWidget(
+          passageiroId: widget.passageiroId!,
+          nomePassageiro: _model.nome,
+        ),
       ),
-      context: context,
-      builder: (bottomSheetContext) {
-        return Padding(
-          padding: EdgeInsets.only(
-            bottom: MediaQuery.of(bottomSheetContext).viewInsets.bottom,
-          ),
-          child: Container(
-            padding: EdgeInsets.all(24.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Center(
-                  child: Container(
-                    width: 40.0,
-                    height: 4.0,
-                    decoration: BoxDecoration(
-                      color: FlutterFlowTheme.of(context).alternate,
-                      borderRadius: BorderRadius.circular(2.0),
-                    ),
-                  ),
-                ),
-                SizedBox(height: 16.0),
-                Text(
-                  responsavel != null
-                      ? 'Editar Responsável'
-                      : 'Novo Responsável',
-                  style: FlutterFlowTheme.of(context).titleLarge.override(
-                        font:
-                            GoogleFonts.interTight(fontWeight: FontWeight.w600),
-                        letterSpacing: 0.0,
-                      ),
-                ),
-                SizedBox(height: 16.0),
-                _buildTextField(bottomSheetContext, nomeController, 'Nome'),
-                SizedBox(height: 12.0),
-                _buildTextField(bottomSheetContext, cpfController, 'CPF'),
-                SizedBox(height: 12.0),
-                _buildTextField(
-                    bottomSheetContext, telefoneController, 'Telefone'),
-                SizedBox(height: 12.0),
-                _buildTextField(
-                    bottomSheetContext, parentescoController, 'Parentesco'),
-                SizedBox(height: 24.0),
-                FFButtonWidget(
-                  onPressed: () async {
-                    final r = VivanResponsavel(
-                      idResponsavel: responsavel?.idResponsavel,
-                      idPassageiro: widget.passageiroId,
-                      nomeResponsavel: nomeController.text,
-                      cpfResponsavel: cpfController.text,
-                      parentesco: parentescoController.text,
-                      whatsAppResponsavel: telefoneController.text,
-                      emailResponsavel: '',
-                    );
-                    if (responsavel != null) {
-                      await VivanLocator.service.updateResponsavel(
-                        widget.passageiroId!, responsavel!.idResponsavel!, r,
-                      );
-                    } else {
-                      await VivanLocator.service.createResponsavel(
-                        widget.passageiroId!, r,
-                      );
-                    }
-                    Navigator.of(bottomSheetContext).pop();
-                    await _model.fetchPassageiro(widget.passageiroId!);
-                    safeSetState(() {});
-                  },
-                  text: 'Salvar',
-                  options: FFButtonOptions(
-                    width: double.infinity,
-                    height: 48.0,
-                    color: FlutterFlowTheme.of(context).primary,
-                    textStyle:
-                        FlutterFlowTheme.of(context).titleSmall.override(
-                              font: GoogleFonts.inter(
-                                  fontWeight: FontWeight.w600),
-                              color: Colors.white,
-                              letterSpacing: 0.0,
-                            ),
-                    elevation: 0.0,
-                    borderRadius: BorderRadius.circular(12.0),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
     );
   }
 
-  Widget _buildTextField(
-      BuildContext context, TextEditingController controller, String label,
-      {TextInputType keyboardType = TextInputType.text}) {
-    return TextFormField(
-      controller: controller,
-      keyboardType: keyboardType,
-      decoration: InputDecoration(
-        labelText: label,
-        filled: true,
-        fillColor: FlutterFlowTheme.of(context).primaryBackground,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12.0),
-          borderSide: BorderSide.none,
+  void _openRenovarMensalidades() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => RenovarMensalidadesMWidget(
+          passageiroId: widget.passageiroId!,
+          nomePassageiro: _model.nome,
         ),
       ),
-      style: FlutterFlowTheme.of(context).bodyMedium.override(
-            font: GoogleFonts.inter(
-                fontWeight:
-                    FlutterFlowTheme.of(context).bodyMedium.fontWeight),
-            letterSpacing: 0.0,
-          ),
     );
   }
 }

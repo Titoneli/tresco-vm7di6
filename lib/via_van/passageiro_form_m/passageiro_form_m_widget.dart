@@ -55,6 +55,9 @@ class _PassageiroFormMWidgetState extends State<PassageiroFormMWidget> {
   @override
   Widget build(BuildContext context) {
     context.watch<FFAppState>();
+    if (_model.isEdit) {
+      return _buildEditScaffold();
+    }
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
@@ -81,6 +84,272 @@ class _PassageiroFormMWidgetState extends State<PassageiroFormMWidget> {
         ),
       ),
     );
+  }
+
+  // ────────────────────────────────────────────────
+  // EDIT LAYOUT — página única (isEdit == true)
+  // ────────────────────────────────────────────────
+  Widget _buildEditScaffold() {
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: Scaffold(
+        backgroundColor: _bg,
+        body: SafeArea(
+          child: Column(
+            children: [
+              _buildEditHeader(),
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _sectionHeader('Passageiro', sub: '*Campos Opcionais'),
+                      const SizedBox(height: 16),
+                      _field(
+                        ctrl: _model.nomeCtrl,
+                        hint: 'Nome completo',
+                        caps: TextCapitalization.words,
+                      ),
+                      const SizedBox(height: 12),
+                      _datePicker(
+                        label: _model.dtNascimento != null
+                            ? DateFormat('dd/MM/yyyy')
+                                .format(_model.dtNascimento!)
+                            : 'Data de Nascimento',
+                        hasValue: _model.dtNascimento != null,
+                        onTap: _pickBirthDate,
+                      ),
+                      const SizedBox(height: 12),
+                      _buildSexoToggle(),
+                      const SizedBox(height: 12),
+                      Row(children: [
+                        Expanded(
+                          child: _pickerButton(
+                            label: _model.escolaNome ?? 'Escola',
+                            hasValue: _model.escolaNome != null,
+                            onTap: _showEscolaSheet,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        _addButton(onTap: _showNovaEscolaSheet),
+                      ]),
+                      const SizedBox(height: 12),
+                      _pickerButton(
+                        label: _model.periodo ?? 'Período',
+                        hasValue: _model.periodo != null,
+                        onTap: _showPeriodoSheet,
+                      ),
+                      const SizedBox(height: 24),
+                      _sectionHeader('Responsável'),
+                      const SizedBox(height: 16),
+                      _field(
+                        ctrl: _model.respNomeCtrl,
+                        hint: 'Nome completo',
+                        caps: TextCapitalization.words,
+                      ),
+                      const SizedBox(height: 12),
+                      _field(
+                        ctrl: _model.respWhatsappCtrl,
+                        hint: 'WhatsApp / Telefone',
+                        kb: TextInputType.phone,
+                      ),
+                      const SizedBox(height: 12),
+                      _field(
+                        ctrl: _model.respCpfCtrl,
+                        hint: 'CPF',
+                        kb: TextInputType.number,
+                        fmt: [FilteringTextInputFormatter.digitsOnly],
+                        maxLen: 11,
+                      ),
+                      const SizedBox(height: 32),
+                      OutlinedButton(
+                        onPressed: _model.isSaving ? null : _onDeletePassageiro,
+                        style: OutlinedButton.styleFrom(
+                          side: BorderSide(
+                              color: FlutterFlowTheme.of(context).error),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12)),
+                          minimumSize: const Size(double.infinity, 48),
+                        ),
+                        child: Text(
+                          'Apagar Passageiro',
+                          style: TextStyle(
+                              color: FlutterFlowTheme.of(context).error,
+                              fontWeight: FontWeight.w600),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                    ],
+                  ),
+                ),
+              ),
+              _buildEditBottomBar(),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEditHeader() {
+    return Container(
+      height: 56,
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      decoration: BoxDecoration(
+        color: _bg,
+        border: Border(bottom: BorderSide(color: Colors.grey.shade100)),
+      ),
+      child: Row(
+        children: [
+          GestureDetector(
+            onTap: () => Navigator.pop(context),
+            child: Text('Fechar',
+                style: FlutterFlowTheme.of(context).bodyMedium.override(
+                      font: GoogleFonts.inter(fontWeight: FontWeight.w500),
+                      color: _primary)),
+          ),
+          Expanded(
+            child: Center(
+              child: Text('Editar Passageiro',
+                  style: FlutterFlowTheme.of(context).titleMedium.override(
+                        font: GoogleFonts.interTight(fontWeight: FontWeight.w700),
+                        color: _primaryText)),
+            ),
+          ),
+          const SizedBox(width: 60),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEditBottomBar() {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+      decoration: BoxDecoration(
+        color: _bg,
+        border: Border(top: BorderSide(color: Colors.grey.shade100)),
+      ),
+      child: ElevatedButton(
+        onPressed: _model.isSaving ? null : _onEditSave,
+        style: ElevatedButton.styleFrom(
+            backgroundColor: _primary,
+            disabledBackgroundColor: Colors.grey.shade300,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            minimumSize: const Size(double.infinity, 52),
+            padding: const EdgeInsets.symmetric(vertical: 14)),
+        child: _model.isSaving
+            ? const SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(
+                    color: Colors.white, strokeWidth: 2))
+            : const Text('Salvar',
+                style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 16)),
+      ),
+    );
+  }
+
+  Future<void> _onEditSave() async {
+    setState(() => _model.isSaving = true);
+    final ok = await _model.salvar();
+    if (ok && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: const Text('Passageiro atualizado com sucesso!'),
+        backgroundColor: _primary,
+      ));
+      Navigator.pop(context, true);
+    } else if (mounted && _model.erro != null) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Erro: ${_model.erro}'),
+        backgroundColor: Colors.red.shade400,
+      ));
+      setState(() => _model.isSaving = false);
+    }
+  }
+
+  Future<void> _onDeletePassageiro() async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Apagar Passageiro'),
+        content: const Text(
+            'Esta ação não pode ser desfeita. Deseja apagar este passageiro?'),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: const Text('Cancelar')),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text('Apagar',
+                style: TextStyle(
+                    color: FlutterFlowTheme.of(context).error)),
+          ),
+        ],
+      ),
+    );
+    if (confirm == true && mounted) {
+      setState(() => _model.isSaving = true);
+      final ok = await _model.deletar();
+      if (ok && mounted) {
+        Navigator.pop(context, 'deleted');
+      } else if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Erro ao apagar: ${_model.erro}'),
+          backgroundColor: Colors.red.shade400,
+        ));
+        setState(() => _model.isSaving = false);
+      }
+    }
+  }
+
+  Widget _buildSexoToggle() {
+    return Row(
+      children: [
+        Expanded(child: _sexoButton('Masculino', 'MASCULINO')),
+        const SizedBox(width: 8),
+        Expanded(child: _sexoButton('Feminino', 'FEMININO')),
+      ],
+    );
+  }
+
+  Widget _sexoButton(String label, String value) {
+    final selected = _model.sexo == value;
+    return GestureDetector(
+      onTap: () => setState(() => _model.sexo = value),
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 14),
+        decoration: BoxDecoration(
+          color: selected ? _primary : _secondBg,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+              color: selected ? _primary : Colors.grey.shade200),
+        ),
+        child: Center(
+          child: Text(label,
+              style: FlutterFlowTheme.of(context).bodyMedium.override(
+                    font: GoogleFonts.inter(
+                        fontWeight: selected
+                            ? FontWeight.w600
+                            : FontWeight.normal),
+                    color: selected ? Colors.white : _secondaryText)),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _pickBirthDate() async {
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: _model.dtNascimento ?? DateTime(2010),
+      firstDate: DateTime(1950),
+      lastDate: DateTime.now(),
+    );
+    if (picked != null) setState(() => _model.dtNascimento = picked);
   }
 
   // ── Header ───────────────────────────────────────

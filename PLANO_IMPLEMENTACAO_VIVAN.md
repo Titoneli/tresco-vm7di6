@@ -1,6 +1,6 @@
 # Plano de Implementação — Módulo ViVan (Motorista)
 
-> Última atualização: 29/04/2026
+> Última atualização: 01/05/2026
 
 ---
 
@@ -88,11 +88,17 @@ O módulo ViVan é o sistema de gestão para motoristas de transporte escolar. O
 - [ ] Rodar `database/001_alter_vivan_despesas_lancamentos.sql` no PostgreSQL de produção
 - [ ] Verificar que constraints foram criadas corretamente
 
-### P2 — Ajustes de UX nas Tabs
-- [ ] Mensalidades: Adicionar pull-to-refresh
-- [ ] Financeiro: Exibir ícone da categoria na lista de lançamentos
-- [ ] Financeiro: Swipe-to-delete em lançamentos
-- [ ] Financeiro: Editar lançamento existente (bottom sheet pré-preenchido)
+### ✅ P2 — Ajustes de UX nas Tabs (Concluído)
+- [x] Mensalidades: Adicionar pull-to-refresh
+- [x] Financeiro: Exibir ícone da categoria na lista de lançamentos
+- [x] Financeiro: Swipe-to-delete em lançamentos
+- [x] Financeiro: Editar lançamento existente (bottom sheet pré-preenchido)
+
+### ✅ P2b — Dashboard Início com Dados Reais (Concluído)
+- [x] Resumo Geral: passageiros, escolas e a receber carregados da API
+- [x] Mensalidades em Aberto: lista de pendentes/atrasados do mês atual
+- [x] Pull-to-refresh na aba Início
+- [x] Seta "Mensalidades em Aberto" navega para a aba Mensalidades
 
 ### P3 — Geração de Cobrança PIX (Asaas)
 - [ ] Botão "Gerar PIX" por mensalidade (serviço `gerarPix()` já existe)

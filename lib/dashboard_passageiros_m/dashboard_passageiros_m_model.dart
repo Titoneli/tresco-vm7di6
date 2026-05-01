@@ -1,7 +1,6 @@
 import '/flutter_flow/flutter_flow_util.dart';
 import '/vivan/vivan.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'dashboard_passageiros_m_widget.dart'
     show DashboardPassageirosMWidget;
 

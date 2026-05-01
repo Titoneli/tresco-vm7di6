@@ -180,38 +180,91 @@ class _FinanceiroTabWidgetState extends State<FinanceiroTabWidget> {
           final dateStr = d.dtDespesa.isNotEmpty
               ? _formatDisplayDate(d.dtDespesa)
               : (d.dtVencimento != null ? _formatDisplayDate(d.dtVencimento!) : '');
-          return InkWell(
-            onTap: () => _showLancamentoDetalhe(d),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 12),
-              child: Row(children: [
-                Container(
-                  width: 44, height: 44,
-                  decoration: BoxDecoration(
-                    color: iconColor.withOpacity(0.12),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Icon(_iconForCategoria(d.categoria), size: 22, color: iconColor),
+          return Dismissible(
+            key: ValueKey(d.idDespesa ?? i),
+            direction: DismissDirection.endToStart,
+            background: Container(
+              alignment: Alignment.centerRight,
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              color: const Color(0xFFF56565),
+              child: const Icon(Icons.delete_outline, color: Colors.white, size: 26),
+            ),
+            confirmDismiss: (_) async {
+              bool confirmed = false;
+              await showDialog(
+                context: context,
+                builder: (dctx) => AlertDialog(
+                  title: Text('Apagar lançamento', style: GoogleFonts.inter(fontWeight: FontWeight.w700)),
+                  content: Text('Deseja realmente apagar este lançamento?', style: GoogleFonts.inter(fontSize: 15)),
+                  actions: [
+                    TextButton(
+                      onPressed: () { Navigator.pop(dctx); confirmed = false; },
+                      child: Text('Não', style: GoogleFonts.inter(fontWeight: FontWeight.w600,
+                          color: FlutterFlowTheme.of(context).secondaryText)),
+                    ),
+                    ElevatedButton(
+                      onPressed: () { Navigator.pop(dctx); confirmed = true; },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFFF56565), foregroundColor: Colors.white,
+                        elevation: 0, textStyle: GoogleFonts.inter(fontWeight: FontWeight.w700),
+                      ),
+                      child: const Text('Sim, apagar'),
+                    ),
+                  ],
                 ),
-                const SizedBox(width: 12),
-                Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Text(d.categoria.isNotEmpty ? d.categoria : (d.descricao.isNotEmpty ? d.descricao : '—'),
-                      style: GoogleFonts.inter(fontSize: 15, fontWeight: FontWeight.w600)),
-                  if (d.descricao.isNotEmpty && d.descricao != d.categoria)
-                    Text(d.descricao,
-                        maxLines: 1, overflow: TextOverflow.ellipsis,
-                        style: GoogleFonts.inter(fontSize: 12, color: FlutterFlowTheme.of(context).secondaryText)),
-                ])),
-                Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
-                  Text('${isDespesa ? "- " : "+ "}${_model.formatCurrency(d.valor)}',
-                      style: GoogleFonts.inter(fontSize: 15, fontWeight: FontWeight.w700, color: iconColor)),
-                  if (dateStr.isNotEmpty)
-                    Text(dateStr,
-                        style: GoogleFonts.inter(fontSize: 12, color: FlutterFlowTheme.of(context).secondaryText)),
+              );
+              return confirmed;
+            },
+            onDismissed: (_) async {
+              try {
+                await VivanLocator.service.deleteDespesa(d.idDespesa!);
+                _reload();
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      content: const Text('Lançamento apagado.'),
+                      backgroundColor: FlutterFlowTheme.of(context).success));
+                }
+              } catch (e) {
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      content: Text('Erro ao apagar: $e'),
+                      backgroundColor: Colors.red));
+                }
+              }
+            },
+            child: InkWell(
+              onTap: () => _showLancamentoDetalhe(d),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                child: Row(children: [
+                  Container(
+                    width: 44, height: 44,
+                    decoration: BoxDecoration(
+                      color: iconColor.withOpacity(0.12),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Icon(_iconForCategoria(d.categoria), size: 22, color: iconColor),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    Text(d.categoria.isNotEmpty ? d.categoria : (d.descricao.isNotEmpty ? d.descricao : '—'),
+                        style: GoogleFonts.inter(fontSize: 15, fontWeight: FontWeight.w600)),
+                    if (d.descricao.isNotEmpty && d.descricao != d.categoria)
+                      Text(d.descricao,
+                          maxLines: 1, overflow: TextOverflow.ellipsis,
+                          style: GoogleFonts.inter(fontSize: 12, color: FlutterFlowTheme.of(context).secondaryText)),
+                  ])),
+                  Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
+                    Text('${isDespesa ? "- " : "+ "}${_model.formatCurrency(d.valor)}',
+                        style: GoogleFonts.inter(fontSize: 15, fontWeight: FontWeight.w700, color: iconColor)),
+                    if (dateStr.isNotEmpty)
+                      Text(dateStr,
+                          style: GoogleFonts.inter(fontSize: 12, color: FlutterFlowTheme.of(context).secondaryText)),
+                  ]),
+                  const SizedBox(width: 4),
+                  Icon(Icons.chevron_right, size: 18, color: FlutterFlowTheme.of(context).secondaryText),
                 ]),
-                const SizedBox(width: 4),
-                Icon(Icons.chevron_right, size: 18, color: FlutterFlowTheme.of(context).secondaryText),
-              ]),
+              ),
             ),
           );
         },

@@ -67,11 +67,15 @@ class _MensalidadesTabWidgetState extends State<MensalidadesTabWidget> {
               ? Center(child: CircularProgressIndicator(color: _primary))
               : _model.filteredMensalidades.isEmpty
                   ? Center(child: Text('Nenhuma mensalidade encontrada', style: GoogleFonts.inter(color: FlutterFlowTheme.of(context).secondaryText)))
-                  : ListView.separated(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                      itemCount: _model.filteredMensalidades.length,
-                      separatorBuilder: (_, __) => const Divider(height: 1),
-                      itemBuilder: (ctx, i) => _buildMensalidadeItem(_model.filteredMensalidades[i]),
+                  : RefreshIndicator(
+                      color: _primary,
+                      onRefresh: () async => _reload(),
+                      child: ListView.separated(
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        itemCount: _model.filteredMensalidades.length,
+                        separatorBuilder: (_, __) => const Divider(height: 1),
+                        itemBuilder: (ctx, i) => _buildMensalidadeItem(_model.filteredMensalidades[i]),
+                      ),
                     ),
         ),
       ]),

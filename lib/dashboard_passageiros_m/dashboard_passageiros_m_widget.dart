@@ -8,6 +8,7 @@ import 'package:ff_theme/flutter_flow/flutter_flow_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'dashboard_passageiros_m_model.dart';
 export 'dashboard_passageiros_m_model.dart';
@@ -35,7 +36,10 @@ class _DashboardPassageirosMWidgetState
     SchedulerBinding.instance.addPostFrameCallback((_) async {
       if (FFAppState().idEmpresa == '') {
         context.pushNamed(LoginWidget.routeName);
+        return;
       }
+      await _model.fetchHomeData(FFAppState().idUsuario);
+      if (mounted) setState(() {});
     });
   }
 
@@ -137,118 +141,220 @@ class _DashboardPassageirosMWidgetState
   }
 
   Widget _buildHomePage(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: EdgeInsetsDirectional.fromSTEB(16.0, 16.0, 16.0, 0.0),
-            child: Text(
-              'Ola, ${FFAppState().nomeUsuario}!',
-              style: FlutterFlowTheme.of(context).headlineSmall.override(
-                    font: GoogleFonts.interTight(fontWeight: FontWeight.w600)),
-            ),
-          ),
-          Padding(
-            padding: EdgeInsetsDirectional.fromSTEB(16.0, 4.0, 16.0, 0.0),
-            child: Text(
-              'Gerencie seus passageiros e financeiro',
-              style: FlutterFlowTheme.of(context).bodyMedium.override(
-                    font: GoogleFonts.inter(),
-                    color: FlutterFlowTheme.of(context).secondaryText),
-            ),
-          ),
-          SizedBox(height: 16.0),
-          Padding(
-            padding: EdgeInsetsDirectional.fromSTEB(16.0, 0.0, 16.0, 0.0),
-            child: Container(
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: FlutterFlowTheme.of(context).secondaryBackground,
-                borderRadius: BorderRadius.circular(12.0),
-                boxShadow: [BoxShadow(blurRadius: 4.0, color: Color(0x0D000000), offset: Offset(0.0, 2.0))],
+    final currency = NumberFormat.currency(locale: 'pt_BR', symbol: 'R\$');
+    return RefreshIndicator(
+      color: FlutterFlowTheme.of(context).primary,
+      onRefresh: () async {
+        await _model.fetchHomeData(FFAppState().idUsuario);
+        if (mounted) setState(() {});
+      },
+      child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: EdgeInsetsDirectional.fromSTEB(16.0, 16.0, 16.0, 0.0),
+              child: Text(
+                'Ola, ${FFAppState().nomeUsuario}!',
+                style: FlutterFlowTheme.of(context).headlineSmall.override(
+                      font: GoogleFonts.interTight(fontWeight: FontWeight.w600)),
               ),
-              child: Padding(
-                padding: EdgeInsets.all(16.0),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Resumo Geral',
-                        style: FlutterFlowTheme.of(context).titleMedium.override(
-                              font: GoogleFonts.interTight(fontWeight: FontWeight.w600),
-                              color: FlutterFlowTheme.of(context).primaryText)),
-                    SizedBox(height: 16.0),
-                    Row(
-                      mainAxisSize: MainAxisSize.max,
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        _buildResumoItem(context, icon: Icons.people_rounded, label: 'Passageiros', value: '0', color: FlutterFlowTheme.of(context).primary),
-                        _buildResumoItem(context, icon: Icons.school_rounded, label: 'Escolas', value: '0', color: Color(0xFF4B7BEC)),
-                        _buildResumoItem(context, icon: Icons.attach_money_rounded, label: 'A Receber', value: 'R\$ 0', color: FlutterFlowTheme.of(context).success),
-                      ],
-                    ),
-                  ],
+            ),
+            Padding(
+              padding: EdgeInsetsDirectional.fromSTEB(16.0, 4.0, 16.0, 0.0),
+              child: Text(
+                'Gerencie seus passageiros e financeiro',
+                style: FlutterFlowTheme.of(context).bodyMedium.override(
+                      font: GoogleFonts.inter(),
+                      color: FlutterFlowTheme.of(context).secondaryText),
+              ),
+            ),
+            SizedBox(height: 16.0),
+            Padding(
+              padding: EdgeInsetsDirectional.fromSTEB(16.0, 0.0, 16.0, 0.0),
+              child: Container(
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: FlutterFlowTheme.of(context).secondaryBackground,
+                  borderRadius: BorderRadius.circular(12.0),
+                  boxShadow: [BoxShadow(blurRadius: 4.0, color: Color(0x0D000000), offset: Offset(0.0, 2.0))],
+                ),
+                child: Padding(
+                  padding: EdgeInsets.all(16.0),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Resumo Geral',
+                          style: FlutterFlowTheme.of(context).titleMedium.override(
+                                font: GoogleFonts.interTight(fontWeight: FontWeight.w600),
+                                color: FlutterFlowTheme.of(context).primaryText)),
+                      SizedBox(height: 16.0),
+                      _model.isLoadingHome
+                          ? Center(child: Padding(
+                              padding: EdgeInsets.symmetric(vertical: 16.0),
+                              child: CircularProgressIndicator(
+                                  color: FlutterFlowTheme.of(context).primary, strokeWidth: 2)))
+                          : Row(
+                              mainAxisSize: MainAxisSize.max,
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                _buildResumoItem(context,
+                                    icon: Icons.people_rounded,
+                                    label: 'Passageiros',
+                                    value: '${_model.totalPassageiros}',
+                                    color: FlutterFlowTheme.of(context).primary),
+                                _buildResumoItem(context,
+                                    icon: Icons.school_rounded,
+                                    label: 'Escolas',
+                                    value: '${_model.totalEscolas}',
+                                    color: Color(0xFF4B7BEC)),
+                                _buildResumoItem(context,
+                                    icon: Icons.attach_money_rounded,
+                                    label: 'A Receber',
+                                    value: currency.format(_model.totalAReceber),
+                                    color: FlutterFlowTheme.of(context).success),
+                              ],
+                            ),
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
-          SizedBox(height: 16.0),
-          Padding(
-            padding: EdgeInsetsDirectional.fromSTEB(16.0, 0.0, 16.0, 0.0),
-            child: Container(
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: FlutterFlowTheme.of(context).secondaryBackground,
-                borderRadius: BorderRadius.circular(12.0),
-                boxShadow: [BoxShadow(blurRadius: 4.0, color: Color(0x0D000000), offset: Offset(0.0, 2.0))],
-              ),
-              child: Padding(
-                padding: EdgeInsets.all(16.0),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisSize: MainAxisSize.max,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text('Mensalidades em Aberto',
-                            style: FlutterFlowTheme.of(context).titleSmall.override(
-                                  font: GoogleFonts.interTight(fontWeight: FontWeight.w600),
-                                  color: FlutterFlowTheme.of(context).primaryText)),
-                        Icon(Icons.arrow_forward_ios_rounded,
-                            color: FlutterFlowTheme.of(context).secondaryText, size: 16.0),
-                      ],
-                    ),
-                    SizedBox(height: 12.0),
-                    Center(
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(vertical: 24.0),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(Icons.check_circle_outline_rounded,
-                                color: FlutterFlowTheme.of(context).success, size: 48.0),
-                            SizedBox(height: 8.0),
-                            Text('Nenhuma mensalidade em aberto',
-                                style: FlutterFlowTheme.of(context).bodyMedium.override(
-                                      font: GoogleFonts.inter(),
-                                      color: FlutterFlowTheme.of(context).secondaryText)),
-                          ],
-                        ),
+            SizedBox(height: 16.0),
+            Padding(
+              padding: EdgeInsetsDirectional.fromSTEB(16.0, 0.0, 16.0, 0.0),
+              child: Container(
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: FlutterFlowTheme.of(context).secondaryBackground,
+                  borderRadius: BorderRadius.circular(12.0),
+                  boxShadow: [BoxShadow(blurRadius: 4.0, color: Color(0x0D000000), offset: Offset(0.0, 2.0))],
+                ),
+                child: Padding(
+                  padding: EdgeInsets.all(16.0),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisSize: MainAxisSize.max,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text('Mensalidades em Aberto',
+                              style: FlutterFlowTheme.of(context).titleSmall.override(
+                                    font: GoogleFonts.interTight(fontWeight: FontWeight.w600),
+                                    color: FlutterFlowTheme.of(context).primaryText)),
+                          GestureDetector(
+                            onTap: () => setState(() {
+                              _model.paginaAtiva = 2;
+                              _model.pageViewController?.animateToPage(2,
+                                  duration: Duration(milliseconds: 200), curve: Curves.easeInOut);
+                            }),
+                            child: Icon(Icons.arrow_forward_ios_rounded,
+                                color: FlutterFlowTheme.of(context).secondaryText, size: 16.0),
+                          ),
+                        ],
                       ),
-                    ),
-                  ],
+                      SizedBox(height: 12.0),
+                      if (_model.isLoadingHome)
+                        Center(child: Padding(
+                            padding: EdgeInsets.symmetric(vertical: 16.0),
+                            child: CircularProgressIndicator(
+                                color: FlutterFlowTheme.of(context).primary, strokeWidth: 2)))
+                      else if (_model.mensalidadesEmAberto.isEmpty)
+                        Center(
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(vertical: 24.0),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(Icons.check_circle_outline_rounded,
+                                    color: FlutterFlowTheme.of(context).success, size: 48.0),
+                                SizedBox(height: 8.0),
+                                Text('Nenhuma mensalidade em aberto',
+                                    style: FlutterFlowTheme.of(context).bodyMedium.override(
+                                          font: GoogleFonts.inter(),
+                                          color: FlutterFlowTheme.of(context).secondaryText)),
+                              ],
+                            ),
+                          ),
+                        )
+                      else
+                        ListView.separated(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: _model.mensalidadesEmAberto.length,
+                          separatorBuilder: (_, __) => Divider(height: 1),
+                          itemBuilder: (ctx, i) {
+                            final m = _model.mensalidadesEmAberto[i];
+                            final isAtrasado = m.isAtrasado;
+                            final statusColor = isAtrasado ? Color(0xFFF56565) : Color(0xFFED8936);
+                            final statusLabel = isAtrasado ? 'Atrasado' : 'Pendente';
+                            return Padding(
+                              padding: EdgeInsets.symmetric(vertical: 10.0),
+                              child: Row(children: [
+                                Container(
+                                  width: 40.0, height: 40.0,
+                                  decoration: BoxDecoration(
+                                    color: statusColor.withOpacity(0.1),
+                                    borderRadius: BorderRadius.circular(10.0),
+                                  ),
+                                  child: Icon(Icons.receipt_long_rounded, color: statusColor, size: 20.0),
+                                ),
+                                SizedBox(width: 12.0),
+                                Expanded(child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(m.nomePassageiro ?? '—',
+                                        style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600,
+                                            color: FlutterFlowTheme.of(context).primaryText)),
+                                    if (m.dtVencimento != null)
+                                      Text('Vence: ${_formatDate(m.dtVencimento!)}',
+                                          style: GoogleFonts.inter(fontSize: 12,
+                                              color: FlutterFlowTheme.of(context).secondaryText)),
+                                  ],
+                                )),
+                                Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
+                                  Text(currency.format(m.valOriginal ?? 0),
+                                      style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w700,
+                                          color: statusColor)),
+                                  Container(
+                                    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                    decoration: BoxDecoration(
+                                      color: statusColor.withOpacity(0.1),
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                    child: Text(statusLabel,
+                                        style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600,
+                                            color: statusColor)),
+                                  ),
+                                ]),
+                              ]),
+                            );
+                          },
+                        ),
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
-          SizedBox(height: 24.0),
-        ],
+            SizedBox(height: 24.0),
+          ],
+        ),
       ),
     );
+  }
+
+  String _formatDate(String iso) {
+    try {
+      final dt = DateTime.parse(iso);
+      return '${dt.day.toString().padLeft(2, '0')}/${dt.month.toString().padLeft(2, '0')}/${dt.year}';
+    } catch (_) {
+      return iso;
+    }
   }
 
   Widget _buildResumoItem(BuildContext context,

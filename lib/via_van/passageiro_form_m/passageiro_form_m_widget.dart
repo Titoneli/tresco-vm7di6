@@ -106,18 +106,10 @@ class _PassageiroFormMWidgetState extends State<PassageiroFormMWidget> {
                     children: [
                       _sectionHeader('Passageiro', sub: '*Campos Opcionais'),
                       const SizedBox(height: 16),
-                      Row(
-                        children: [
-                          Expanded(
-                              child: _field(
-                                  ctrl: _model.primeiroNomeEditCtrl,
-                                  hint: 'Nome')),
-                          const SizedBox(width: 8),
-                          Expanded(
-                              child: _field(
-                                  ctrl: _model.sobrenomeEditCtrl,
-                                  hint: 'Sobrenome')),
-                        ],
+                      _field(
+                        ctrl: _model.nomeCtrl,
+                        hint: 'Nome completo',
+                        caps: TextCapitalization.words,
                       ),
                       const SizedBox(height: 12),
                       _datePicker(
@@ -151,43 +143,21 @@ class _PassageiroFormMWidgetState extends State<PassageiroFormMWidget> {
                       const SizedBox(height: 24),
                       _sectionHeader('Responsável'),
                       const SizedBox(height: 16),
-                      Row(
-                        children: [
-                          Expanded(
-                              child: _field(
-                                  ctrl: _model.respNomeEditCtrl,
-                                  hint: 'Nome')),
-                          const SizedBox(width: 8),
-                          Expanded(
-                              child: _field(
-                                  ctrl: _model.respSobrenomeEditCtrl,
-                                  hint: 'Sobrenome')),
-                        ],
+                      _field(
+                        ctrl: _model.respNomeCtrl,
+                        hint: 'Nome completo',
+                        caps: TextCapitalization.words,
                       ),
                       const SizedBox(height: 12),
-                      Row(
-                        children: [
-                          SizedBox(
-                            width: 80,
-                            child: _field(
-                                ctrl: _model.respDddCtrl,
-                                hint: 'DDD',
-                                kb: TextInputType.phone,
-                                maxLen: 3),
-                          ),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: _field(
-                                ctrl: _model.respTelCtrl,
-                                hint: 'Número de telefone',
-                                kb: TextInputType.phone),
-                          ),
-                        ],
+                      _field(
+                        ctrl: _model.respWhatsappCtrl,
+                        hint: 'WhatsApp / Telefone',
+                        kb: TextInputType.phone,
                       ),
                       const SizedBox(height: 12),
                       _field(
                         ctrl: _model.respCpfCtrl,
-                        hint: 'CPF 000.000.000-00',
+                        hint: 'CPF',
                         kb: TextInputType.number,
                         fmt: [FilteringTextInputFormatter.digitsOnly],
                         maxLen: 11,

@@ -10,7 +10,7 @@ class PassageiroFormMModel extends FlutterFlowModel<PassageiroFormMWidget> {
   String? erro;
 
   // ── Step 1 — Passageiro ──────────────────────────
-  final nomeCtrl = TextEditingController(); // nome completo (wizard)
+  final nomeCtrl = TextEditingController(); // nome completo (wizard + edit)
   String? escolaNome;
   String? periodo;
   List<String> escolas = [];
@@ -30,9 +30,9 @@ class PassageiroFormMModel extends FlutterFlowModel<PassageiroFormMWidget> {
 
   static const periodos = ['Integral', 'Manhã', 'Almoço', 'Tarde', 'Noite'];
 
-  // ── Step 2 — Responsável (wizard) ────────────────
-  final respNomeCtrl = TextEditingController();
-  final respWhatsappCtrl = TextEditingController();
+  // ── Step 2 — Responsável (wizard + edit) ─────────
+  final respNomeCtrl = TextEditingController();    // nome completo
+  final respWhatsappCtrl = TextEditingController(); // WhatsApp / telefone
   final respCpfCtrl = TextEditingController();
 
   // ── Step 3 — Contrato (wizard) ───────────────────
@@ -47,15 +47,7 @@ class PassageiroFormMModel extends FlutterFlowModel<PassageiroFormMWidget> {
   String get vigenciaFimFmt =>
       vigenciaFim != null ? DateFormat('MM/yyyy').format(vigenciaFim!) : '';
 
-  // ── Controllers modo edição ──────────────────────
-  final primeiroNomeEditCtrl = TextEditingController();
-  final sobrenomeEditCtrl = TextEditingController();
-  final respNomeEditCtrl = TextEditingController();
-  final respSobrenomeEditCtrl = TextEditingController();
-  final respDddCtrl = TextEditingController();
-  final respTelCtrl = TextEditingController();
-
-  // ── Campos extras modo edição ────────────────────
+  // ── Campos extras — só no edit ───────────────────
   DateTime? dtNascimento;
   String? sexo;
 
@@ -73,18 +65,10 @@ class PassageiroFormMModel extends FlutterFlowModel<PassageiroFormMWidget> {
       final json = await VivanHttp.get('/passageiros/$id');
       final p = json as Map<String, dynamic>;
 
-      // Wizard (nome completo)
       nomeCtrl.text = p['nomePassageiro']?.toString() ?? '';
       escolaNome = p['nomeEscola']?.toString();
       periodo = p['domTurno']?.toString() ?? p['periodo']?.toString();
 
-      // Edit mode (nome dividido)
-      final partes = (p['nomePassageiro'] ?? '').toString().split(' ');
-      primeiroNomeEditCtrl.text = partes.isNotEmpty ? partes.first : '';
-      sobrenomeEditCtrl.text =
-          partes.length > 1 ? partes.skip(1).join(' ') : '';
-
-      // Data de nascimento e sexo
       final dtn = p['dtNascimento']?.toString();
       dtNascimento = dtn != null ? DateTime.tryParse(dtn) : null;
       sexo = p['domSexo']?.toString();
@@ -96,25 +80,9 @@ class PassageiroFormMModel extends FlutterFlowModel<PassageiroFormMWidget> {
         if (lista.isNotEmpty) {
           final r = lista.first as Map<String, dynamic>;
           _responsavelId = int.tryParse(r['idResponsavel']?.toString() ?? '');
-
-          // Wizard
           respNomeCtrl.text = r['nomeResponsavel']?.toString() ?? '';
           respWhatsappCtrl.text = r['whatsAppResponsavel']?.toString() ?? '';
           respCpfCtrl.text = r['cpfResponsavel']?.toString() ?? '';
-
-          // Edit mode (nome dividido)
-          final respPartes = (r['nomeResponsavel'] ?? '').toString().split(' ');
-          respNomeEditCtrl.text =
-              respPartes.isNotEmpty ? respPartes.first : '';
-          respSobrenomeEditCtrl.text =
-              respPartes.length > 1 ? respPartes.skip(1).join(' ') : '';
-
-          // Telefone dividido em DDD + número
-          final wpp = r['whatsAppResponsavel']?.toString() ?? '';
-          final spaceIdx = wpp.indexOf(' ');
-          respDddCtrl.text = spaceIdx > 0 ? wpp.substring(0, spaceIdx) : '';
-          respTelCtrl.text =
-              spaceIdx > 0 ? wpp.substring(spaceIdx + 1) : wpp;
         }
       } catch (_) {}
     } catch (e) {
@@ -130,12 +98,9 @@ class PassageiroFormMModel extends FlutterFlowModel<PassageiroFormMWidget> {
       final Map<String, dynamic> body;
       if (isEdit) {
         body = {
-          'nomePassageiro':
-              '${primeiroNomeEditCtrl.text.trim()} ${sobrenomeEditCtrl.text.trim()}'
-                  .trim(),
+          'nomePassageiro': nomeCtrl.text.trim(),
           if (dtNascimento != null)
-            'dtNascimento':
-                dtNascimento!.toIso8601String().substring(0, 10),
+            'dtNascimento': dtNascimento!.toIso8601String().substring(0, 10),
           if (sexo != null) 'domSexo': sexo,
           if (escolaNome?.isNotEmpty == true) 'nomeEscola': escolaNome,
           if (periodo != null) 'domTurno': periodo,
@@ -157,22 +122,10 @@ class PassageiroFormMModel extends FlutterFlowModel<PassageiroFormMWidget> {
             int.tryParse((savedP as Map)['idPassageiro']?.toString() ?? '');
       }
 
-      // Responsável
-      final String respNome;
-      final String respWpp;
-      final String respCpf;
-      if (isEdit) {
-        respNome =
-            '${respNomeEditCtrl.text.trim()} ${respSobrenomeEditCtrl.text.trim()}'
-                .trim();
-        respWpp =
-            '${respDddCtrl.text.trim()} ${respTelCtrl.text.trim()}'.trim();
-        respCpf = respCpfCtrl.text.trim();
-      } else {
-        respNome = respNomeCtrl.text.trim();
-        respWpp = respWhatsappCtrl.text.trim();
-        respCpf = respCpfCtrl.text.trim();
-      }
+      // Responsável — mesmos campos em ambos os modos
+      final respNome = respNomeCtrl.text.trim();
+      final respWpp = respWhatsappCtrl.text.trim();
+      final respCpf = respCpfCtrl.text.trim();
 
       final shouldSaveResp = isEdit
           ? (passageiroId != null && respNome.isNotEmpty)
@@ -263,11 +216,5 @@ class PassageiroFormMModel extends FlutterFlowModel<PassageiroFormMWidget> {
     respWhatsappCtrl.dispose();
     respCpfCtrl.dispose();
     valorCtrl.dispose();
-    primeiroNomeEditCtrl.dispose();
-    sobrenomeEditCtrl.dispose();
-    respNomeEditCtrl.dispose();
-    respSobrenomeEditCtrl.dispose();
-    respDddCtrl.dispose();
-    respTelCtrl.dispose();
   }
 }

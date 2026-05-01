@@ -1358,7 +1358,16 @@ class _DashboardMotoristaViaVanMWidgetState
                                       hoverColor: Colors.transparent,
                                       highlightColor: Colors.transparent,
                                       onTap: () async {
-                                        context.pushNamed('passageirosListaM');
+                                        await _model.pageViewController
+                                            ?.animateToPage(
+                                          1,
+                                          duration:
+                                              const Duration(milliseconds: 300),
+                                          curve: Curves.ease,
+                                        );
+                                        safeSetState(() {
+                                          _model.paginaAtiva = 1;
+                                        });
                                       },
                                       child: Container(
                                         width: 100.0,

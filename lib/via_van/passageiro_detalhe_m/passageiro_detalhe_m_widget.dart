@@ -1,6 +1,9 @@
 import '/vivan/vivan.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/via_van/passageiro_form_m/passageiro_form_m_widget.dart';
+import '/via_van/extrato_passageiro_m/extrato_passageiro_m_widget.dart';
+import '/via_van/gestao_mensalidades_m/gestao_mensalidades_m_widget.dart';
+import '/via_van/renovar_mensalidades_m/renovar_mensalidades_m_widget.dart';
 import 'package:ff_theme/flutter_flow/flutter_flow_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -371,8 +374,16 @@ class _PassageiroDetalheMWidgetState extends State<PassageiroDetalheMWidget> {
   }
 
   void _openExtrato() {
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text('Extrato Financeiro — em breve')));
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ExtratoPassageiroMWidget(
+          passageiroId: widget.passageiroId!,
+          nomePassageiro: _model.nome,
+          urlFoto: _model.foto.isNotEmpty ? _model.foto : null,
+        ),
+      ),
+    );
   }
 
   void _openContratos() {
@@ -391,12 +402,26 @@ class _PassageiroDetalheMWidgetState extends State<PassageiroDetalheMWidget> {
   }
 
   void _openGestaoMensalidades() {
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text('Gestão de Mensalidades — em breve')));
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => GestaoMensalidadesMWidget(
+          passageiroId: widget.passageiroId!,
+          nomePassageiro: _model.nome,
+        ),
+      ),
+    );
   }
 
   void _openRenovarMensalidades() {
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text('Renovar Mensalidades — em breve')));
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => RenovarMensalidadesMWidget(
+          passageiroId: widget.passageiroId!,
+          nomePassageiro: _model.nome,
+        ),
+      ),
+    );
   }
 }

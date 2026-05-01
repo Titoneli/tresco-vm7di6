@@ -1,9 +1,9 @@
 import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_util.dart';
-import '/flutter_flow/flutter_flow_widgets.dart';
 import '/index.dart';
 import '/via_van/financeiro_tab/financeiro_tab_widget.dart';
 import '/via_van/mensalidades_tab/mensalidades_tab_widget.dart';
+import '/via_van/passageiros_tab/passageiros_tab_widget.dart';
 import 'package:ff_theme/flutter_flow/flutter_flow_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -70,7 +70,7 @@ class _DashboardPassageirosMWidgetState
                   scrollDirection: Axis.horizontal,
                   children: [
                     _buildHomePage(context),
-                    _buildPlaceholderPage(context, 'Passageiros'),
+                    PassageirosTabWidget(),
                     MensalidadesTabWidget(),
                     FinanceiroTabWidget(),
                     _buildMaisPage(context),
@@ -272,23 +272,6 @@ class _DashboardPassageirosMWidgetState
     );
   }
 
-  Widget _buildPlaceholderPage(BuildContext context, String title) {
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(Icons.construction_rounded, color: FlutterFlowTheme.of(context).secondaryText, size: 48.0),
-          SizedBox(height: 12.0),
-          Text(title, style: FlutterFlowTheme.of(context).titleMedium.override(
-                font: GoogleFonts.interTight(fontWeight: FontWeight.w600),
-                color: FlutterFlowTheme.of(context).primaryText)),
-          SizedBox(height: 4.0),
-          Text('Em breve', style: FlutterFlowTheme.of(context).bodyMedium.override(
-                font: GoogleFonts.inter(), color: FlutterFlowTheme.of(context).secondaryText)),
-        ],
-      ),
-    );
-  }
 
   Widget _buildBottomNav(BuildContext context) {
     return Container(
@@ -386,11 +369,6 @@ class _DashboardPassageirosMWidgetState
     final inactiveColor = FlutterFlowTheme.of(context).secondaryText;
     return InkWell(
       onTap: () {
-        // Passageiros (1) → navega para tela dedicada
-        if (index == 1) {
-          context.pushNamed(PassageirosListaMWidget.routeName);
-          return;
-        }
         setState(() {
           _model.paginaAtiva = index;
           _model.pageViewController?.animateToPage(index,

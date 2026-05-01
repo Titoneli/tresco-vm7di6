@@ -100,21 +100,17 @@ class PassageiroFormMModel extends FlutterFlowModel<PassageiroFormMWidget> {
           'whatsAppResponsavel': respWpp,
           'cpfResponsavel': respCpf,
         };
-        try {
-          if (_responsavelId != null) {
-            await VivanHttp.put(
-                '/passageiros/$passageiroId/responsaveis/$_responsavelId',
-                rBody);
-          } else {
-            final r = await VivanHttp.post(
-                '/passageiros/$passageiroId/responsaveis', rBody);
-            if (r is Map) {
-              _responsavelId =
-                  int.tryParse(r['idResponsavel']?.toString() ?? '');
-            }
+        if (_responsavelId != null) {
+          await VivanHttp.put(
+              '/passageiros/$passageiroId/responsaveis/$_responsavelId',
+              rBody);
+        } else {
+          final r = await VivanHttp.post(
+              '/passageiros/$passageiroId/responsaveis', rBody);
+          if (r is Map) {
+            _responsavelId =
+                int.tryParse(r['idResponsavel']?.toString() ?? '');
           }
-        } catch (e) {
-          debugPrint('PassageiroForm.responsavel: $e');
         }
       }
 
@@ -130,28 +126,16 @@ class PassageiroFormMModel extends FlutterFlowModel<PassageiroFormMWidget> {
           if (vigenciaFim != null)
             'vigenciaFim': DateFormat('yyyy-MM').format(vigenciaFim!),
         };
-        try {
-          if (_contratoId != null) {
-            await VivanHttp.put(
-                '/passageiros/$passageiroId/contratos/$_contratoId', cBody);
-          } else {
-            final c = await VivanHttp.post(
-                '/passageiros/$passageiroId/contratos', cBody);
-            if (c is Map) {
-              _contratoId = int.tryParse(c['idContrato']?.toString() ?? '');
-            }
+        if (_contratoId != null) {
+          await VivanHttp.put(
+              '/passageiros/$passageiroId/contratos/$_contratoId', cBody);
+        } else {
+          final c = await VivanHttp.post(
+              '/passageiros/$passageiroId/contratos', cBody);
+          if (c is Map) {
+            _contratoId = int.tryParse(
+                (c['contrato'] as Map?)?['idContrato']?.toString() ?? '');
           }
-          // Ativa contrato para gerar mensalidades automaticamente
-          if (_contratoId != null && !isEdit) {
-            try {
-              await VivanHttp.post(
-                  '/contratos/$_contratoId/ativar', {});
-            } catch (e) {
-              debugPrint('PassageiroForm.ativarContrato: $e');
-            }
-          }
-        } catch (e) {
-          debugPrint('PassageiroForm.contrato: $e');
         }
       }
 

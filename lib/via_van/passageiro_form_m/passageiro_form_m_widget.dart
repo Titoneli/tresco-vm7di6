@@ -48,7 +48,7 @@ class _PassageiroFormMWidgetState extends State<PassageiroFormMWidget> {
   Color get _secondaryText => FlutterFlowTheme.of(context).secondaryText;
   Color get _secondBg => FlutterFlowTheme.of(context).secondaryBackground;
 
-  static const _totalSteps = 4;
+  static const _totalSteps = 3;
 
   @override
   Widget build(BuildContext context) {
@@ -70,7 +70,6 @@ class _PassageiroFormMWidgetState extends State<PassageiroFormMWidget> {
                     _buildStep1(),
                     _buildStep2(),
                     _buildStep3(),
-                    _buildStep4(),
                   ],
                 ),
               ),
@@ -131,9 +130,7 @@ class _PassageiroFormMWidgetState extends State<PassageiroFormMWidget> {
             width: current ? 24 : 8,
             height: 8,
             decoration: BoxDecoration(
-              color: done || current
-                  ? _primary
-                  : Colors.grey.shade300,
+              color: done || current ? _primary : Colors.grey.shade300,
               borderRadius: BorderRadius.circular(4),
             ),
           );
@@ -238,31 +235,15 @@ class _PassageiroFormMWidgetState extends State<PassageiroFormMWidget> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _sectionHeader('Passageiro', sub: '*Campos Opcionais'),
+          _sectionHeader('Passageiro'),
           const SizedBox(height: 16),
-          Row(children: [
-            Expanded(child: _field(ctrl: _model.nomeCtrl, hint: 'Nome')),
-            const SizedBox(width: 12),
-            Expanded(
-                child: _field(ctrl: _model.sobrenomeCtrl, hint: 'Sobrenome*')),
-          ]),
-          const SizedBox(height: 12),
-          _datePicker(
-            label: _model.dataNascimento != null
-                ? _model.dataNascimentoFmt
-                : 'Data de Nascimento*',
-            hasValue: _model.dataNascimento != null,
-            onTap: () => _pickDate(
-              initial: _model.dataNascimento,
-              first: DateTime(1900),
-              last: DateTime.now(),
-              onPicked: (d) => setState(() => _model.dataNascimento = d),
-            ),
+          _field(
+            ctrl: _model.nomeCtrl,
+            hint: 'Nome completo',
+            caps: TextCapitalization.words,
           ),
-          const SizedBox(height: 12),
-          _sexoToggle(),
           const SizedBox(height: 24),
-          _sectionHeader('Informações Escolares'),
+          _sectionHeader('Informações Escolares', sub: 'Opcional'),
           const SizedBox(height: 12),
           Row(children: [
             Expanded(
@@ -287,7 +268,7 @@ class _PassageiroFormMWidgetState extends State<PassageiroFormMWidget> {
   }
 
   // ────────────────────────────────────────────────
-  // STEP 2 — Endereço
+  // STEP 2 — Responsável
   // ────────────────────────────────────────────────
   Widget _buildStep2() {
     return SingleChildScrollView(
@@ -295,78 +276,18 @@ class _PassageiroFormMWidgetState extends State<PassageiroFormMWidget> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _sectionHeader('Endereço', sub: '*Campos Opcionais'),
+          _sectionHeader('Responsável', sub: 'Opcional'),
           const SizedBox(height: 16),
           _field(
-            ctrl: _model.cepCtrl,
-            hint: 'CEP',
-            kb: TextInputType.number,
-            fmt: [FilteringTextInputFormatter.digitsOnly],
-            maxLen: 8,
+            ctrl: _model.respNomeCtrl,
+            hint: 'Nome completo',
+            caps: TextCapitalization.words,
           ),
-          const SizedBox(height: 12),
-          _field(ctrl: _model.logradouroCtrl, hint: 'Logradouro'),
-          const SizedBox(height: 12),
-          Row(children: [
-            SizedBox(
-                width: 100,
-                child: _field(
-                    ctrl: _model.numeroCtrl,
-                    hint: 'Nº',
-                    kb: TextInputType.number)),
-            const SizedBox(width: 12),
-            Expanded(
-                child: _field(ctrl: _model.complementoCtrl, hint: 'Complemento*')),
-          ]),
-          const SizedBox(height: 12),
-          _field(ctrl: _model.bairroCtrl, hint: 'Bairro'),
-          const SizedBox(height: 12),
-          Row(children: [
-            Expanded(child: _field(ctrl: _model.cidadeCtrl, hint: 'Cidade')),
-            const SizedBox(width: 12),
-            SizedBox(
-                width: 70,
-                child: _field(
-                    ctrl: _model.ufCtrl,
-                    hint: 'UF',
-                    maxLen: 2,
-                    caps: TextCapitalization.characters)),
-          ]),
-        ],
-      ),
-    );
-  }
-
-  // ────────────────────────────────────────────────
-  // STEP 3 — Responsável
-  // ────────────────────────────────────────────────
-  Widget _buildStep3() {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(20, 8, 20, 20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _sectionHeader('Responsável', sub: '*Campos Opcionais'),
-          const SizedBox(height: 16),
-          Row(children: [
-            Expanded(child: _field(ctrl: _model.respNomeCtrl, hint: 'Nome')),
-            const SizedBox(width: 12),
-            Expanded(
-                child: _field(
-                    ctrl: _model.respSobrenomeCtrl, hint: 'Sobrenome*')),
-          ]),
           const SizedBox(height: 12),
           _field(
             ctrl: _model.respWhatsappCtrl,
             hint: 'WhatsApp',
             kb: TextInputType.phone,
-          ),
-          const SizedBox(height: 12),
-          _field(
-            ctrl: _model.respEmailCtrl,
-            hint: 'E-mail',
-            kb: TextInputType.emailAddress,
-            caps: TextCapitalization.none,
           ),
           const SizedBox(height: 12),
           _field(
@@ -376,15 +297,9 @@ class _PassageiroFormMWidgetState extends State<PassageiroFormMWidget> {
             fmt: [FilteringTextInputFormatter.digitsOnly],
             maxLen: 11,
           ),
-          const SizedBox(height: 12),
-          _pickerButton(
-            label: _model.respParentesco ?? 'Parentesco',
-            hasValue: _model.respParentesco != null,
-            onTap: _showParentescoSheet,
-          ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 16),
           Text(
-            'Preencha todos os campos acima para salvar o responsável.',
+            'Preencha nome, WhatsApp e CPF para vincular um responsável.',
             style: FlutterFlowTheme.of(context).bodySmall.override(
                   font: GoogleFonts.inter(), color: _secondaryText),
             textAlign: TextAlign.center,
@@ -395,15 +310,15 @@ class _PassageiroFormMWidgetState extends State<PassageiroFormMWidget> {
   }
 
   // ────────────────────────────────────────────────
-  // STEP 4 — Contrato / Mensalidade
+  // STEP 3 — Contrato / Mensalidade
   // ────────────────────────────────────────────────
-  Widget _buildStep4() {
+  Widget _buildStep3() {
     return SingleChildScrollView(
       padding: const EdgeInsets.fromLTRB(20, 8, 20, 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _sectionHeader('Mensalidade', sub: '*Campos Opcionais'),
+          _sectionHeader('Mensalidade', sub: 'Opcional'),
           const SizedBox(height: 16),
           _field(
             ctrl: _model.valorCtrl,
@@ -417,7 +332,7 @@ class _PassageiroFormMWidgetState extends State<PassageiroFormMWidget> {
           _pickerButton(
             label: _model.diaPagamento != null
                 ? 'Dia ${_model.diaPagamento} de cada mês'
-                : 'Dia de pagamento*',
+                : 'Dia de pagamento',
             hasValue: _model.diaPagamento != null,
             onTap: _showDiaPagamentoSheet,
           ),
@@ -425,7 +340,7 @@ class _PassageiroFormMWidgetState extends State<PassageiroFormMWidget> {
           _datePicker(
             label: _model.vigenciaInicio != null
                 ? 'Início: ${_model.vigenciaInicioFmt}'
-                : 'Vigência início*',
+                : 'Vigência início',
             hasValue: _model.vigenciaInicio != null,
             onTap: () => _pickMonthYear(
               title: 'Vigência Início',
@@ -437,13 +352,20 @@ class _PassageiroFormMWidgetState extends State<PassageiroFormMWidget> {
           _datePicker(
             label: _model.vigenciaFim != null
                 ? 'Fim: ${_model.vigenciaFimFmt}'
-                : 'Vigência fim*',
+                : 'Vigência fim',
             hasValue: _model.vigenciaFim != null,
             onTap: () => _pickMonthYear(
               title: 'Vigência Fim',
               initial: _model.vigenciaFim,
               onPicked: (d) => setState(() => _model.vigenciaFim = d),
             ),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'As mensalidades serão geradas automaticamente ao salvar.',
+            style: FlutterFlowTheme.of(context).bodySmall.override(
+                  font: GoogleFonts.inter(), color: _secondaryText),
+            textAlign: TextAlign.center,
           ),
         ],
       ),
@@ -561,45 +483,6 @@ class _PassageiroFormMWidgetState extends State<PassageiroFormMWidget> {
     );
   }
 
-  Widget _sexoToggle() {
-    return Container(
-      width: double.infinity,
-      decoration: BoxDecoration(
-          border: Border.all(color: _primary),
-          borderRadius: BorderRadius.circular(12)),
-      child: Row(
-        children: [
-          _sexoOption('Masculino', true),
-          _sexoOption('Feminino', false),
-        ],
-      ),
-    );
-  }
-
-  Widget _sexoOption(String label, bool isMasc) {
-    final active = _model.sexoMasculino == isMasc;
-    return Expanded(
-      child: GestureDetector(
-        onTap: () => setState(() => _model.sexoMasculino = isMasc),
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 12),
-          decoration: BoxDecoration(
-            color: active ? _primary : Colors.transparent,
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Text(
-            label,
-            textAlign: TextAlign.center,
-            style: FlutterFlowTheme.of(context).bodyMedium.override(
-                  font:
-                      GoogleFonts.inter(fontWeight: FontWeight.w600),
-                  color: active ? Colors.white : _primaryText),
-          ),
-        ),
-      ),
-    );
-  }
-
   Widget _addButton({required VoidCallback onTap}) {
     return GestureDetector(
       onTap: onTap,
@@ -619,7 +502,7 @@ class _PassageiroFormMWidgetState extends State<PassageiroFormMWidget> {
   void _showEscolaSheet() {
     _showListSheet(
       titulo: 'Escola',
-      opcoes: const [], // lista vazia — endpoint indisponível
+      opcoes: const [],
       selecionado: _model.escolaNome,
       onSelect: (v) => setState(() => _model.escolaNome = v),
       emptyMsg: 'Use o botão + para adicionar uma escola',
@@ -642,8 +525,7 @@ class _PassageiroFormMWidgetState extends State<PassageiroFormMWidget> {
           children: [
             Text('Nova Escola',
                 style: FlutterFlowTheme.of(context).titleMedium.override(
-                      font:
-                          GoogleFonts.interTight(fontWeight: FontWeight.w700),
+                      font: GoogleFonts.interTight(fontWeight: FontWeight.w700),
                       color: _primaryText)),
             const SizedBox(height: 16),
             TextFormField(
@@ -705,15 +587,6 @@ class _PassageiroFormMWidgetState extends State<PassageiroFormMWidget> {
     );
   }
 
-  void _showParentescoSheet() {
-    _showListSheet(
-      titulo: 'Parentesco',
-      opcoes: PassageiroFormMModel.parentescos,
-      selecionado: _model.respParentesco,
-      onSelect: (v) => setState(() => _model.respParentesco = v),
-    );
-  }
-
   void _showDiaPagamentoSheet() {
     int? temp = _model.diaPagamento;
     showModalBottomSheet(
@@ -730,8 +603,7 @@ class _PassageiroFormMWidgetState extends State<PassageiroFormMWidget> {
             children: [
               Text('Dia de Pagamento',
                   style: FlutterFlowTheme.of(context).titleMedium.override(
-                        font: GoogleFonts.interTight(
-                            fontWeight: FontWeight.w700),
+                        font: GoogleFonts.interTight(fontWeight: FontWeight.w700),
                         color: _primaryText)),
               const SizedBox(height: 12),
               SizedBox(
@@ -740,8 +612,8 @@ class _PassageiroFormMWidgetState extends State<PassageiroFormMWidget> {
                   itemExtent: 44,
                   perspective: 0.004,
                   physics: const FixedExtentScrollPhysics(),
-                  controller: FixedExtentScrollController(
-                      initialItem: (temp ?? 1) - 1),
+                  controller:
+                      FixedExtentScrollController(initialItem: (temp ?? 1) - 1),
                   onSelectedItemChanged: (i) => setS(() => temp = i + 1),
                   childDelegate: ListWheelChildBuilderDelegate(
                     childCount: 31,
@@ -849,73 +721,6 @@ class _PassageiroFormMWidgetState extends State<PassageiroFormMWidget> {
   }
 
   // ── Date pickers ─────────────────────────────────
-  Future<void> _pickDate({
-    required DateTime? initial,
-    required DateTime first,
-    required DateTime last,
-    required void Function(DateTime) onPicked,
-  }) async {
-    DateTime temp = initial ?? DateTime(2010, 1, 1);
-    if (temp.isAfter(last)) temp = last;
-    if (temp.isBefore(first)) temp = first;
-
-    await showModalBottomSheet(
-      context: context,
-      backgroundColor: _bg,
-      shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
-      builder: (ctx) => Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                GestureDetector(
-                  onTap: () => Navigator.pop(ctx),
-                  child: Text('Cancelar',
-                      style: TextStyle(
-                          color: _primary,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500)),
-                ),
-                Text('Data de Nascimento',
-                    style: TextStyle(
-                        color: _primaryText,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600)),
-                GestureDetector(
-                  onTap: () {
-                    onPicked(temp);
-                    Navigator.pop(ctx);
-                  },
-                  child: Text('Selecionar',
-                      style: TextStyle(
-                          color: _primary,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700)),
-                ),
-              ],
-            ),
-          ),
-          Divider(height: 1, color: Colors.grey.shade200),
-          SizedBox(
-            height: 220,
-            child: CupertinoDatePicker(
-              mode: CupertinoDatePickerMode.date,
-              initialDateTime: temp,
-              minimumDate: first,
-              maximumDate: last,
-              onDateTimeChanged: (d) => temp = d,
-            ),
-          ),
-          const SizedBox(height: 16),
-        ],
-      ),
-    );
-  }
-
   Future<void> _pickMonthYear({
     required String title,
     required DateTime? initial,
@@ -930,7 +735,7 @@ class _PassageiroFormMWidgetState extends State<PassageiroFormMWidget> {
 
     final now = DateTime.now();
     final init = initial ?? now;
-    int selMonth = init.month - 1; // 0-based index
+    int selMonth = init.month - 1;
     int selYear = init.year.clamp(firstYear, lastYear);
 
     await showModalBottomSheet(
@@ -982,8 +787,8 @@ class _PassageiroFormMWidgetState extends State<PassageiroFormMWidget> {
                   Expanded(
                     flex: 2,
                     child: CupertinoPicker(
-                      scrollController: FixedExtentScrollController(
-                          initialItem: selMonth),
+                      scrollController:
+                          FixedExtentScrollController(initialItem: selMonth),
                       itemExtent: 44,
                       onSelectedItemChanged: (i) => setS(() => selMonth = i),
                       children: months

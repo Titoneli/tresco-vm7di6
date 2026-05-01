@@ -1,9 +1,22 @@
 /// Modelos de dados do módulo ViVan.
 /// Mapeiam 1:1 com as tabelas do banco (vivan_*).
-///
-/// Quando virar app separado, estes modelos são reutilizados integralmente.
 
-import 'dart:convert';
+// ── Helpers de parsing seguro ──────────────────────────────────────────────
+// A API pode retornar números como String (ex: "123") — estes helpers
+// aceitam qualquer tipo e convertem sem lançar exceção.
+
+int? _i(dynamic v) => v == null ? null : int.tryParse(v.toString());
+int _iOr(dynamic v, int d) => _i(v) ?? d;
+double? _d(dynamic v) => v == null ? null : double.tryParse(v.toString());
+double _dOr(dynamic v, double d) => _d(v) ?? d;
+bool _b(dynamic v, {bool def = false}) {
+  if (v == null) return def;
+  if (v is bool) return v;
+  final s = v.toString().toLowerCase();
+  return s == 'true' || s == '1';
+}
+String? _s(dynamic v) => v?.toString();
+String _sOr(dynamic v, String d) => _s(v) ?? d;
 
 // ============================================
 // PASSAGEIRO
@@ -30,7 +43,7 @@ class VivanPassageiro {
   final double? lngPassageiro;
   final String? urlFoto;
   final int? idEscola;
-  final String? nomeEscola; // join
+  final String? nomeEscola;
   final String? domTurno;
   final String? domSerie;
   final int? idTurma;
@@ -76,41 +89,39 @@ class VivanPassageiro {
     this.ativo = true,
   });
 
-  factory VivanPassageiro.fromJson(Map<String, dynamic> json) {
-    return VivanPassageiro(
-      idPassageiro: json['idPassageiro'] as int?,
-      idMotorista: json['idMotorista'] as int?,
-      nomePassageiro: json['nomePassageiro'] as String? ?? '',
-      cpfPassageiro: json['cpfPassageiro'] as String?,
-      rgPassageiro: json['rgPassageiro'] as String?,
-      dtNascimento: json['dtNascimento'] as String?,
-      whatsAppPassageiro: json['whatsAppPassageiro'] as String?,
-      telPassageiro: json['telPassageiro'] as String?,
-      emailPassageiro: json['emailPassageiro'] as String?,
-      cepPassageiro: json['cepPassageiro'] as String?,
-      endPassageiro: json['endPassageiro'] as String? ?? '',
-      numPassageiro: json['numPassageiro'] as String?,
-      compPassageiro: json['compPassageiro'] as String?,
-      bairroPassageiro: json['bairroPassageiro'] as String?,
-      cidadePassageiro: json['cidadePassageiro'] as String?,
-      ufPassageiro: json['ufPassageiro'] as String?,
-      latPassageiro: (json['latPassageiro'] as num?)?.toDouble(),
-      lngPassageiro: (json['lngPassageiro'] as num?)?.toDouble(),
-      urlFoto: json['urlFoto'] as String?,
-      idEscola: json['idEscola'] as int?,
-      nomeEscola: json['nomeEscola'] as String?,
-      domTurno: json['domTurno'] as String?,
-      domSerie: json['domSerie'] as String?,
-      idTurma: json['idTurma'] as int?,
-      horarioEntrada: json['horarioEntrada'] as String?,
-      horarioSaida: json['horarioSaida'] as String?,
-      periodoLetivo: json['periodoLetivo'] as String?,
-      necessidadesEspeciais: json['necessidadesEspeciais'] as String?,
-      observacoes: json['observacoes'] as String?,
-      domSexo: json['domSexo'] as String?,
-      ativo: json['ativo'] as bool? ?? true,
-    );
-  }
+  factory VivanPassageiro.fromJson(Map<String, dynamic> j) => VivanPassageiro(
+        idPassageiro: _i(j['idPassageiro']),
+        idMotorista: _i(j['idMotorista']),
+        nomePassageiro: _sOr(j['nomePassageiro'], ''),
+        cpfPassageiro: _s(j['cpfPassageiro']),
+        rgPassageiro: _s(j['rgPassageiro']),
+        dtNascimento: _s(j['dtNascimento']),
+        whatsAppPassageiro: _s(j['whatsAppPassageiro']),
+        telPassageiro: _s(j['telPassageiro']),
+        emailPassageiro: _s(j['emailPassageiro']),
+        cepPassageiro: _s(j['cepPassageiro']),
+        endPassageiro: _sOr(j['endPassageiro'], ''),
+        numPassageiro: _s(j['numPassageiro']),
+        compPassageiro: _s(j['compPassageiro']),
+        bairroPassageiro: _s(j['bairroPassageiro']),
+        cidadePassageiro: _s(j['cidadePassageiro']),
+        ufPassageiro: _s(j['ufPassageiro']),
+        latPassageiro: _d(j['latPassageiro']),
+        lngPassageiro: _d(j['lngPassageiro']),
+        urlFoto: _s(j['urlFoto']),
+        idEscola: _i(j['idEscola']),
+        nomeEscola: _s(j['nomeEscola']),
+        domTurno: _s(j['domTurno']),
+        domSerie: _s(j['domSerie']),
+        idTurma: _i(j['idTurma']),
+        horarioEntrada: _s(j['horarioEntrada']),
+        horarioSaida: _s(j['horarioSaida']),
+        periodoLetivo: _s(j['periodoLetivo']),
+        necessidadesEspeciais: _s(j['necessidadesEspeciais']),
+        observacoes: _s(j['observacoes']),
+        domSexo: _s(j['domSexo']),
+        ativo: _b(j['ativo'], def: true),
+      );
 
   Map<String, dynamic> toJson() => {
         if (idPassageiro != null) 'idPassageiro': idPassageiro,
@@ -145,7 +156,6 @@ class VivanPassageiro {
         'ativo': ativo,
       };
 
-  /// Endereço formatado
   String get enderecoCompleto {
     final parts = <String>[];
     if (endPassageiro.isNotEmpty) parts.add(endPassageiro);
@@ -158,7 +168,6 @@ class VivanPassageiro {
     return parts.join(', ');
   }
 
-  /// Inicial do nome para avatar
   String get inicial => nomePassageiro.isNotEmpty ? nomePassageiro[0].toUpperCase() : 'P';
 }
 
@@ -172,19 +181,13 @@ class VivanEscola {
   final int? idMotorista;
   final String nomeEscola;
 
-  VivanEscola({
-    this.idEscola,
-    this.idMotorista,
-    required this.nomeEscola,
-  });
+  VivanEscola({this.idEscola, this.idMotorista, required this.nomeEscola});
 
-  factory VivanEscola.fromJson(Map<String, dynamic> json) {
-    return VivanEscola(
-      idEscola: json['idEscola'] as int?,
-      idMotorista: json['idMotorista'] as int?,
-      nomeEscola: json['nomeEscola'] as String? ?? '',
-    );
-  }
+  factory VivanEscola.fromJson(Map<String, dynamic> j) => VivanEscola(
+        idEscola: _i(j['idEscola']),
+        idMotorista: _i(j['idMotorista']),
+        nomeEscola: _sOr(j['nomeEscola'], ''),
+      );
 
   Map<String, dynamic> toJson() => {
         if (idEscola != null) 'idEscola': idEscola,
@@ -232,25 +235,23 @@ class VivanResponsavel {
     this.ativo = true,
   });
 
-  factory VivanResponsavel.fromJson(Map<String, dynamic> json) {
-    return VivanResponsavel(
-      idResponsavel: json['idResponsavel'] as int?,
-      idPassageiro: json['idPassageiro'] as int?,
-      nomeResponsavel: json['nomeResponsavel'] as String? ?? '',
-      cpfResponsavel: json['cpfResponsavel'] as String? ?? '',
-      rgResponsavel: json['rgResponsavel'] as String?,
-      parentesco: json['parentesco'] as String? ?? '',
-      telResponsavel: json['telResponsavel'] as String?,
-      whatsAppResponsavel: json['whatsAppResponsavel'] as String? ?? '',
-      emailResponsavel: json['emailResponsavel'] as String? ?? '',
-      endResponsavel: json['endResponsavel'] as String?,
-      cnhResponsavel: json['cnhResponsavel'] as String?,
-      profissao: json['profissao'] as String?,
-      estadoCivil: json['estadoCivil'] as String?,
-      principal: json['principal'] as bool? ?? true,
-      ativo: json['ativo'] as bool? ?? true,
-    );
-  }
+  factory VivanResponsavel.fromJson(Map<String, dynamic> j) => VivanResponsavel(
+        idResponsavel: _i(j['idResponsavel']),
+        idPassageiro: _i(j['idPassageiro']),
+        nomeResponsavel: _sOr(j['nomeResponsavel'], ''),
+        cpfResponsavel: _sOr(j['cpfResponsavel'], ''),
+        rgResponsavel: _s(j['rgResponsavel']),
+        parentesco: _sOr(j['parentesco'], ''),
+        telResponsavel: _s(j['telResponsavel']),
+        whatsAppResponsavel: _sOr(j['whatsAppResponsavel'], ''),
+        emailResponsavel: _sOr(j['emailResponsavel'], ''),
+        endResponsavel: _s(j['endResponsavel']),
+        cnhResponsavel: _s(j['cnhResponsavel']),
+        profissao: _s(j['profissao']),
+        estadoCivil: _s(j['estadoCivil']),
+        principal: _b(j['principal'], def: true),
+        ativo: _b(j['ativo'], def: true),
+      );
 
   Map<String, dynamic> toJson() => {
         if (idResponsavel != null) 'idResponsavel': idResponsavel,
@@ -297,7 +298,6 @@ class VivanContrato {
   final String? motivoCancelamento;
   final String? motivoSuspensao;
   final String? observacoes;
-  // Joins
   final String? nomePassageiro;
   final String? nomeResponsavel;
   final String? nomeEscola;
@@ -330,35 +330,35 @@ class VivanContrato {
     this.nomeEscola,
   });
 
-  factory VivanContrato.fromJson(Map<String, dynamic> json) {
-    return VivanContrato(
-      idContrato: json['idContrato'] as int?,
-      numContrato: json['numContrato'] as String?,
-      idMotorista: json['idMotorista'] as int?,
-      idPassageiro: json['idPassageiro'] as int?,
-      idResponsavel: json['idResponsavel'] as int?,
-      idEscola: json['idEscola'] as int?,
-      idVeiculo: json['idVeiculo'] as int?,
-      domTurno: json['domTurno'] as String?,
-      dtInicio: json['dtInicio'] as String?,
-      dtTermino: json['dtTermino'] as String?,
-      valMensal: (json['valMensal'] as num?)?.toDouble(),
-      diaVencimento: json['diaVencimento'] as int?,
-      domFormaPagamento: json['domFormaPagamento'] as String?,
-      domCondicaoPagamento: json['domCondicaoPagamento'] as String?,
-      percentualDesconto: (json['percentualDesconto'] as num?)?.toDouble(),
-      percentualMulta: (json['percentualMulta'] as num?)?.toDouble(),
-      percentualJurosDia: (json['percentualJurosDia'] as num?)?.toDouble(),
-      clausulasAdicionais: json['clausulasAdicionais'] as Map<String, dynamic>?,
-      status: json['status'] as String? ?? 'RASCUNHO',
-      motivoCancelamento: json['motivoCancelamento'] as String?,
-      motivoSuspensao: json['motivoSuspensao'] as String?,
-      observacoes: json['observacoes'] as String?,
-      nomePassageiro: json['nomePassageiro'] as String?,
-      nomeResponsavel: json['nomeResponsavel'] as String?,
-      nomeEscola: json['nomeEscola'] as String?,
-    );
-  }
+  factory VivanContrato.fromJson(Map<String, dynamic> j) => VivanContrato(
+        idContrato: _i(j['idContrato']),
+        numContrato: _s(j['numContrato']),
+        idMotorista: _i(j['idMotorista']),
+        idPassageiro: _i(j['idPassageiro']),
+        idResponsavel: _i(j['idResponsavel']),
+        idEscola: _i(j['idEscola']),
+        idVeiculo: _i(j['idVeiculo']),
+        domTurno: _s(j['domTurno']),
+        dtInicio: _s(j['dtInicio']),
+        dtTermino: _s(j['dtTermino']),
+        valMensal: _d(j['valMensal']),
+        diaVencimento: _i(j['diaVencimento']),
+        domFormaPagamento: _s(j['domFormaPagamento']),
+        domCondicaoPagamento: _s(j['domCondicaoPagamento']),
+        percentualDesconto: _d(j['percentualDesconto']),
+        percentualMulta: _d(j['percentualMulta']),
+        percentualJurosDia: _d(j['percentualJurosDia']),
+        clausulasAdicionais: j['clausulasAdicionais'] is Map
+            ? Map<String, dynamic>.from(j['clausulasAdicionais'] as Map)
+            : null,
+        status: _sOr(j['status'], 'RASCUNHO'),
+        motivoCancelamento: _s(j['motivoCancelamento']),
+        motivoSuspensao: _s(j['motivoSuspensao']),
+        observacoes: _s(j['observacoes']),
+        nomePassageiro: _s(j['nomePassageiro']),
+        nomeResponsavel: _s(j['nomeResponsavel']),
+        nomeEscola: _s(j['nomeEscola']),
+      );
 
   Map<String, dynamic> toJson() => {
         'idMotorista': idMotorista,
@@ -408,7 +408,6 @@ class VivanMensalidade {
   final String? comprovanteUrl;
   final String? motivoAbono;
   final String? observacoes;
-  // Joins
   final String? nomePassageiro;
   final String? nomeResponsavel;
   final String? numContrato;
@@ -443,38 +442,35 @@ class VivanMensalidade {
     this.turnoPassageiro,
   });
 
-  factory VivanMensalidade.fromJson(Map<String, dynamic> json) {
-    return VivanMensalidade(
-      idMensalidade: json['idMensalidade'] as int?,
-      idContrato: json['idContrato'] as int?,
-      idPassageiro: json['idPassageiro'] as int?,
-      idResponsavel: json['idResponsavel'] as int?,
-      idMotorista: json['idMotorista'] as int?,
-      mesReferencia: json['mesReferencia'] as String?,
-      dtVencimento: json['dtVencimento'] as String?,
-      valOriginal: (json['valOriginal'] as num?)?.toDouble(),
-      valDesconto: (json['valDesconto'] as num?)?.toDouble(),
-      valMulta: (json['valMulta'] as num?)?.toDouble(),
-      valJuros: (json['valJuros'] as num?)?.toDouble(),
-      valPago: (json['valPago'] as num?)?.toDouble(),
-      dtPagamento: json['dtPagamento'] as String?,
-      formaPagamento: json['formaPagamento'] as String?,
-      status: json['status'] as String? ?? 'AGUARDANDO',
-      asaasPixQrCode: json['asaasPixQrCode'] as String?,
-      asaasPixCopiaECola: json['asaasPixCopiaECola'] as String?,
-      asaasInvoiceUrl: json['asaasInvoiceUrl'] as String?,
-      asaasBankSlipUrl: json['asaasBankSlipUrl'] as String?,
-      comprovanteUrl: json['comprovanteUrl'] as String?,
-      motivoAbono: json['motivoAbono'] as String?,
-      observacoes: json['observacoes'] as String?,
-      nomePassageiro: json['nomePassageiro'] as String?,
-      nomeResponsavel: json['nomeResponsavel'] as String?,
-      numContrato: json['numContrato'] as String?,
-      turnoPassageiro: json['turnoPassageiro'] as String?,
-    );
-  }
+  factory VivanMensalidade.fromJson(Map<String, dynamic> j) => VivanMensalidade(
+        idMensalidade: _i(j['idMensalidade']),
+        idContrato: _i(j['idContrato']),
+        idPassageiro: _i(j['idPassageiro']),
+        idResponsavel: _i(j['idResponsavel']),
+        idMotorista: _i(j['idMotorista']),
+        mesReferencia: _s(j['mesReferencia']),
+        dtVencimento: _s(j['dtVencimento']),
+        valOriginal: _d(j['valOriginal']),
+        valDesconto: _d(j['valDesconto']),
+        valMulta: _d(j['valMulta']),
+        valJuros: _d(j['valJuros']),
+        valPago: _d(j['valPago']),
+        dtPagamento: _s(j['dtPagamento']),
+        formaPagamento: _s(j['formaPagamento']),
+        status: _sOr(j['status'], 'AGUARDANDO'),
+        asaasPixQrCode: _s(j['asaasPixQrCode']),
+        asaasPixCopiaECola: _s(j['asaasPixCopiaECola']),
+        asaasInvoiceUrl: _s(j['asaasInvoiceUrl']),
+        asaasBankSlipUrl: _s(j['asaasBankSlipUrl']),
+        comprovanteUrl: _s(j['comprovanteUrl']),
+        motivoAbono: _s(j['motivoAbono']),
+        observacoes: _s(j['observacoes']),
+        nomePassageiro: _s(j['nomePassageiro']),
+        nomeResponsavel: _s(j['nomeResponsavel']),
+        numContrato: _s(j['numContrato']),
+        turnoPassageiro: _s(j['turnoPassageiro']),
+      );
 
-  /// Valor líquido a pagar
   double get valorLiquido =>
       (valOriginal ?? 0) - (valDesconto ?? 0) + (valMulta ?? 0) + (valJuros ?? 0);
 
@@ -529,28 +525,26 @@ class VivanDespesa {
     this.mesFinal,
   });
 
-  factory VivanDespesa.fromJson(Map<String, dynamic> json) {
-    return VivanDespesa(
-      idDespesa: json['idDespesa'] as int?,
-      idMotorista: json['idMotorista'] as int?,
-      idVeiculo: json['idVeiculo'] as int?,
-      categoria: json['categoria'] as String? ?? '',
-      descricao: json['descricao'] as String? ?? '',
-      valor: (json['valor'] as num?)?.toDouble() ?? 0,
-      dtDespesa: json['dtDespesa'] as String? ?? '',
-      dtVencimento: json['dtVencimento'] as String?,
-      pago: json['pago'] as bool? ?? false,
-      dtPagamento: json['dtPagamento'] as String?,
-      comprovanteUrl: json['comprovanteUrl'] as String?,
-      mesReferencia: json['mesReferencia'] as String?,
-      observacoes: json['observacoes'] as String?,
-      tipoLancamento: json['tipoLancamento'] as String? ?? 'DESPESA',
-      recorrente: json['recorrente'] as bool? ?? false,
-      diaVencimento: json['diaVencimento'] as int?,
-      mesInicial: json['mesInicial'] as String?,
-      mesFinal: json['mesFinal'] as String?,
-    );
-  }
+  factory VivanDespesa.fromJson(Map<String, dynamic> j) => VivanDespesa(
+        idDespesa: _i(j['idDespesa']),
+        idMotorista: _i(j['idMotorista']),
+        idVeiculo: _i(j['idVeiculo']),
+        categoria: _sOr(j['categoria'], ''),
+        descricao: _sOr(j['descricao'], ''),
+        valor: _dOr(j['valor'], 0),
+        dtDespesa: _sOr(j['dtDespesa'], ''),
+        dtVencimento: _s(j['dtVencimento']),
+        pago: _b(j['pago']),
+        dtPagamento: _s(j['dtPagamento']),
+        comprovanteUrl: _s(j['comprovanteUrl']),
+        mesReferencia: _s(j['mesReferencia']),
+        observacoes: _s(j['observacoes']),
+        tipoLancamento: _sOr(j['tipoLancamento'], 'DESPESA'),
+        recorrente: _b(j['recorrente']),
+        diaVencimento: _i(j['diaVencimento']),
+        mesInicial: _s(j['mesInicial']),
+        mesFinal: _s(j['mesFinal']),
+      );
 
   Map<String, dynamic> toJson() => {
         'idMotorista': idMotorista,
@@ -584,11 +578,10 @@ class VivanPresenca {
   final int? idMotorista;
   final String? dtPresenca;
   final String? domTurno;
-  final String tipoPresenca; // P = Presente, F = Falta
+  final String tipoPresenca;
   final String? justificativa;
   final double? latRegistro;
   final double? lngRegistro;
-  // Join
   final String? nomePassageiro;
 
   VivanPresenca({
@@ -605,21 +598,19 @@ class VivanPresenca {
     this.nomePassageiro,
   });
 
-  factory VivanPresenca.fromJson(Map<String, dynamic> json) {
-    return VivanPresenca(
-      idPresenca: json['idPresenca'] as int?,
-      idContrato: json['idContrato'] as int?,
-      idPassageiro: json['idPassageiro'] as int?,
-      idMotorista: json['idMotorista'] as int?,
-      dtPresenca: json['dtPresenca'] as String?,
-      domTurno: json['domTurno'] as String?,
-      tipoPresenca: json['tipoPresenca'] as String? ?? 'P',
-      justificativa: json['justificativa'] as String?,
-      latRegistro: (json['latRegistro'] as num?)?.toDouble(),
-      lngRegistro: (json['lngRegistro'] as num?)?.toDouble(),
-      nomePassageiro: json['nomePassageiro'] as String?,
-    );
-  }
+  factory VivanPresenca.fromJson(Map<String, dynamic> j) => VivanPresenca(
+        idPresenca: _i(j['idPresenca']),
+        idContrato: _i(j['idContrato']),
+        idPassageiro: _i(j['idPassageiro']),
+        idMotorista: _i(j['idMotorista']),
+        dtPresenca: _s(j['dtPresenca']),
+        domTurno: _s(j['domTurno']),
+        tipoPresenca: _sOr(j['tipoPresenca'], 'P'),
+        justificativa: _s(j['justificativa']),
+        latRegistro: _d(j['latRegistro']),
+        lngRegistro: _d(j['lngRegistro']),
+        nomePassageiro: _s(j['nomePassageiro']),
+      );
 
   Map<String, dynamic> toJson() => {
         'idContrato': idContrato,
@@ -661,18 +652,17 @@ class VivanContratoHistorico {
     this.dtAlteracao,
   });
 
-  factory VivanContratoHistorico.fromJson(Map<String, dynamic> json) {
-    return VivanContratoHistorico(
-      idHistorico: json['idHistorico'] as int?,
-      idContrato: json['idContrato'] as int?,
-      tipoAlteracao: json['tipoAlteracao'] as String?,
-      statusAnterior: json['statusAnterior'] as String?,
-      statusNovo: json['statusNovo'] as String?,
-      usuario: json['usuario'] as String?,
-      descricao: json['descricao'] as String?,
-      dtAlteracao: json['dtAlteracao'] as String?,
-    );
-  }
+  factory VivanContratoHistorico.fromJson(Map<String, dynamic> j) =>
+      VivanContratoHistorico(
+        idHistorico: _i(j['idHistorico']),
+        idContrato: _i(j['idContrato']),
+        tipoAlteracao: _s(j['tipoAlteracao']),
+        statusAnterior: _s(j['statusAnterior']),
+        statusNovo: _s(j['statusNovo']),
+        usuario: _s(j['usuario']),
+        descricao: _s(j['descricao']),
+        dtAlteracao: _s(j['dtAlteracao']),
+      );
 }
 
 // ============================================
@@ -708,27 +698,23 @@ class VivanDashboardResumo {
     this.totalDespesas = 0,
   });
 
-  factory VivanDashboardResumo.fromJson(Map<String, dynamic> json) {
-    return VivanDashboardResumo(
-      mesReferencia: json['mesReferencia'] as String? ?? '',
-      totalPassageiros: json['totalPassageiros'] as int? ?? 0,
-      passageirosAtivos: json['passageirosAtivos'] as int? ?? 0,
-      totalContratos: json['totalContratos'] as int? ?? 0,
-      contratosAtivos: json['contratosAtivos'] as int? ?? 0,
-      mensalidadesPendentes: json['mensalidadesPendentes'] as int? ?? 0,
-      mensalidadesAtrasadas: json['mensalidadesAtrasadas'] as int? ?? 0,
-      totalAReceber: (json['totalAReceber'] as num?)?.toDouble() ?? 0,
-      totalRecebido: (json['totalRecebido'] as num?)?.toDouble() ?? 0,
-      totalAbonado: (json['totalAbonado'] as num?)?.toDouble() ?? 0,
-      totalInadimplente: (json['totalInadimplente'] as num?)?.toDouble() ?? 0,
-      totalDespesas: (json['totalDespesas'] as num?)?.toDouble() ?? 0,
-    );
-  }
+  factory VivanDashboardResumo.fromJson(Map<String, dynamic> j) =>
+      VivanDashboardResumo(
+        mesReferencia: _sOr(j['mesReferencia'], ''),
+        totalPassageiros: _iOr(j['totalPassageiros'], 0),
+        passageirosAtivos: _iOr(j['passageirosAtivos'], 0),
+        totalContratos: _iOr(j['totalContratos'], 0),
+        contratosAtivos: _iOr(j['contratosAtivos'], 0),
+        mensalidadesPendentes: _iOr(j['mensalidadesPendentes'], 0),
+        mensalidadesAtrasadas: _iOr(j['mensalidadesAtrasadas'], 0),
+        totalAReceber: _dOr(j['totalAReceber'], 0),
+        totalRecebido: _dOr(j['totalRecebido'], 0),
+        totalAbonado: _dOr(j['totalAbonado'], 0),
+        totalInadimplente: _dOr(j['totalInadimplente'], 0),
+        totalDespesas: _dOr(j['totalDespesas'], 0),
+      );
 
-  /// Saldo do mês = recebido - despesas
   double get saldoMes => totalRecebido - totalDespesas;
-
-  /// Percentual de inadimplência
   double get percentualInadimplencia =>
       totalAReceber > 0 ? (totalInadimplente / totalAReceber) * 100 : 0;
 }
@@ -739,30 +725,25 @@ class VivanDashboardResumo {
 
 class VivanCapacidade {
   final Map<String, dynamic>? veiculo;
-  final Map<String, int> ocupacao; // turno -> quantidade
+  final Map<String, int> ocupacao;
 
-  VivanCapacidade({
-    this.veiculo,
-    this.ocupacao = const {},
-  });
+  VivanCapacidade({this.veiculo, this.ocupacao = const {}});
 
-  factory VivanCapacidade.fromJson(Map<String, dynamic> json) {
+  factory VivanCapacidade.fromJson(Map<String, dynamic> j) {
     final ocupMap = <String, int>{};
-    final ocp = json['ocupacao'];
+    final ocp = j['ocupacao'];
     if (ocp is Map) {
-      ocp.forEach((k, v) {
-        ocupMap[k.toString()] = (v as num?)?.toInt() ?? 0;
-      });
+      ocp.forEach((k, v) => ocupMap[k.toString()] = _iOr(v, 0));
     }
     return VivanCapacidade(
-      veiculo: json['veiculo'] as Map<String, dynamic>?,
+      veiculo: j['veiculo'] is Map
+          ? Map<String, dynamic>.from(j['veiculo'] as Map)
+          : null,
       ocupacao: ocupMap,
     );
   }
 
-  int get capacidadeVeiculo =>
-      (veiculo?['capacidade'] as num?)?.toInt() ?? 0;
-
+  int get capacidadeVeiculo => _iOr(veiculo?['capacidade'], 0);
   String get placaVeiculo => veiculo?['placa']?.toString() ?? '';
 }
 

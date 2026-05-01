@@ -1,19 +1,21 @@
-import '/vivan/vivan.dart';
-import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_util.dart';
-import '/flutter_flow/flutter_flow_widgets.dart';
-import '/index.dart';
+import '/via_van/gerar_contrato_m/gerar_contrato_m_widget.dart';
 import 'package:ff_theme/flutter_flow/flutter_flow_theme.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'contratos_lista_m_model.dart';
 export 'contratos_lista_m_model.dart';
 
 class ContratosListaMWidget extends StatefulWidget {
-  const ContratosListaMWidget({super.key});
+  const ContratosListaMWidget({
+    super.key,
+    required this.passageiroId,
+    required this.nomePassageiro,
+  });
+
+  final int passageiroId;
+  final String nomePassageiro;
 
   static String routeName = 'contratosListaM';
   static String routePath = '/contratosLista';
@@ -24,21 +26,11 @@ class ContratosListaMWidget extends StatefulWidget {
 
 class _ContratosListaMWidgetState extends State<ContratosListaMWidget> {
   late ContratosListaMModel _model;
-  final scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
     super.initState();
     _model = createModel(context, () => ContratosListaMModel());
-
-    SchedulerBinding.instance.addPostFrameCallback((_) async {
-      if (FFAppState().idEmpresa == 0) {
-        context.pushNamed(LoginWidget.routeName);
-        return;
-      }
-      await _model.fetchContratos(FFAppState().idUsuario);
-      safeSetState(() {});
-    });
   }
 
   @override
@@ -47,274 +39,146 @@ class _ContratosListaMWidgetState extends State<ContratosListaMWidget> {
     super.dispose();
   }
 
-  Color _statusColor(String? status) {
-    switch (status?.toUpperCase()) {
-      case 'ATIVO':
-        return Color(0xFF39D2C0);
-      case 'RASCUNHO':
-        return Color(0xFF9E9E9E);
-      case 'SUSPENSO':
-        return Color(0xFFF9CF58);
-      case 'CANCELADO':
-        return Color(0xFFFF5963);
-      default:
-        return Color(0xFF9E9E9E);
-    }
-  }
+  Color get _primary => FlutterFlowTheme.of(context).primary;
+  Color get _bg => FlutterFlowTheme.of(context).primaryBackground;
+  Color get _primaryText => FlutterFlowTheme.of(context).primaryText;
+  Color get _secondaryText => FlutterFlowTheme.of(context).secondaryText;
 
   @override
   Widget build(BuildContext context) {
     context.watch<FFAppState>();
-
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
-        key: scaffoldKey,
-        backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
-        appBar: AppBar(
-          backgroundColor: FlutterFlowTheme.of(context).primary,
-          leading: FlutterFlowIconButton(
-            borderRadius: 8.0,
-            buttonSize: 40.0,
-            icon: Icon(Icons.arrow_back,
-                color: FlutterFlowTheme.of(context).info, size: 24.0),
-            onPressed: () async => context.safePop(),
-          ),
-          title: Text(
-            'Contratos',
-            style: FlutterFlowTheme.of(context).headlineMedium.override(
-                  font: GoogleFonts.interTight(fontWeight: FontWeight.w600),
-                  color: FlutterFlowTheme.of(context).info,
-                  fontSize: 20.0,
-                  letterSpacing: 0.0,
-                ),
-          ),
-          actions: [
-            Padding(
-              padding: EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 12.0, 0.0),
-              child: FlutterFlowIconButton(
-                borderRadius: 8.0,
-                buttonSize: 40.0,
-                icon: Icon(Icons.add,
-                    color: FlutterFlowTheme.of(context).info, size: 24.0),
-                onPressed: () async {
-                  context.pushNamed('contratoDetalheM');
-                },
-              ),
-            ),
-          ],
-          centerTitle: true,
-          elevation: 0.0,
-        ),
+        backgroundColor: _bg,
         body: SafeArea(
-          top: true,
           child: Column(
             children: [
-              // Filter chips
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
-                child: Row(
-                  children: [
-                    _buildFilterChip(context, 'Todos', null),
-                    SizedBox(width: 8.0),
-                    _buildFilterChip(context, 'Ativos', 'ATIVO'),
-                    SizedBox(width: 8.0),
-                    _buildFilterChip(context, 'Rascunho', 'RASCUNHO'),
-                    SizedBox(width: 8.0),
-                    _buildFilterChip(context, 'Suspensos', 'SUSPENSO'),
-                    SizedBox(width: 8.0),
-                    _buildFilterChip(context, 'Cancelados', 'CANCELADO'),
-                  ],
-                ),
-              ),
+              _buildHeader(),
               Expanded(
-                child: _model.isLoading
-                    ? Center(
-                        child: SpinKitPulse(
-                            color: FlutterFlowTheme.of(context).primary,
-                            size: 50.0))
-                    : _model.contratos.isEmpty
-                        ? Center(
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(Icons.description_outlined,
-                                    color: FlutterFlowTheme.of(context)
-                                        .secondaryText,
-                                    size: 64.0),
-                                SizedBox(height: 16.0),
-                                Text(
-                                  'Nenhum contrato encontrado',
-                                  style: FlutterFlowTheme.of(context)
-                                      .bodyLarge
-                                      .override(
-                                        font: GoogleFonts.inter(
-                                            fontWeight: FontWeight.normal),
-                                        color: FlutterFlowTheme.of(context)
-                                            .secondaryText,
-                                        letterSpacing: 0.0,
-                                      ),
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(24),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Crie contratos do seu transporte escolar de forma rápida e segura, direto pelo Smartvan.',
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.inter(
+                            fontSize: 16, color: _secondaryText),
+                      ),
+                      const SizedBox(height: 24),
+                      Text(
+                        'Nesta etapa, você pode:',
+                        style: GoogleFonts.inter(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: _primaryText),
+                      ),
+                      const SizedBox(height: 12),
+                      _bullet('Visualizar como está o seu modelo de contrato'),
+                      _bullet(
+                          'Visualizar a lista de contratos já gerados para seus passageiros'),
+                      _bullet('Ajustar cláusulas conforme sua necessidade'),
+                      _bullet(
+                          'Voltar ao modelo padrão do Smartvan quando precisar'),
+                      const SizedBox(height: 16),
+                      Text(
+                        'Depois de gerar o contrato, é só enviar o link para o responsável assinar digitalmente. Simples e sem papelada.',
+                        style: GoogleFonts.inter(
+                            fontSize: 14, color: _secondaryText),
+                      ),
+                      const SizedBox(height: 32),
+                      SizedBox(
+                        width: double.infinity,
+                        height: 52,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => GerarContratoMWidget(
+                                  passageiroId: widget.passageiroId,
+                                  nomePassageiro: widget.nomePassageiro,
                                 ),
-                              ],
-                            ),
-                          )
-                        : RefreshIndicator(
-                            onRefresh: () async {
-                              await _model.fetchContratos(
-                                  FFAppState().idUsuario,
-                                  status: _model.filtroStatus);
-                              safeSetState(() {});
-                            },
-                            child: ListView.builder(
-                              padding: EdgeInsets.fromLTRB(0, 0, 0, 80.0),
-                              itemCount: _model.contratos.length,
-                              itemBuilder: (context, index) {
-                                final contrato = _model.contratos[index];
-                                final status = contrato.status;
-                                final statusColor = _statusColor(status);
-
-                                return Padding(
-                                  padding: EdgeInsetsDirectional.fromSTEB(
-                                      16.0, 4.0, 16.0, 4.0),
-                                  child: InkWell(
-                                    borderRadius: BorderRadius.circular(12.0),
-                                    onTap: () async {
-                                      context.pushNamed(
-                                        'contratoDetalheM',
-                                        queryParameters: {
-                                          'contratoId': serializeParam(
-                                            contrato.idContrato,
-                                            ParamType.int,
-                                          ),
-                                        }.withoutNulls,
-                                      );
-                                    },
-                                    child: Container(
-                                      width: double.infinity,
-                                      decoration: BoxDecoration(
-                                        color: FlutterFlowTheme.of(context)
-                                            .secondaryBackground,
-                                        borderRadius:
-                                            BorderRadius.circular(12.0),
-                                        border: Border(
-                                          left: BorderSide(
-                                            color: statusColor,
-                                            width: 4.0,
-                                          ),
-                                        ),
-                                      ),
-                                      child: Padding(
-                                        padding: EdgeInsets.all(16.0),
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                              children: [
-                                                Expanded(
-                                                  child: Text(
-                                                    contrato.nomePassageiro ?? '',
-                                                    style: FlutterFlowTheme.of(
-                                                            context)
-                                                        .bodyLarge
-                                                        .override(
-                                                          font:
-                                                              GoogleFonts.inter(
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w600),
-                                                          letterSpacing: 0.0,
-                                                        ),
-                                                  ),
-                                                ),
-                                                Container(
-                                                  padding: EdgeInsets.symmetric(
-                                                      horizontal: 8.0,
-                                                      vertical: 4.0),
-                                                  decoration: BoxDecoration(
-                                                    color: statusColor
-                                                        .withOpacity(0.2),
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            8.0),
-                                                  ),
-                                                  child: Text(
-                                                    status ?? '',
-                                                    style: FlutterFlowTheme.of(
-                                                            context)
-                                                        .bodySmall
-                                                        .override(
-                                                          font:
-                                                              GoogleFonts.inter(
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w600),
-                                                          color: statusColor,
-                                                          letterSpacing: 0.0,
-                                                        ),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                            SizedBox(height: 8.0),
-                                            Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                              children: [
-                                                Text(
-                                                  'R\$ ${contrato.valMensal}/mês',
-                                                  style: FlutterFlowTheme.of(
-                                                          context)
-                                                      .titleMedium
-                                                      .override(
-                                                        font: GoogleFonts.inter(
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .w600),
-                                                        color:
-                                                            FlutterFlowTheme.of(
-                                                                    context)
-                                                                .primary,
-                                                        letterSpacing: 0.0,
-                                                      ),
-                                                ),
-                                                Icon(Icons.chevron_right,
-                                                    color: FlutterFlowTheme.of(
-                                                            context)
-                                                        .secondaryText,
-                                                    size: 24.0),
-                                              ],
-                                            ),
-                                            SizedBox(height: 4.0),
-                                            Text(
-                                              '${contrato.dtInicio} - ${contrato.dtTermino}',
-                                              style: FlutterFlowTheme.of(
-                                                      context)
-                                                  .bodySmall
-                                                  .override(
-                                                    font: GoogleFonts.inter(
-                                                        fontWeight:
-                                                            FontWeight.normal),
-                                                    color: FlutterFlowTheme.of(
-                                                            context)
-                                                        .secondaryText,
-                                                    letterSpacing: 0.0,
-                                                  ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                );
-                              },
-                            ),
+                              ),
+                            );
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: _primary,
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(24)),
                           ),
+                          child: Text('Novo Contrato',
+                              style: GoogleFonts.inter(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 16)),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      SizedBox(
+                        width: double.infinity,
+                        height: 52,
+                        child: OutlinedButton(
+                          onPressed: () {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('Em breve')));
+                          },
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: _primaryText,
+                            side: BorderSide(color: Colors.grey.shade300),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(24)),
+                          ),
+                          child: Text('Ver Modelo Atual',
+                              style: GoogleFonts.inter(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 16)),
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      SizedBox(
+                        width: double.infinity,
+                        height: 52,
+                        child: OutlinedButton(
+                          onPressed: () {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('Em breve')));
+                          },
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: _primaryText,
+                            side: BorderSide(color: Colors.grey.shade300),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(24)),
+                          ),
+                          child: Text('Editar Contrato',
+                              style: GoogleFonts.inter(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 16)),
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      SizedBox(
+                        width: double.infinity,
+                        height: 52,
+                        child: OutlinedButton(
+                          onPressed: () => _confirmRestoreDefault(),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: _primaryText,
+                            side: BorderSide(color: Colors.grey.shade300),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(24)),
+                          ),
+                          child: Text('Voltar Modelo Padrão',
+                              style: GoogleFonts.inter(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 16)),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ],
           ),
@@ -323,26 +187,144 @@ class _ContratosListaMWidgetState extends State<ContratosListaMWidget> {
     );
   }
 
-  Widget _buildFilterChip(
-      BuildContext context, String label, String? status) {
-    final isSelected = _model.filtroStatus == status;
-    return FilterChip(
-      label: Text(label),
-      selected: isSelected,
-      onSelected: (selected) async {
-        await _model.fetchContratos(FFAppState().idUsuario,
-            status: selected ? status : null);
-        safeSetState(() {});
-      },
-      selectedColor: FlutterFlowTheme.of(context).primary.withOpacity(0.2),
-      checkmarkColor: FlutterFlowTheme.of(context).primary,
-      labelStyle: FlutterFlowTheme.of(context).bodySmall.override(
-            font: GoogleFonts.inter(fontWeight: FontWeight.w500),
-            color: isSelected
-                ? FlutterFlowTheme.of(context).primary
-                : FlutterFlowTheme.of(context).secondaryText,
-            letterSpacing: 0.0,
+  Widget _buildHeader() {
+    return Container(
+      height: 56,
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      decoration: BoxDecoration(
+        color: _bg,
+        border: Border(bottom: BorderSide(color: Colors.grey.shade100)),
+      ),
+      child: Row(
+        children: [
+          GestureDetector(
+            onTap: () => Navigator.pop(context),
+            child: Text('Voltar',
+                style: FlutterFlowTheme.of(context).bodyMedium.override(
+                      font: GoogleFonts.inter(fontWeight: FontWeight.w500),
+                      color: _primary)),
           ),
+          Expanded(
+            child: Center(
+              child: Text('Gerar Contrato',
+                  style: FlutterFlowTheme.of(context).titleMedium.override(
+                        font: GoogleFonts.interTight(
+                            fontWeight: FontWeight.w700),
+                        color: _primaryText)),
+            ),
+          ),
+          GestureDetector(
+            onTap: () => _showTutorial(),
+            child: Text('Como Usar?',
+                style: FlutterFlowTheme.of(context).bodyMedium.override(
+                      font: GoogleFonts.inter(fontWeight: FontWeight.w600),
+                      color: _primary)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _bullet(String text) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 6,
+            height: 6,
+            margin: const EdgeInsets.only(top: 5),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: _primary,
+            ),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(text,
+                style: GoogleFonts.inter(
+                    fontSize: 14, color: _secondaryText)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showTutorial() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: _bg,
+      shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      builder: (ctx) => Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Como Usar os Contratos',
+                style: GoogleFonts.interTight(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                    color: _primaryText)),
+            const SizedBox(height: 16),
+            Text(
+              '1. Toque em "Novo Contrato" para iniciar o assistente de criação.\n\n'
+              '2. Preencha as informações do motorista, passageiro, responsável e valores.\n\n'
+              '3. Assine digitalmente na etapa final e gere o contrato.\n\n'
+              '4. Compartilhe o link com o responsável para que ele assine digitalmente.\n\n'
+              '5. Use "Ver Modelo Atual" para revisar o modelo antes de gerar.',
+              style: GoogleFonts.inter(fontSize: 14, color: _secondaryText),
+            ),
+            const SizedBox(height: 24),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () => Navigator.pop(ctx),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: _primary,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12)),
+                ),
+                child: Text('Entendi',
+                    style: GoogleFonts.inter(fontWeight: FontWeight.w600)),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _confirmRestoreDefault() {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text('Voltar Modelo Padrão',
+            style: GoogleFonts.interTight(fontWeight: FontWeight.w700)),
+        content: Text(
+            'Deseja restaurar o modelo padrão do Smartvan? As personalizações serão perdidas.',
+            style: GoogleFonts.inter(fontSize: 14)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancelar'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(ctx);
+              ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Modelo padrão restaurado')));
+            },
+            style: ElevatedButton.styleFrom(
+                backgroundColor: FlutterFlowTheme.of(context).primary),
+            child: Text('Confirmar',
+                style: GoogleFonts.inter(color: Colors.white)),
+          ),
+        ],
+      ),
     );
   }
 }

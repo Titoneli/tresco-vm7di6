@@ -4,6 +4,7 @@ import '/via_van/passageiro_form_m/passageiro_form_m_widget.dart';
 import '/via_van/extrato_passageiro_m/extrato_passageiro_m_widget.dart';
 import '/via_van/gestao_mensalidades_m/gestao_mensalidades_m_widget.dart';
 import '/via_van/renovar_mensalidades_m/renovar_mensalidades_m_widget.dart';
+import '/via_van/contratos_lista_m/contratos_lista_m_widget.dart';
 import 'package:ff_theme/flutter_flow/flutter_flow_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -138,7 +139,7 @@ class _PassageiroDetalheMWidgetState extends State<PassageiroDetalheMWidget> {
   // ── Dark info card ────────────────────────────────
   Widget _buildDarkCard() {
     final p = _model.passageiro;
-    String dtNasc = '';
+    String dtNasc = '—';
     if (p?.dtNascimento != null && p!.dtNascimento!.isNotEmpty) {
       try {
         dtNasc =
@@ -147,61 +148,62 @@ class _PassageiroDetalheMWidgetState extends State<PassageiroDetalheMWidget> {
         dtNasc = p.dtNascimento!;
       }
     }
+    final turno = (p?.domTurno ?? '').isNotEmpty ? p!.domTurno! : '—';
+    final escola = (p?.nomeEscola ?? '').isNotEmpty ? p!.nomeEscola! : '—';
+
+    Widget infoRow(String label, String value, {bool last = false}) {
+      return Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(label,
+                    style: GoogleFonts.inter(
+                        fontSize: 13, color: Colors.white70)),
+                Flexible(
+                  child: Text(value,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                      textAlign: TextAlign.end,
+                      style: GoogleFonts.inter(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.white)),
+                ),
+              ],
+            ),
+          ),
+          if (!last)
+            Divider(
+                height: 1,
+                color: Colors.white.withValues(alpha: 0.10)),
+        ],
+      );
+    }
 
     return Container(
       width: double.infinity,
       color: const Color(0xFF4A5568),
-      padding: const EdgeInsets.all(24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Container(
-            width: 72,
-            height: 72,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: Colors.white.withValues(alpha: 0.15),
-            ),
-            child: _model.foto.isNotEmpty
-                ? ClipRRect(
-                    borderRadius: BorderRadius.circular(36),
-                    child: Image.network(_model.foto,
-                        fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) => const Icon(Icons.person,
-                            size: 36, color: Colors.white70)),
-                  )
-                : const Icon(Icons.person, size: 36, color: Colors.white70),
-          ),
-          const SizedBox(height: 12),
-          Text(
-            p?.nomePassageiro ?? '',
-            textAlign: TextAlign.center,
-            style: GoogleFonts.interTight(
-                fontSize: 20,
-                fontWeight: FontWeight.w700,
-                color: Colors.white),
-          ),
-          if (dtNasc.isNotEmpty) ...[
-            const SizedBox(height: 6),
-            Text(dtNasc,
-                style: GoogleFonts.inter(fontSize: 14, color: Colors.white70)),
-          ],
-          if ((p?.domTurno ?? '').isNotEmpty) ...[
-            const SizedBox(height: 4),
-            Text(p!.domTurno!,
-                style:
-                    GoogleFonts.inter(fontSize: 14, color: Colors.white70)),
-          ],
-          if ((p?.nomeEscola ?? '').isNotEmpty) ...[
-            const SizedBox(height: 4),
-            Text(
-              p!.nomeEscola!,
+          Padding(
+            padding: const EdgeInsets.all(20),
+            child: Text(
+              p?.nomePassageiro ?? '',
               textAlign: TextAlign.center,
-              overflow: TextOverflow.ellipsis,
-              maxLines: 1,
-              style: GoogleFonts.inter(fontSize: 13, color: Colors.white54),
+              style: GoogleFonts.interTight(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.white),
             ),
-          ],
+          ),
+          Divider(height: 1, color: Colors.white.withValues(alpha: 0.20)),
+          infoRow('Data Nascimento', dtNasc),
+          infoRow('Período', turno),
+          infoRow('Escola', escola, last: true),
         ],
       ),
     );
@@ -237,65 +239,52 @@ class _PassageiroDetalheMWidgetState extends State<PassageiroDetalheMWidget> {
         resp.whatsAppResponsavel.replaceAll(' ', '').replaceAll('-', '');
     final numero55 = tel.startsWith('+') ? tel : '+55$tel';
 
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: FlutterFlowTheme.of(context).secondaryBackground,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(resp.nomeResponsavel,
-              style: GoogleFonts.inter(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w600,
-                  color: _primaryText)),
-          if (resp.whatsAppResponsavel.isNotEmpty) ...[
-            const SizedBox(height: 4),
-            Text(resp.whatsAppResponsavel,
-                style:
-                    GoogleFonts.inter(fontSize: 13, color: _secondaryText)),
-          ],
-          const SizedBox(height: 12),
-          Row(
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(
-                child: OutlinedButton.icon(
-                  onPressed: () => launchUrl(Uri.parse('tel:$numero55')),
-                  icon: const Icon(Icons.phone_outlined, size: 16),
-                  label: const Text('Ligar'),
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: _primary,
-                    side: BorderSide(color: _primary),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8)),
-                    padding: const EdgeInsets.symmetric(vertical: 8),
+              Text(resp.nomeResponsavel,
+                  style: GoogleFonts.inter(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                      color: _primaryText)),
+              const SizedBox(height: 4),
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(resp.whatsAppResponsavel,
+                        style: GoogleFonts.inter(
+                            fontSize: 13, color: _secondaryText)),
                   ),
-                ),
+                  GestureDetector(
+                    onTap: () => launchUrl(Uri.parse('tel:$numero55')),
+                    child: Text('Ligar',
+                        style: GoogleFonts.inter(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: _primary)),
+                  ),
+                ],
               ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: OutlinedButton.icon(
-                  onPressed: () => launchUrl(
-                      Uri.parse('https://wa.me/$numero55'),
-                      mode: LaunchMode.externalApplication),
-                  icon: const Icon(Icons.chat_outlined, size: 16),
-                  label: const Text('WhatsApp'),
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: const Color(0xFF25D366),
-                    side: const BorderSide(color: Color(0xFF25D366)),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8)),
-                    padding: const EdgeInsets.symmetric(vertical: 8),
-                  ),
-                ),
+              const SizedBox(height: 4),
+              GestureDetector(
+                onTap: () => launchUrl(
+                    Uri.parse('https://wa.me/$numero55'),
+                    mode: LaunchMode.externalApplication),
+                child: Text('Conversar no WhatsApp',
+                    style: GoogleFonts.inter(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
+                        color: _primary)),
               ),
             ],
           ),
-        ],
-      ),
+        ),
+        Divider(height: 1, color: Colors.grey.shade100),
+      ],
     );
   }
 
@@ -387,18 +376,15 @@ class _PassageiroDetalheMWidgetState extends State<PassageiroDetalheMWidget> {
   }
 
   void _openContratos() {
-    if (_model.contratos.isNotEmpty) {
-      context.pushNamed(
-        'contratoDetalheM',
-        queryParameters: {
-          'contratoId': serializeParam(
-              _model.contratos.first.idContrato, ParamType.int),
-        }.withoutNulls,
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Nenhum contrato encontrado')));
-    }
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ContratosListaMWidget(
+          passageiroId: widget.passageiroId!,
+          nomePassageiro: _model.nome,
+        ),
+      ),
+    );
   }
 
   void _openGestaoMensalidades() {

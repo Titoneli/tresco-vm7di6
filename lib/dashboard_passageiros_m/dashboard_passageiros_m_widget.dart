@@ -8,7 +8,6 @@ import 'package:ff_theme/flutter_flow/flutter_flow_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'dashboard_passageiros_m_model.dart';
 export 'dashboard_passageiros_m_model.dart';
@@ -34,7 +33,7 @@ class _DashboardPassageirosMWidgetState
     super.initState();
     _model = createModel(context, () => DashboardPassageirosMModel());
     SchedulerBinding.instance.addPostFrameCallback((_) async {
-      if (FFAppState().idEmpresa == '') {
+      if (FFAppState().idEmpresa == 0) {
         context.pushNamed(LoginWidget.routeName);
         return;
       }

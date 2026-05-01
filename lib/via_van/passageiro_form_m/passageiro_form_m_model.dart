@@ -13,6 +13,20 @@ class PassageiroFormMModel extends FlutterFlowModel<PassageiroFormMWidget> {
   final nomeCtrl = TextEditingController(); // nome completo
   String? escolaNome;
   String? periodo;
+  List<String> escolas = [];
+
+  Future<void> loadEscolas() async {
+    try {
+      final res = await VivanHttp.get('/escolas');
+      final lista = res is List ? res : (res is Map ? (res['data'] ?? []) : []);
+      escolas = (lista as List)
+          .map((e) => (e as Map)['nomeEscola']?.toString() ?? '')
+          .where((s) => s.isNotEmpty)
+          .toList();
+    } catch (e) {
+      debugPrint('PassageiroForm.loadEscolas: $e');
+    }
+  }
 
   static const periodos = ['Integral', 'Manhã', 'Almoço', 'Tarde', 'Noite'];
 

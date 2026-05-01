@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '/flutter_flow/flutter_flow_util.dart';
+import '../_vivan_http.dart';
 import 'passageiro_form_m_model.dart';
 export 'passageiro_form_m_model.dart';
 
@@ -29,10 +30,11 @@ class _PassageiroFormMWidgetState extends State<PassageiroFormMWidget> {
     super.initState();
     _model = createModel(context, () => PassageiroFormMModel());
     SchedulerBinding.instance.addPostFrameCallback((_) async {
+      await _model.loadEscolas();
       if (widget.passageiroId != null) {
         await _model.carregar(widget.passageiroId!);
-        safeSetState(() {});
       }
+      safeSetState(() {});
     });
   }
 
@@ -502,7 +504,7 @@ class _PassageiroFormMWidgetState extends State<PassageiroFormMWidget> {
   void _showEscolaSheet() {
     _showListSheet(
       titulo: 'Escola',
-      opcoes: const [],
+      opcoes: _model.escolas,
       selecionado: _model.escolaNome,
       onSelect: (v) => setState(() => _model.escolaNome = v),
       emptyMsg: 'Use o botão + para adicionar uma escola',
@@ -511,68 +513,93 @@ class _PassageiroFormMWidgetState extends State<PassageiroFormMWidget> {
 
   void _showNovaEscolaSheet() {
     final ctrl = TextEditingController();
+    bool isSaving = false;
+    String? erro;
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: _bg,
       shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
-      builder: (_) => Padding(
-        padding: EdgeInsets.fromLTRB(
-            24, 20, 24, MediaQuery.of(context).viewInsets.bottom + 24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text('Nova Escola',
-                style: FlutterFlowTheme.of(context).titleMedium.override(
-                      font: GoogleFonts.interTight(fontWeight: FontWeight.w700),
-                      color: _primaryText)),
-            const SizedBox(height: 16),
-            TextFormField(
-              controller: ctrl,
-              autofocus: true,
-              textCapitalization: TextCapitalization.words,
-              style: FlutterFlowTheme.of(context)
-                  .bodyMedium
-                  .override(font: GoogleFonts.inter(), color: _primaryText),
-              decoration: InputDecoration(
-                hintText: 'Nome da escola',
-                hintStyle: FlutterFlowTheme.of(context)
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setSheet) => Padding(
+          padding: EdgeInsets.fromLTRB(
+              24, 20, 24, MediaQuery.of(ctx).viewInsets.bottom + 24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('Nova Escola',
+                  style: FlutterFlowTheme.of(context).titleMedium.override(
+                        font: GoogleFonts.interTight(fontWeight: FontWeight.w700),
+                        color: _primaryText)),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: ctrl,
+                autofocus: true,
+                textCapitalization: TextCapitalization.words,
+                style: FlutterFlowTheme.of(context)
                     .bodyMedium
-                    .override(font: GoogleFonts.inter(), color: _secondaryText),
-                filled: true,
-                fillColor: _secondBg,
-                contentPadding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: Colors.grey.shade200)),
-                enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: Colors.grey.shade200)),
-                focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: _primary, width: 1.5)),
+                    .override(font: GoogleFonts.inter(), color: _primaryText),
+                decoration: InputDecoration(
+                  hintText: 'Nome da escola',
+                  hintStyle: FlutterFlowTheme.of(context)
+                      .bodyMedium
+                      .override(font: GoogleFonts.inter(), color: _secondaryText),
+                  filled: true,
+                  fillColor: _secondBg,
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(color: Colors.grey.shade200)),
+                  enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(color: Colors.grey.shade200)),
+                  focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(color: _primary, width: 1.5)),
+                ),
               ),
-            ),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () {
-                final nome = ctrl.text.trim();
-                if (nome.isEmpty) return;
-                setState(() => _model.escolaNome = nome);
-                Navigator.pop(context);
-              },
-              style: ElevatedButton.styleFrom(
-                  backgroundColor: _primary,
-                  minimumSize: const Size(double.infinity, 48),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12))),
-              child: const Text('Salvar',
-                  style: TextStyle(
-                      color: Colors.white, fontWeight: FontWeight.w600)),
-            ),
-          ],
+              if (erro != null) ...[
+                const SizedBox(height: 8),
+                Text(erro!, style: GoogleFonts.inter(fontSize: 13, color: Colors.red)),
+              ],
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: isSaving
+                    ? null
+                    : () async {
+                        final nome = ctrl.text.trim();
+                        if (nome.isEmpty) return;
+                        setSheet(() { isSaving = true; erro = null; });
+                        try {
+                          await VivanHttp.post('/escolas', {'nomeEscola': nome});
+                          await _model.loadEscolas();
+                          if (ctx.mounted) Navigator.pop(ctx);
+                          setState(() => _model.escolaNome = nome);
+                        } catch (e) {
+                          setSheet(() {
+                            isSaving = false;
+                            erro = e.toString().replaceFirst('Exception: ', '');
+                          });
+                        }
+                      },
+                style: ElevatedButton.styleFrom(
+                    backgroundColor: _primary,
+                    minimumSize: const Size(double.infinity, 48),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12))),
+                child: isSaving
+                    ? const SizedBox(
+                        width: 20, height: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                    : const Text('Salvar',
+                        style: TextStyle(
+                            color: Colors.white, fontWeight: FontWeight.w600)),
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -46,7 +46,7 @@ class VivanHttp {
       Future<http.Response> Function() call, String label) async {
     if (_cookie == null) await _login();
     var res = await call();
-    if (res.statusCode == 401) {
+    if (res.statusCode == 401 || res.statusCode == 403) {
       _cookie = null;
       await _login();
       res = await call();

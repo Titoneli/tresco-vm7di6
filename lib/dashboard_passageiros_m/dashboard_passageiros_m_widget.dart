@@ -1,6 +1,7 @@
 import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/index.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import '/via_van/financeiro_tab/financeiro_tab_widget.dart';
 import '/via_van/mensalidades_tab/mensalidades_tab_widget.dart';
 import '/via_van/passageiros_tab/passageiros_tab_widget.dart';
@@ -509,11 +510,20 @@ class _DashboardPassageirosMWidgetState
           ),
           const SizedBox(height: 32),
           Center(
-            child: Text(
-              'ViVan v8.1.0',
-              style: GoogleFonts.inter(
-                  fontSize: 12,
-                  color: FlutterFlowTheme.of(context).secondaryText),
+            child: FutureBuilder<PackageInfo>(
+              future: PackageInfo.fromPlatform(),
+              builder: (ctx, snap) {
+                final info = snap.data;
+                final label = info != null
+                    ? 'ViVan v${info.version}+${info.buildNumber}'
+                    : 'ViVan v8.1.0+2';
+                return Text(
+                  label,
+                  style: GoogleFonts.inter(
+                      fontSize: 12,
+                      color: FlutterFlowTheme.of(context).secondaryText),
+                );
+              },
             ),
           ),
           const SizedBox(height: 24),

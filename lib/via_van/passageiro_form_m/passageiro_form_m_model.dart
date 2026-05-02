@@ -177,6 +177,31 @@ class PassageiroFormMModel extends FlutterFlowModel<PassageiroFormMWidget> {
                 (c['contrato'] as Map?)?['idContrato']?.toString() ?? '');
           }
         }
+
+        // Gera mensalidades para cada mês entre vigenciaInicio e vigenciaFim
+        if (_contratoId != null &&
+            vigenciaInicio != null &&
+            vigenciaFim != null) {
+          final motoristaId = FFAppState().idUsuario;
+          final diaVenc = diaPagamento ?? 5;
+          DateTime mes =
+              DateTime(vigenciaInicio!.year, vigenciaInicio!.month);
+          final fim = DateTime(vigenciaFim!.year, vigenciaFim!.month);
+          while (!mes.isAfter(fim)) {
+            final mesRef = DateFormat('yyyy-MM').format(mes);
+            final dtVenc = DateTime(mes.year, mes.month, diaVenc);
+            await VivanHttp.post('/mensalidades', {
+              'idContrato': _contratoId,
+              'idPassageiro': passageiroId,
+              'idMotorista': motoristaId,
+              'mesReferencia': mesRef,
+              'dtVencimento': DateFormat('yyyy-MM-dd').format(dtVenc),
+              'valOriginal': valor,
+              'status': 'PENDENTE',
+            });
+            mes = DateTime(mes.year, mes.month + 1);
+          }
+        }
       }
 
       isSaving = false;

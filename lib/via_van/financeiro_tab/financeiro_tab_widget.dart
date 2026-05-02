@@ -240,7 +240,7 @@ class _FinanceiroTabWidgetState extends State<FinanceiroTabWidget> {
                   Container(
                     width: 44, height: 44,
                     decoration: BoxDecoration(
-                      color: iconColor.withOpacity(0.12),
+                      color: iconColor.withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Icon(_iconForCategoria(d.categoria), size: 22, color: iconColor),
@@ -299,7 +299,7 @@ class _FinanceiroTabWidgetState extends State<FinanceiroTabWidget> {
           Container(
             width: 72, height: 72,
             decoration: BoxDecoration(
-              color: valueColor.withOpacity(0.12),
+              color: valueColor.withValues(alpha: 0.12),
               borderRadius: BorderRadius.circular(20),
             ),
             child: Icon(_iconForCategoria(d.categoria), size: 36, color: valueColor),
@@ -462,7 +462,7 @@ class _FinanceiroTabWidgetState extends State<FinanceiroTabWidget> {
                     onTap: () => setSheetState(() => selectedCategoria = cat.$1),
                     child: Container(
                       decoration: BoxDecoration(
-                        color: isSelected ? _primary.withOpacity(0.1) : _bg,
+                        color: isSelected ? _primary.withValues(alpha: 0.1) : _bg,
                         border: Border.all(color: isSelected ? _primary : Colors.grey.shade300, width: isSelected ? 2 : 1),
                         borderRadius: BorderRadius.circular(_r)),
                       child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
@@ -572,7 +572,7 @@ class _FinanceiroTabWidgetState extends State<FinanceiroTabWidget> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: (selectedCategoria != null && valorCtrl.text.isNotEmpty && !isSaving)
                         ? _primary
-                        : _primary.withOpacity(0.4),
+                        : _primary.withValues(alpha: 0.4),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(_r)),
                     elevation: 0,
                   ),
@@ -656,7 +656,7 @@ class _FinanceiroTabWidgetState extends State<FinanceiroTabWidget> {
             Text('Filtrar', style: GoogleFonts.inter(fontSize: 18, fontWeight: FontWeight.w600)),
             const SizedBox(width: 60),
           ]),
-          Divider(height: 24, color: _primary.withOpacity(0.3)),
+          Divider(height: 24, color: _primary.withValues(alpha: 0.3)),
           const SizedBox(height: 8),
           Text('Ano Base de Exibição', style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w700)),
           const SizedBox(height: 8),

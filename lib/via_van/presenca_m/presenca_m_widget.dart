@@ -92,7 +92,7 @@ class _PresencaMWidgetState extends State<PresencaMWidget>
             controller: _tabController,
             indicatorColor: FlutterFlowTheme.of(context).info,
             labelColor: FlutterFlowTheme.of(context).info,
-            unselectedLabelColor: FlutterFlowTheme.of(context).info.withOpacity(0.6),
+            unselectedLabelColor: FlutterFlowTheme.of(context).info.withValues(alpha: 0.6),
             tabs: [
               Tab(text: 'Hoje'),
               Tab(text: 'Histórico'),
@@ -274,8 +274,8 @@ class _PresencaMWidgetState extends State<PresencaMWidget>
                                   width: 40.0, height: 40.0,
                                   decoration: BoxDecoration(
                                     color: isPresente
-                                        ? Color(0xFF39D2C0).withOpacity(0.2)
-                                        : Color(0xFFFF5963).withOpacity(0.2),
+                                        ? Color(0xFF39D2C0).withValues(alpha: 0.2)
+                                        : Color(0xFFFF5963).withValues(alpha: 0.2),
                                     borderRadius: BorderRadius.circular(20.0),
                                   ),
                                   child: Icon(

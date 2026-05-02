@@ -70,7 +70,7 @@ class _GerarContratoMWidgetState extends State<GerarContratoMWidget> {
     '1ª Série EM', '2ª Série EM', '3ª Série EM',
   ];
 
-  static const _periodos = ['Integral', 'Manhã', 'Almoço', 'Tarde', 'Noite'];
+  static const _periodos = ['Integral', 'Manhã', 'Tarde', 'Noite'];
 
   static const _tiposViagem = ['Apenas Ida', 'Apenas Volta', 'Ida e Volta'];
 

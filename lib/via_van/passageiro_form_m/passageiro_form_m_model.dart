@@ -28,7 +28,7 @@ class PassageiroFormMModel extends FlutterFlowModel<PassageiroFormMWidget> {
     }
   }
 
-  static const periodos = ['Integral', 'Manhã', 'Almoço', 'Tarde', 'Noite'];
+  static const periodos = ['Integral', 'Manhã', 'Tarde', 'Noite'];
 
   // ── Step 2 — Responsável (wizard + edit) ─────────
   final respNomeCtrl = TextEditingController();    // nome completo

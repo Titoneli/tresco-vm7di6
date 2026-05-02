@@ -302,7 +302,7 @@ class _MensalidadesTabWidgetState extends State<MensalidadesTabWidget> {
       ('Mensalidades Vencidas', 'ATRASADO'),
       ('Mensalidades Abonadas', 'ABONADO'),
     ];
-    final periodoOptions = ['Manhã', 'Almoço', 'Tarde', 'Noite', 'Integral'];
+    final periodoOptions = ['Manhã', 'Tarde', 'Noite', 'Integral'];
 
     showModalBottomSheet(context: context, isScrollControlled: true, backgroundColor: _bg,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(_r * 2))),

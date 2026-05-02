@@ -57,31 +57,11 @@ class _PassageirosTabWidgetState extends State<PassageirosTabWidget> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Row(
-            children: [
-              Text(
-                'Passageiros',
-                style: FlutterFlowTheme.of(context).headlineSmall.override(
-                      font: GoogleFonts.interTight(fontWeight: FontWeight.w700),
-                      color: _primaryText),
-              ),
-              const SizedBox(width: 8),
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                decoration: BoxDecoration(
-                  color: _primary,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Text(
-                  'v8.1',
-                  style: GoogleFonts.inter(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.white),
-                ),
-              ),
-            ],
+          Text(
+            'Passageiros',
+            style: FlutterFlowTheme.of(context).headlineSmall.override(
+                  font: GoogleFonts.interTight(fontWeight: FontWeight.w700),
+                  color: _primaryText),
           ),
           InkWell(
             borderRadius: BorderRadius.circular(24),

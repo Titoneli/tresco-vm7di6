@@ -507,6 +507,16 @@ class _DashboardPassageirosMWidgetState
               ),
             ),
           ),
+          const SizedBox(height: 32),
+          Center(
+            child: Text(
+              'ViVan v8.1.0',
+              style: GoogleFonts.inter(
+                  fontSize: 12,
+                  color: FlutterFlowTheme.of(context).secondaryText),
+            ),
+          ),
+          const SizedBox(height: 24),
         ],
       ),
     );

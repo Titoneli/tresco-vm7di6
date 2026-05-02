@@ -39,7 +39,7 @@ class MensalidadesTabModel extends ChangeNotifier {
   // ── Filters ─────────────────────────────────
   int filterYear = DateTime.now().year;
   Set<String> filterStatus = {'PAGO', 'PENDENTE', 'ATRASADO', 'ABONADO', 'AGUARDANDO', 'PAGO_ATRASO'};
-  Set<String> filterPeriodo = {'Manhã', 'Almoço', 'Tarde', 'Noite', 'Integral'};
+  Set<String> filterPeriodo = {'Manhã', 'Tarde', 'Noite', 'Integral'};
 
   // ── Summary ─────────────────────────────────
   double get totalAcumulado => mensalidades.fold(0, (s, m) => s + (m.valOriginal ?? 0));

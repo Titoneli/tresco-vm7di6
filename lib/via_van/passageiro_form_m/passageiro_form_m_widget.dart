@@ -473,6 +473,11 @@ class _PassageiroFormMWidgetState extends State<PassageiroFormMWidget> {
 
   Future<void> _onNextOrSave() async {
     if (_model.step < _totalSteps - 1) {
+      // Ao avançar do step 0 (passageiro) para o step 1 (responsável),
+      // pré-preencher o nome do responsável com o nome do aluno
+      if (_model.step == 0 && _model.respNomeCtrl.text.trim().isEmpty) {
+        _model.respNomeCtrl.text = _model.nomeCtrl.text.trim();
+      }
       _model.pageCtrl.nextPage(
           duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
       setState(() => _model.step++);
@@ -593,7 +598,7 @@ class _PassageiroFormMWidgetState extends State<PassageiroFormMWidget> {
           const SizedBox(height: 16),
           _field(
             ctrl: _model.valorCtrl,
-            hint: 'Valor (R\$)',
+            hint: 'Valor',
             kb: const TextInputType.numberWithOptions(decimal: true),
             prefix: Text('R\$ ',
                 style: TextStyle(

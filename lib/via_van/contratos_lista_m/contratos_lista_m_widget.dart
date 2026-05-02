@@ -10,8 +10,8 @@ export 'contratos_lista_m_model.dart';
 class ContratosListaMWidget extends StatefulWidget {
   const ContratosListaMWidget({
     super.key,
-    required this.passageiroId,
-    required this.nomePassageiro,
+    this.passageiroId = 0,
+    this.nomePassageiro = '',
   });
 
   final int passageiroId;

@@ -256,24 +256,53 @@ class _ExtratoPassageiroMWidgetState extends State<ExtratoPassageiroMWidget> {
         NumberFormat.currency(locale: 'pt_BR', symbol: 'R\$').format(
             m.valOriginal ?? 0);
     final status = m.status.toUpperCase();
-    final isAtrasado = status == 'ATRASADO' || status == 'VENCIDO';
-    final isPago = status == 'PAGO';
 
-    final statusColor = isAtrasado
-        ? const Color(0xFFF56565)
-        : isPago
-            ? const Color(0xFF48BB78)
-            : Colors.grey;
-    final statusIcon = isAtrasado
-        ? Icons.warning_rounded
-        : isPago
-            ? Icons.check_circle_outline
-            : Icons.access_time;
-    final statusLabel = isAtrasado
-        ? 'em atraso'
-        : isPago
-            ? 'pago'
-            : 'a vencer';
+    // Mapeamento completo de cores/ícones/labels per REGRAS_FRONTEND_VIVAN.md
+    final Color statusColor;
+    final IconData statusIcon;
+    final String statusLabel;
+    switch (status) {
+      case 'ATRASADO':
+      case 'VENCIDO':
+        statusColor = const Color(0xFFF56565);
+        statusIcon = Icons.warning_rounded;
+        statusLabel = 'em atraso';
+        break;
+      case 'PENDENTE':
+        statusColor = const Color(0xFFD69E2E);
+        statusIcon = Icons.access_time;
+        statusLabel = 'pendente';
+        break;
+      case 'PAGO':
+        statusColor = const Color(0xFF48BB78);
+        statusIcon = Icons.check_circle_outline;
+        statusLabel = 'pago';
+        break;
+      case 'PAGO_ATRASO':
+        statusColor = const Color(0xFF68D391);
+        statusIcon = Icons.check_circle_outline;
+        statusLabel = 'pago c/ atraso';
+        break;
+      case 'ABONADO':
+        statusColor = const Color(0xFF4299E1);
+        statusIcon = Icons.volunteer_activism_outlined;
+        statusLabel = 'abonado';
+        break;
+      case 'ISENTO':
+        statusColor = const Color(0xFF76E4F7);
+        statusIcon = Icons.remove_circle_outline;
+        statusLabel = 'isento';
+        break;
+      case 'CANCELADO':
+        statusColor = const Color(0xFF718096);
+        statusIcon = Icons.cancel_outlined;
+        statusLabel = 'cancelado';
+        break;
+      default: // AGUARDANDO
+        statusColor = Colors.grey;
+        statusIcon = Icons.access_time;
+        statusLabel = 'a vencer';
+    }
 
     return InkWell(
       onTap: () => _showPagamentoSheet(m),
@@ -310,7 +339,9 @@ class _ExtratoPassageiroMWidgetState extends State<ExtratoPassageiroMWidget> {
   }
 
   void _showPagamentoSheet(VivanMensalidade m) {
-    if (m.isPago) return;
+    // Bloquear para status finais ou que não precisam de pagamento manual
+    final s = m.status.toUpperCase();
+    if (m.isPago || m.isAbonado || s == 'ISENTO' || s == 'CANCELADO') return;
     String? selectedForma;
 
     showModalBottomSheet(

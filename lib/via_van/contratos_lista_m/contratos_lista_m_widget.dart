@@ -369,7 +369,7 @@ class _ContratosListaMWidgetState extends State<ContratosListaMWidget> {
                                     setD(() => temp = i + 1),
                                 childDelegate:
                                     ListWheelChildBuilderDelegate(
-                                  childCount: 31,
+                                  childCount: 28, // máx 28 para evitar problemas com meses curtos (REGRAS)
                                   builder: (_, i) => Center(
                                     child: Text('Dia ${i + 1}',
                                         style: TextStyle(

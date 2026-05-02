@@ -122,19 +122,13 @@ class PassageiroFormMModel extends FlutterFlowModel<PassageiroFormMWidget> {
             int.tryParse((savedP as Map)['idPassageiro']?.toString() ?? '');
       }
 
-      // Responsável — mesmos campos em ambos os modos
+      // Responsável — salva com apenas nome (mínimo exigido pelo backend para criar contrato)
       final respNome = respNomeCtrl.text.trim();
       final respWpp = respWhatsappCtrl.text.trim();
       final respCpf = respCpfCtrl.text.trim();
+      bool responsavelSalvo = _responsavelId != null;
 
-      final shouldSaveResp = isEdit
-          ? (passageiroId != null && respNome.isNotEmpty)
-          : (passageiroId != null &&
-              respNome.isNotEmpty &&
-              respWpp.isNotEmpty &&
-              respCpf.isNotEmpty);
-
-      if (shouldSaveResp) {
+      if (passageiroId != null && respNome.isNotEmpty) {
         final rBody = <String, dynamic>{
           'nomeResponsavel': respNome,
           if (respWpp.isNotEmpty) 'whatsAppResponsavel': respWpp,
@@ -144,18 +138,24 @@ class PassageiroFormMModel extends FlutterFlowModel<PassageiroFormMWidget> {
           await VivanHttp.put(
               '/passageiros/$passageiroId/responsaveis/$_responsavelId',
               rBody);
+          responsavelSalvo = true;
         } else {
           final r = await VivanHttp.post(
               '/passageiros/$passageiroId/responsaveis', rBody);
           if (r is Map) {
             _responsavelId =
                 int.tryParse(r['idResponsavel']?.toString() ?? '');
+            responsavelSalvo = true;
           }
         }
       }
 
-      // Contrato — somente no wizard (criação)
-      if (!isEdit && passageiroId != null && valorCtrl.text.trim().isNotEmpty) {
+      // Contrato — somente no wizard (criação), exige responsável salvo e valor preenchido.
+      // O backend POST /passageiros/:id/contratos já cria contrato + mensalidades em uma única chamada.
+      if (!isEdit &&
+          passageiroId != null &&
+          responsavelSalvo &&
+          valorCtrl.text.trim().isNotEmpty) {
         final valor =
             double.tryParse(valorCtrl.text.replaceAll(',', '.')) ?? 0;
         final cBody = <String, dynamic>{
@@ -166,41 +166,11 @@ class PassageiroFormMModel extends FlutterFlowModel<PassageiroFormMWidget> {
           if (vigenciaFim != null)
             'vigenciaFim': DateFormat('yyyy-MM').format(vigenciaFim!),
         };
-        if (_contratoId != null) {
-          await VivanHttp.put(
-              '/passageiros/$passageiroId/contratos/$_contratoId', cBody);
-        } else {
-          final c = await VivanHttp.post(
-              '/passageiros/$passageiroId/contratos', cBody);
-          if (c is Map) {
-            _contratoId = int.tryParse(
-                (c['contrato'] as Map?)?['idContrato']?.toString() ?? '');
-          }
-        }
-
-        // Gera mensalidades para cada mês entre vigenciaInicio e vigenciaFim
-        if (_contratoId != null &&
-            vigenciaInicio != null &&
-            vigenciaFim != null) {
-          final motoristaId = FFAppState().idUsuario;
-          final diaVenc = diaPagamento ?? 5;
-          DateTime mes =
-              DateTime(vigenciaInicio!.year, vigenciaInicio!.month);
-          final fim = DateTime(vigenciaFim!.year, vigenciaFim!.month);
-          while (!mes.isAfter(fim)) {
-            final mesRef = DateFormat('yyyy-MM').format(mes);
-            final dtVenc = DateTime(mes.year, mes.month, diaVenc);
-            await VivanHttp.post('/mensalidades', {
-              'idContrato': _contratoId,
-              'idPassageiro': passageiroId,
-              'idMotorista': motoristaId,
-              'mesReferencia': mesRef,
-              'dtVencimento': DateFormat('yyyy-MM-dd').format(dtVenc),
-              'valOriginal': valor,
-              'status': 'PENDENTE',
-            });
-            mes = DateTime(mes.year, mes.month + 1);
-          }
+        final c = await VivanHttp.post(
+            '/passageiros/$passageiroId/contratos', cBody);
+        if (c is Map) {
+          _contratoId = int.tryParse(
+              (c['contrato'] as Map?)?['idContrato']?.toString() ?? '');
         }
       }
 

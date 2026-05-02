@@ -72,7 +72,7 @@ class _ContratosListaMWidgetState extends State<ContratosListaMWidget> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Crie contratos do seu transporte escolar de forma rápida e segura, direto pelo Smartvan.',
+                        'Crie contratos do seu transporte escolar de forma rápida e segura, direto pelo ViVan.',
                         textAlign: TextAlign.center,
                         style: GoogleFonts.inter(
                             fontSize: 16, color: _secondaryText),
@@ -91,7 +91,7 @@ class _ContratosListaMWidgetState extends State<ContratosListaMWidget> {
                           'Visualizar a lista de contratos já gerados para seus passageiros'),
                       _bullet('Ajustar cláusulas conforme sua necessidade'),
                       _bullet(
-                          'Voltar ao modelo padrão do Smartvan quando precisar'),
+                          'Voltar ao modelo padrão do ViVan quando precisar'),
                       const SizedBox(height: 16),
                       Text(
                         'Depois de gerar o contrato, é só enviar o link para o responsável assinar digitalmente. Simples e sem papelada.',
@@ -542,7 +542,7 @@ class _ContratosListaMWidgetState extends State<ContratosListaMWidget> {
         title: Text('Voltar Modelo Padrão',
             style: GoogleFonts.interTight(fontWeight: FontWeight.w700)),
         content: Text(
-            'Deseja restaurar o modelo padrão do Smartvan? As personalizações serão perdidas.',
+            'Deseja restaurar o modelo padrão do ViVan? As personalizações serão perdidas.',
             style: GoogleFonts.inter(fontSize: 14)),
         actions: [
           TextButton(

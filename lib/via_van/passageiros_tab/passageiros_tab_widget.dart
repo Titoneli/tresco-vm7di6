@@ -2,6 +2,7 @@ import 'package:ff_theme/flutter_flow/flutter_flow_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '/flutter_flow/flutter_flow_util.dart';
+import '/via_van/passageiro_detalhe_m/passageiro_detalhe_m_widget.dart';
 import '/via_van/passageiro_form_m/passageiro_form_m_widget.dart';
 import 'passageiros_tab_model.dart';
 export 'passageiros_tab_model.dart';
@@ -212,7 +213,7 @@ class _PassageirosTabWidgetState extends State<PassageirosTabWidget> {
 
   Widget _buildItem(PassageiroTabItem p) {
     return InkWell(
-      onTap: () => _abrirForm(p.id),
+      onTap: () => _abrirDetalhe(p.id),
       borderRadius: BorderRadius.circular(8),
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 12),
@@ -460,6 +461,16 @@ class _PassageirosTabWidgetState extends State<PassageirosTabWidget> {
         ),
       ),
     );
+  }
+
+  Future<void> _abrirDetalhe(int passageiroId) async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => PassageiroDetalheMWidget(passageiroId: passageiroId),
+      ),
+    );
+    _model.carregar();
   }
 
   Future<void> _abrirForm(int? passageiroId) async {

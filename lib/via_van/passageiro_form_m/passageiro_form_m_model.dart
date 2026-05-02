@@ -12,20 +12,33 @@ class PassageiroFormMModel extends FlutterFlowModel<PassageiroFormMWidget> {
   // ── Step 1 — Passageiro ──────────────────────────
   final nomeCtrl = TextEditingController(); // nome completo (wizard + edit)
   String? escolaNome;
+  int? escolaId;
   String? periodo;
   List<String> escolas = [];
+  final Map<String, int> _escolaIds = {};
 
   Future<void> loadEscolas() async {
     try {
       final res = await VivanHttp.get('/escolas');
       final lista = res is List ? res : (res is Map ? (res['data'] ?? []) : []);
+      _escolaIds.clear();
       escolas = (lista as List)
           .map((e) => (e as Map)['nomeEscola']?.toString() ?? '')
           .where((s) => s.isNotEmpty)
           .toList();
+      for (final e in lista) {
+        final nome = (e as Map)['nomeEscola']?.toString() ?? '';
+        final id = int.tryParse(e['idEscola']?.toString() ?? '');
+        if (nome.isNotEmpty && id != null) _escolaIds[nome] = id;
+      }
     } catch (e) {
       debugPrint('PassageiroForm.loadEscolas: $e');
     }
+  }
+
+  void setEscolaNome(String? nome) {
+    escolaNome = nome;
+    escolaId = nome != null ? _escolaIds[nome] : null;
   }
 
   static const periodos = ['Integral', 'Manhã', 'Tarde', 'Noite'];
@@ -80,11 +93,11 @@ class PassageiroFormMModel extends FlutterFlowModel<PassageiroFormMWidget> {
       sobrenomeEditCtrl.text = partes.skip(1).join(' ');
 
       escolaNome = p['nomeEscola']?.toString();
+      escolaId = int.tryParse(p['idEscola']?.toString() ?? '');
       periodo = p['domTurno']?.toString() ?? p['periodo']?.toString();
 
       final dtn = p['dtNascimento']?.toString();
       dtNascimento = dtn != null ? DateTime.tryParse(dtn) : null;
-      sexo = p['domSexo']?.toString();
 
       // Responsável
       try {
@@ -120,18 +133,19 @@ class PassageiroFormMModel extends FlutterFlowModel<PassageiroFormMWidget> {
       if (isEdit) {
         final nomeEdit =
             '${primeiroNomeEditCtrl.text} ${sobrenomeEditCtrl.text}'.trim();
+        final resolvedEscolaId = escolaId ?? _escolaIds[escolaNome ?? ''];
         body = {
           'nomePassageiro': nomeEdit.isNotEmpty ? nomeEdit : nomeCtrl.text.trim(),
           if (dtNascimento != null)
             'dtNascimento': dtNascimento!.toIso8601String().substring(0, 10),
-          if (sexo != null) 'domSexo': sexo,
-          if (escolaNome?.isNotEmpty == true) 'nomeEscola': escolaNome,
+          if (resolvedEscolaId != null) 'idEscola': resolvedEscolaId,
           if (periodo != null) 'domTurno': periodo,
         };
       } else {
         body = {
           'nomePassageiro': nomeCtrl.text.trim(),
-          if (escolaNome?.isNotEmpty == true) 'nomeEscola': escolaNome,
+          if (escolaId != null) 'idEscola': escolaId
+          else if (escolaNome?.isNotEmpty == true) 'nomeEscola': escolaNome,
           if (periodo != null) 'domTurno': periodo,
         };
       }

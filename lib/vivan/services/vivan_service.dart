@@ -258,12 +258,15 @@ class VivanService {
   Future<VivanMensalidade> pagamentoManual(int id, {
     required double valorPago,
     required String formaPagamento,
+    String? dtPagamento,
     String? comprovanteUrl,
     String? observacoes,
   }) async {
+    final dt = dtPagamento ?? DateTime.now().toIso8601String().substring(0, 10);
     final json = await _client.post('/mensalidades/$id/pagamento-manual', body: {
-      'valorPago': valorPago,
+      'valPago': valorPago,
       'formaPagamento': formaPagamento,
+      'dtPagamento': dt,
       if (comprovanteUrl != null) 'comprovanteUrl': comprovanteUrl,
       if (observacoes != null) 'observacoes': observacoes,
     });

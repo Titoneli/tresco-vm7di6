@@ -824,7 +824,7 @@ class _PassageiroFormMWidgetState extends State<PassageiroFormMWidget> {
       titulo: 'Escola',
       opcoes: _model.escolas,
       selecionado: _model.escolaNome,
-      onSelect: (v) => setState(() => _model.escolaNome = v),
+      onSelect: (v) => setState(() => _model.setEscolaNome(v)),
       emptyMsg: 'Use o botão + para adicionar uma escola',
     );
   }
@@ -895,7 +895,7 @@ class _PassageiroFormMWidgetState extends State<PassageiroFormMWidget> {
                           await VivanHttp.post('/escolas', {'nomeEscola': nome});
                           await _model.loadEscolas();
                           if (ctx.mounted) Navigator.pop(ctx);
-                          setState(() => _model.escolaNome = nome);
+                          setState(() => _model.setEscolaNome(nome));
                         } catch (e) {
                           setSheet(() {
                             isSaving = false;

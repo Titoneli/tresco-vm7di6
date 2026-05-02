@@ -755,11 +755,9 @@ class _DashboardAssociadoMWidgetState extends State<DashboardAssociadoMWidget>
                                                           child: Column(
                                                             mainAxisSize:
                                                                 MainAxisSize
-                                                                    .max,
+                                                                    .min,
                                                             children: [
-                                                              Expanded(
-                                                                child:
-                                                                    Container(
+                                                              Container(
                                                                   width: double
                                                                       .infinity,
                                                                   height: 35.0,
@@ -933,7 +931,6 @@ class _DashboardAssociadoMWidgetState extends State<DashboardAssociadoMWidget>
                                                                     ],
                                                                   ),
                                                                 ),
-                                                              ),
                                                               Container(
                                                                 width: double
                                                                     .infinity,

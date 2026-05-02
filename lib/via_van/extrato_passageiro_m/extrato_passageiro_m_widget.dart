@@ -276,7 +276,7 @@ class _ExtratoPassageiroMWidgetState extends State<ExtratoPassageiroMWidget> {
             : 'a vencer';
 
     return InkWell(
-      onTap: () {},
+      onTap: () => _showPagamentoSheet(m),
       child: Container(
         padding:
             const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -304,6 +304,129 @@ class _ExtratoPassageiroMWidgetState extends State<ExtratoPassageiroMWidget> {
             const SizedBox(width: 4),
             Icon(Icons.chevron_right, size: 16, color: _secondaryText),
           ],
+        ),
+      ),
+    );
+  }
+
+  void _showPagamentoSheet(VivanMensalidade m) {
+    if (m.isPago) return;
+    String? selectedForma;
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
+      shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(16))),
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setSheet) => Padding(
+          padding: EdgeInsets.fromLTRB(
+              20, 20, 20, MediaQuery.of(ctx).viewInsets.bottom + 20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('Informar Pagamento',
+                  style: GoogleFonts.inter(
+                      fontSize: 16, color: _secondaryText)),
+              const SizedBox(height: 8),
+              Text(
+                widget.nomePassageiro,
+                style: GoogleFonts.interTight(
+                    fontSize: 20, fontWeight: FontWeight.w700),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                'Vencimento: ${m.dtVencimento != null ? DateFormat('dd/MM/yyyy').format(DateTime.parse(m.dtVencimento!)) : '—'}',
+                style: GoogleFonts.inter(
+                    fontSize: 13, color: _secondaryText),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                NumberFormat.currency(locale: 'pt_BR', symbol: 'R\$')
+                    .format(m.valOriginal ?? 0),
+                style: GoogleFonts.inter(
+                    fontSize: 22, fontWeight: FontWeight.w700),
+              ),
+              const SizedBox(height: 16),
+              Text('Como foi o pagamento?',
+                  style: GoogleFonts.inter(
+                      fontSize: 15, fontWeight: FontWeight.w600)),
+              const SizedBox(height: 12),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  'Pix', 'Dinheiro', 'Cartão de Crédito',
+                  'Cartão de Débito', 'Boleto', 'Outro'
+                ]
+                    .map((forma) {
+                      final sel = selectedForma == forma;
+                      return GestureDetector(
+                        onTap: () => setSheet(() => selectedForma = forma),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 14, vertical: 8),
+                          decoration: BoxDecoration(
+                            color: sel ? _primary : _bg,
+                            border: Border.all(
+                                color: _primary, width: 1.5),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Text(forma,
+                              style: GoogleFonts.inter(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w500,
+                                  color: sel
+                                      ? Colors.white
+                                      : _primary)),
+                        ),
+                      );
+                    })
+                    .toList(),
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: selectedForma == null
+                    ? null
+                    : () async {
+                        try {
+                          await VivanLocator.service.pagamentoManual(
+                            m.idMensalidade!,
+                            valorPago: m.valOriginal ?? 0,
+                            formaPagamento: selectedForma!,
+                          );
+                          if (ctx.mounted) Navigator.pop(ctx);
+                          await _load();
+                          if (mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                    content: const Text(
+                                        'Pagamento registrado!'),
+                                    backgroundColor: _primary));
+                          }
+                        } catch (e) {
+                          if (ctx.mounted) {
+                            ScaffoldMessenger.of(ctx).showSnackBar(SnackBar(
+                                content: Text('Erro: $e')));
+                          }
+                        }
+                      },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: _primary,
+                  disabledBackgroundColor:
+                      _primary.withValues(alpha: 0.4),
+                  minimumSize: const Size(double.infinity, 48),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12)),
+                ),
+                child: const Text('Confirmar pagamento',
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600)),
+              ),
+            ],
+          ),
         ),
       ),
     );

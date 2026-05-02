@@ -1,7 +1,10 @@
 import '/flutter_flow/flutter_flow_util.dart';
 import '/via_van/gerar_contrato_m/gerar_contrato_m_widget.dart';
+import '/via_van/contrato_detalhe_m/contrato_detalhe_m_widget.dart';
+import '../_vivan_http.dart';
 import 'package:ff_theme/flutter_flow/flutter_flow_theme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'contratos_lista_m_model.dart';
@@ -31,6 +34,13 @@ class _ContratosListaMWidgetState extends State<ContratosListaMWidget> {
   void initState() {
     super.initState();
     _model = createModel(context, () => ContratosListaMModel());
+    SchedulerBinding.instance.addPostFrameCallback((_) async {
+      await _model.fetchContratos(
+        FFAppState().idUsuario,
+        passageiro: widget.passageiroId > 0 ? widget.passageiroId : null,
+      );
+      safeSetState(() {});
+    });
   }
 
   @override
@@ -121,10 +131,7 @@ class _ContratosListaMWidgetState extends State<ContratosListaMWidget> {
                         width: double.infinity,
                         height: 52,
                         child: OutlinedButton(
-                          onPressed: () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('Em breve')));
-                          },
+                          onPressed: _openVerModelo,
                           style: OutlinedButton.styleFrom(
                             foregroundColor: _primaryText,
                             side: BorderSide(color: Colors.grey.shade300),
@@ -142,10 +149,7 @@ class _ContratosListaMWidgetState extends State<ContratosListaMWidget> {
                         width: double.infinity,
                         height: 52,
                         child: OutlinedButton(
-                          onPressed: () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('Em breve')));
-                          },
+                          onPressed: _showEditarContratoSheet,
                           style: OutlinedButton.styleFrom(
                             foregroundColor: _primaryText,
                             side: BorderSide(color: Colors.grey.shade300),
@@ -247,6 +251,239 @@ class _ContratosListaMWidgetState extends State<ContratosListaMWidget> {
                     fontSize: 14, color: _secondaryText)),
           ),
         ],
+      ),
+    );
+  }
+
+  void _openVerModelo() {
+    final contrato = _model.contratoAtivo;
+    if (contrato == null || contrato.idContrato == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Nenhum contrato ativo encontrado')));
+      return;
+    }
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) =>
+            ContratoDetalheMWidget(contratoId: contrato.idContrato),
+      ),
+    );
+  }
+
+  void _showEditarContratoSheet() {
+    final contrato = _model.contratoAtivo;
+    if (contrato == null || contrato.idContrato == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Nenhum contrato ativo encontrado')));
+      return;
+    }
+
+    final valorCtrl = TextEditingController(
+        text: contrato.valMensal?.toStringAsFixed(2) ?? '');
+    int? diaVenc = contrato.diaVencimento;
+    bool isSaving = false;
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: _bg,
+      shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setSheet) => Padding(
+          padding: EdgeInsets.fromLTRB(
+              24, 20, 24, MediaQuery.of(ctx).viewInsets.bottom + 24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Editar Contrato',
+                  style: GoogleFonts.interTight(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
+                      color: _primaryText)),
+              const SizedBox(height: 16),
+              Text('Valor Mensal (R\$)',
+                  style: GoogleFonts.inter(
+                      fontSize: 13, color: _secondaryText)),
+              const SizedBox(height: 6),
+              TextFormField(
+                controller: valorCtrl,
+                keyboardType:
+                    const TextInputType.numberWithOptions(decimal: true),
+                autofocus: true,
+                decoration: InputDecoration(
+                  hintText: '0,00',
+                  prefixText: 'R\$ ',
+                  filled: true,
+                  fillColor:
+                      FlutterFlowTheme.of(context).secondaryBackground,
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(color: Colors.grey.shade200)),
+                  enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(color: Colors.grey.shade200)),
+                  focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(color: _primary, width: 1.5)),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Text('Dia de Vencimento',
+                  style: GoogleFonts.inter(
+                      fontSize: 13, color: _secondaryText)),
+              const SizedBox(height: 6),
+              GestureDetector(
+                onTap: () async {
+                  int? temp = diaVenc;
+                  await showModalBottomSheet(
+                    context: ctx,
+                    backgroundColor: _bg,
+                    shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.vertical(
+                            top: Radius.circular(20))),
+                    builder: (_) => StatefulBuilder(
+                      builder: (_, setD) => Padding(
+                        padding:
+                            const EdgeInsets.fromLTRB(24, 20, 24, 32),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text('Dia de Vencimento',
+                                style: GoogleFonts.interTight(
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 16,
+                                    color: _primaryText)),
+                            const SizedBox(height: 12),
+                            SizedBox(
+                              height: 180,
+                              child: ListWheelScrollView.useDelegate(
+                                itemExtent: 44,
+                                physics:
+                                    const FixedExtentScrollPhysics(),
+                                controller: FixedExtentScrollController(
+                                    initialItem: (temp ?? 1) - 1),
+                                onSelectedItemChanged: (i) =>
+                                    setD(() => temp = i + 1),
+                                childDelegate:
+                                    ListWheelChildBuilderDelegate(
+                                  childCount: 31,
+                                  builder: (_, i) => Center(
+                                    child: Text('Dia ${i + 1}',
+                                        style: TextStyle(
+                                            fontSize: 18,
+                                            color: temp == i + 1
+                                                ? _primary
+                                                : _secondaryText,
+                                            fontWeight: temp == i + 1
+                                                ? FontWeight.w700
+                                                : FontWeight.normal)),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            ElevatedButton(
+                              onPressed: () {
+                                setSheet(() => diaVenc = temp ?? 1);
+                                Navigator.pop(ctx);
+                              },
+                              style: ElevatedButton.styleFrom(
+                                  backgroundColor: _primary,
+                                  minimumSize:
+                                      const Size(double.infinity, 48),
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius:
+                                          BorderRadius.circular(12))),
+                              child: const Text('Confirmar',
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w600)),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                },
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 16, vertical: 14),
+                  decoration: BoxDecoration(
+                    color: FlutterFlowTheme.of(context).secondaryBackground,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Colors.grey.shade200),
+                  ),
+                  child: Text(
+                    diaVenc != null ? 'Dia $diaVenc de cada mês' : 'Selecionar',
+                    style: GoogleFonts.inter(
+                        color: diaVenc != null
+                            ? _primaryText
+                            : _secondaryText),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: isSaving
+                    ? null
+                    : () async {
+                        final valor = double.tryParse(
+                            valorCtrl.text.replaceAll(',', '.'));
+                        if (valor == null) return;
+                        setSheet(() => isSaving = true);
+                        try {
+                          await VivanHttp.put(
+                              '/contratos/${contrato.idContrato}', {
+                            'valMensal': valor,
+                            if (diaVenc != null) 'diaVencimento': diaVenc,
+                          });
+                          await _model.fetchContratos(
+                            FFAppState().idUsuario,
+                            passageiro: widget.passageiroId > 0
+                                ? widget.passageiroId
+                                : null,
+                          );
+                          if (ctx.mounted) Navigator.pop(ctx);
+                          if (mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                    content: const Text(
+                                        'Contrato atualizado!'),
+                                    backgroundColor: _primary));
+                          }
+                        } catch (e) {
+                          setSheet(() => isSaving = false);
+                          if (ctx.mounted) {
+                            ScaffoldMessenger.of(ctx).showSnackBar(SnackBar(
+                                content: Text(
+                                    'Erro: ${e.toString().replaceFirst('Exception: ', '')}')));
+                          }
+                        }
+                      },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: _primary,
+                  minimumSize: const Size(double.infinity, 48),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12)),
+                ),
+                child: isSaving
+                    ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                            color: Colors.white, strokeWidth: 2))
+                    : const Text('Salvar',
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600)),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

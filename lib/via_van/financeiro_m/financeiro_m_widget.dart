@@ -81,7 +81,7 @@ class _FinanceiroMWidgetState extends State<FinanceiroMWidget>
             controller: _model.tabBarController,
             indicatorColor: FlutterFlowTheme.of(context).info,
             labelColor: FlutterFlowTheme.of(context).info,
-            unselectedLabelColor: FlutterFlowTheme.of(context).info.withOpacity(0.6),
+            unselectedLabelColor: FlutterFlowTheme.of(context).info.withValues(alpha: 0.6),
             tabs: [
               Tab(text: 'Mensalidades'),
               Tab(text: 'Despesas'),
@@ -113,7 +113,7 @@ class _FinanceiroMWidgetState extends State<FinanceiroMWidget>
           width: double.infinity, margin: EdgeInsets.all(16.0),
           padding: EdgeInsets.all(16.0),
           decoration: BoxDecoration(
-            color: FlutterFlowTheme.of(context).primary.withOpacity(0.1),
+            color: FlutterFlowTheme.of(context).primary.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(12.0),
           ),
           child: Column(
@@ -177,9 +177,9 @@ class _FinanceiroMWidgetState extends State<FinanceiroMWidget>
                                     Container(
                                       padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
                                       decoration: BoxDecoration(
-                                        color: isPago ? Color(0xFF39D2C0).withOpacity(0.2)
-                                            : isAbonado ? Color(0xFFF9CF58).withOpacity(0.2)
-                                            : Color(0xFFFF5963).withOpacity(0.2),
+                                        color: isPago ? Color(0xFF39D2C0).withValues(alpha: 0.2)
+                                            : isAbonado ? Color(0xFFF9CF58).withValues(alpha: 0.2)
+                                            : Color(0xFFFF5963).withValues(alpha: 0.2),
                                         borderRadius: BorderRadius.circular(8.0),
                                       ),
                                       child: Text(status,
@@ -309,7 +309,7 @@ class _FinanceiroMWidgetState extends State<FinanceiroMWidget>
         Container(
           width: double.infinity, margin: EdgeInsets.all(16.0), padding: EdgeInsets.all(16.0),
           decoration: BoxDecoration(
-            color: Color(0xFFFF5963).withOpacity(0.1),
+            color: Color(0xFFFF5963).withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(12.0),
           ),
           child: Column(
@@ -360,7 +360,7 @@ class _FinanceiroMWidgetState extends State<FinanceiroMWidget>
                                 Container(
                                   width: 40.0, height: 40.0,
                                   decoration: BoxDecoration(
-                                    color: Color(0xFFFF5963).withOpacity(0.1),
+                                    color: Color(0xFFFF5963).withValues(alpha: 0.1),
                                     borderRadius: BorderRadius.circular(20.0),
                                   ),
                                   child: Icon(Icons.receipt_long, color: Color(0xFFFF5963), size: 20.0),

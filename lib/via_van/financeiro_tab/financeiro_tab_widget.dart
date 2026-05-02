@@ -255,7 +255,7 @@ class _FinanceiroTabWidgetState extends State<FinanceiroTabWidget> {
                           style: GoogleFonts.inter(fontSize: 12, color: FlutterFlowTheme.of(context).secondaryText)),
                   ])),
                   Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
-                    Text('${isDespesa ? "- " : "+ "}${_model.formatCurrency(d.valor)}',
+                    Text('${isDespesa ? "- " : "+ "}${_model.formatCurrency(d.valor.abs())}',
                         style: GoogleFonts.inter(fontSize: 15, fontWeight: FontWeight.w700, color: iconColor)),
                     if (dateStr.isNotEmpty)
                       Text(dateStr,
@@ -312,7 +312,7 @@ class _FinanceiroTabWidgetState extends State<FinanceiroTabWidget> {
             Text(d.descricao, textAlign: TextAlign.center,
                 style: GoogleFonts.inter(fontSize: 14, color: FlutterFlowTheme.of(context).secondaryText)),
           const SizedBox(height: 12),
-          Text('${isDespesa ? "- " : "+ "}${_model.formatCurrency(d.valor)}',
+          Text('${isDespesa ? "- " : "+ "}${_model.formatCurrency(d.valor.abs())}',
               style: GoogleFonts.inter(fontSize: 28, fontWeight: FontWeight.w800, color: valueColor)),
           const SizedBox(height: 4),
           Text(dateStr, style: GoogleFonts.inter(fontSize: 14, color: FlutterFlowTheme.of(context).secondaryText)),
@@ -580,7 +580,7 @@ class _FinanceiroTabWidgetState extends State<FinanceiroTabWidget> {
                       ? null
                       : () async {
                           final rawValor = valorCtrl.text.replaceAll('.', '').replaceAll(',', '.');
-                          final valor = double.tryParse(rawValor) ?? 0;
+                          final valor = (double.tryParse(rawValor) ?? 0).abs();
                           final tipo = isDespesa ? 'DESPESA' : 'ENTRADA';
                           setSheetState(() { isSaving = true; erroSalvar = null; });
                           try {

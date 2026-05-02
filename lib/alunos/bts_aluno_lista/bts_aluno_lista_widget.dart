@@ -604,7 +604,7 @@ class _BtsAlunoListaWidgetState extends State<BtsAlunoListaWidget>
                                       highlightColor: Colors.transparent,
                                       onTap: () async {
                                         FFAppState().recCountAlunosLista =
-                                            alunosLista.length;
+                                            (_model.listViewPagingController?.itemList?.length ?? 0);
                                         safeSetState(() {});
                                       },
                                       child: PagedListView<ApiPagingParams,

@@ -1,6 +1,5 @@
 import '/backend/supabase/supabase.dart';
 import '/flutter_flow/flutter_flow_util.dart';
-import '/flutter_flow/form_field_controller.dart';
 import 'bts_aluno_adicionar_widget.dart' show BtsAlunoAdicionarWidget;
 import 'package:flutter/material.dart';
 
@@ -8,63 +7,135 @@ class BtsAlunoAdicionarModel extends FlutterFlowModel<BtsAlunoAdicionarWidget> {
   ///  State fields for stateful widgets in this component.
 
   final formKey = GlobalKey<FormState>();
-  // State field(s) for cpfCNPJ widget.
-  FocusNode? cpfCNPJFocusNode;
-  TextEditingController? cpfCNPJTextController;
-  String? Function(BuildContext, String?)? cpfCNPJTextControllerValidator;
-  // State field(s) for nomeLead widget.
-  FocusNode? nomeLeadFocusNode;
-  TextEditingController? nomeLeadTextController;
-  String? Function(BuildContext, String?)? nomeLeadTextControllerValidator;
-  String? _nomeLeadTextControllerValidator(BuildContext context, String? val) {
-    if (val == null || val.isEmpty) {
-      return 'Informe o Nome do Aluno';
-    }
 
+  // PageView controller
+  PageController? pageController;
+  int currentPage = 0;
+
+  // ===== Step 1 - Passageiro =====
+  FocusNode? nomeFocusNode;
+  TextEditingController? nomeTextController;
+  String? Function(BuildContext, String?)? nomeTextControllerValidator;
+  String? _nomeTextControllerValidator(BuildContext context, String? val) {
+    if (val == null || val.isEmpty) {
+      return 'Informe o Nome do Passageiro';
+    }
     return null;
   }
 
-  // State field(s) for telefoneLead widget.
-  FocusNode? telefoneLeadFocusNode;
-  TextEditingController? telefoneLeadTextController;
-  String? Function(BuildContext, String?)? telefoneLeadTextControllerValidator;
-  // State field(s) for ddwMotorista widget.
-  int? ddwMotoristaValue;
-  FormFieldController<int>? ddwMotoristaValueController;
-  // State field(s) for ddwEscola widget.
-  int? ddwEscolaValue;
-  FormFieldController<int>? ddwEscolaValueController;
-  // State field(s) for ddwSerie widget.
-  String? ddwSerieValue;
-  FormFieldController<String>? ddwSerieValueController;
-  // State field(s) for ddwTurno widget.
-  String? ddwTurnoValue;
-  FormFieldController<String>? ddwTurnoValueController;
-  // State field(s) for ddwTurma widget.
-  int? ddwTurmaValue;
-  FormFieldController<int>? ddwTurmaValueController;
-  // State field(s) for ddwTipoAluno widget.
-  String? ddwTipoAlunoValue;
-  FormFieldController<String>? ddwTipoAlunoValueController;
-  // Stores action output result for [Backend Call - Query Rows] action in Button widget.
+  FocusNode? sobrenomeFocusNode;
+  TextEditingController? sobrenomeTextController;
+
+  DateTime? dtNascimento;
+  String? sexo; // 'Masculino' or 'Feminino'
+
+  // Escola
+  int? selectedEscolaId;
+  String? selectedEscolaNome;
+  List<EscolaRow> escolasList = [];
+
+  // Período (Turno)
+  String? selectedPeriodo;
+  final List<String> periodoOptions = [
+    'Integral',
+    'Manhã',
+    'Almoço',
+    'Tarde',
+    'Noite',
+  ];
+
+  // ===== Step 2 - Responsável =====
+  FocusNode? respNomeFocusNode;
+  TextEditingController? respNomeTextController;
+
+  FocusNode? respSobrenomeFocusNode;
+  TextEditingController? respSobrenomeTextController;
+
+  FocusNode? respDDDFocusNode;
+  TextEditingController? respDDDTextController;
+
+  FocusNode? respTelefoneFocusNode;
+  TextEditingController? respTelefoneTextController;
+
+  FocusNode? respCPFFocusNode;
+  TextEditingController? respCPFTextController;
+
+  // ===== Step 3 - Mensalidade =====
+  FocusNode? valorMensalidadeFocusNode;
+  TextEditingController? valorMensalidadeTextController;
+
+  String? diaPagamento;
+  DateTime? dtInicioVigencia;
+  DateTime? dtFinalVigencia;
+
+  // API results
   List<AlunoRow>? apiResBuscaAluno;
-  // Stores action output result for [Backend Call - Insert Row] action in Button widget.
   AlunoRow? apiResAdicionaAluno;
+  ContratoAlunoRow? apiResAdicionaContrato;
 
   @override
   void initState(BuildContext context) {
-    nomeLeadTextControllerValidator = _nomeLeadTextControllerValidator;
+    nomeTextControllerValidator = _nomeTextControllerValidator;
   }
 
   @override
   void dispose() {
-    cpfCNPJFocusNode?.dispose();
-    cpfCNPJTextController?.dispose();
+    pageController?.dispose();
 
-    nomeLeadFocusNode?.dispose();
-    nomeLeadTextController?.dispose();
+    nomeFocusNode?.dispose();
+    nomeTextController?.dispose();
 
-    telefoneLeadFocusNode?.dispose();
-    telefoneLeadTextController?.dispose();
+    sobrenomeFocusNode?.dispose();
+    sobrenomeTextController?.dispose();
+
+    respNomeFocusNode?.dispose();
+    respNomeTextController?.dispose();
+
+    respSobrenomeFocusNode?.dispose();
+    respSobrenomeTextController?.dispose();
+
+    respDDDFocusNode?.dispose();
+    respDDDTextController?.dispose();
+
+    respTelefoneFocusNode?.dispose();
+    respTelefoneTextController?.dispose();
+
+    respCPFFocusNode?.dispose();
+    respCPFTextController?.dispose();
+
+    valorMensalidadeFocusNode?.dispose();
+    valorMensalidadeTextController?.dispose();
+  }
+
+  /// Concatena Nome + Sobrenome para salvar em nomeAluno
+  String get nomeCompleto {
+    final nome = nomeTextController?.text.trim() ?? '';
+    final sobrenome = sobrenomeTextController?.text.trim() ?? '';
+    if (sobrenome.isEmpty) return nome;
+    return '$nome $sobrenome';
+  }
+
+  /// Concatena responsável nome + sobrenome
+  String get nomeCompletoResponsavel {
+    final nome = respNomeTextController?.text.trim() ?? '';
+    final sobrenome = respSobrenomeTextController?.text.trim() ?? '';
+    if (sobrenome.isEmpty) return nome;
+    return '$nome $sobrenome';
+  }
+
+  /// Telefone completo com DDD
+  String get telefoneCompletoResponsavel {
+    final ddd = respDDDTextController?.text.trim() ?? '';
+    final tel = respTelefoneTextController?.text.trim() ?? '';
+    if (ddd.isEmpty) return tel;
+    return '($ddd) $tel';
+  }
+
+  /// Converte valor mensalidade string (ex: "350,00") para double
+  double? get valorMensalidadeDouble {
+    final text = valorMensalidadeTextController?.text.trim() ?? '';
+    if (text.isEmpty) return null;
+    final normalized = text.replaceAll('.', '').replaceAll(',', '.');
+    return double.tryParse(normalized);
   }
 }

@@ -7,3 +7,17 @@ ff_flutter_sdk/flutter/
 temp/Tresco/dashboard_automacao.zip
 .dart_tool/
 temp/build/
+
+# Cache e metadata
+.DS_Store
+**/.DS_Store
+build/
+.flutter-plugins-dependencies
+.vscode/file_map.json
+
+# Pasta temp inteira (documentos, backups, node_modules)
+temp/
+# Binários node_modules
+**/node_modules/
+# PDFs e zips
+*.zip

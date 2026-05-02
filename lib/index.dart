@@ -18,5 +18,22 @@ export '/dashboard_mensagens/dashboard_mensagens_widget.dart'
     show DashboardMensagensWidget;
 export '/via_van/dashboard_motorista_via_van_m/dashboard_motorista_via_van_m_widget.dart'
     show DashboardMotoristaViaVanMWidget;
+export '/dashboard_passageiros_m/dashboard_passageiros_m_widget.dart'
+    show DashboardPassageirosMWidget;
 export '/via_van/dashboard_resp_via_van_m/dashboard_resp_via_van_m_widget.dart'
     show DashboardRespViaVanMWidget;
+export '/via_van/passageiros_lista_m/passageiros_lista_m_widget.dart'
+    show PassageirosListaMWidget;
+export '/via_van/passageiro_detalhe_m/passageiro_detalhe_m_widget.dart'
+    show PassageiroDetalheMWidget;
+export '/via_van/passageiro_form_m/passageiro_form_m_widget.dart'
+    show PassageiroFormMWidget;
+export '/via_van/contratos_lista_m/contratos_lista_m_widget.dart'
+    show ContratosListaMWidget;
+export '/via_van/contrato_detalhe_m/contrato_detalhe_m_widget.dart'
+    show ContratoDetalheMWidget;
+export '/via_van/financeiro_m/financeiro_m_widget.dart'
+    show FinanceiroMWidget;
+export '/via_van/presenca_m/presenca_m_widget.dart'
+    show PresencaMWidget;
+export '/atfs/atf_lista/atf_lista_widget.dart' show AtfListaWidget;

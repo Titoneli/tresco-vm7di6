@@ -1,0 +1,503 @@
+import 'package:ff_theme/flutter_flow/flutter_flow_theme.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import '/flutter_flow/flutter_flow_util.dart';
+import '/index.dart';
+import 'passageiros_lista_m_model.dart';
+export 'passageiros_lista_m_model.dart';
+
+class PassageirosListaMWidget extends StatefulWidget {
+  const PassageirosListaMWidget({super.key});
+
+  static String routeName = 'passageirosListaM';
+  static String routePath = '/passageirosLista';
+
+  @override
+  State<PassageirosListaMWidget> createState() =>
+      _PassageirosListaMWidgetState();
+}
+
+class _PassageirosListaMWidgetState extends State<PassageirosListaMWidget> {
+  late PassageirosListaMModel _model;
+
+  @override
+  void initState() {
+    super.initState();
+    _model = createModel(context, () => PassageirosListaMModel());
+    SchedulerBinding.instance.addPostFrameCallback((_) async {
+      safeSetState(() => _model.isLoading = true);
+      await _model.carregar();
+      safeSetState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    _model.dispose();
+    super.dispose();
+  }
+
+  Color get _primary => FlutterFlowTheme.of(context).primary;
+  Color get _bg => FlutterFlowTheme.of(context).primaryBackground;
+  Color get _secondBg => FlutterFlowTheme.of(context).secondaryBackground;
+  Color get _primaryText => FlutterFlowTheme.of(context).primaryText;
+  Color get _secondaryText => FlutterFlowTheme.of(context).secondaryText;
+
+  @override
+  Widget build(BuildContext context) {
+    context.watch<FFAppState>();
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: Scaffold(
+        backgroundColor: _bg,
+        body: SafeArea(
+          top: true,
+          child: Column(
+            children: [
+              _buildHeader(),
+              _buildSearch(),
+              _buildFilterRow(),
+              Expanded(child: _buildBody()),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHeader() {
+    return Container(
+      width: double.infinity,
+      height: 56,
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      decoration: BoxDecoration(
+        color: _bg,
+        boxShadow: [
+          BoxShadow(
+              color: Colors.black.withValues(alpha: 0.06),
+              blurRadius: 4,
+              offset: const Offset(0, 2))
+        ],
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            'Passageiros',
+            style: FlutterFlowTheme.of(context).headlineSmall.override(
+                  font: GoogleFonts.interTight(fontWeight: FontWeight.w700),
+                  color: _primaryText),
+          ),
+          InkWell(
+            borderRadius: BorderRadius.circular(24),
+            onTap: () => _abrirForm(null),
+            child: Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(color: _primary, shape: BoxShape.circle),
+              child:
+                  const Icon(Icons.person_add_rounded, color: Colors.white, size: 20),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSearch() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+      child: Container(
+        height: 44,
+        decoration: BoxDecoration(
+          color: _secondBg,
+          borderRadius: BorderRadius.circular(22),
+          border: Border.all(color: Colors.grey.shade200),
+        ),
+        child: TextField(
+          controller: _model.searchCtrl,
+          focusNode: _model.searchFocus,
+          onChanged: (v) {
+            _model.setBusca(v);
+            safeSetState(() {});
+          },
+          style: FlutterFlowTheme.of(context)
+              .bodyMedium
+              .override(font: GoogleFonts.inter(), color: _primaryText),
+          decoration: InputDecoration(
+            hintText: 'Buscar passageiro',
+            hintStyle: FlutterFlowTheme.of(context)
+                .bodyMedium
+                .override(font: GoogleFonts.inter(), color: _secondaryText),
+            prefixIcon:
+                Icon(Icons.search_rounded, color: _secondaryText, size: 20),
+            border: InputBorder.none,
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFilterRow() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 10, 16, 4),
+      child: Row(
+        children: [
+          _filterChip(
+              label: 'Período',
+              active: _model.periodoFiltro != null,
+              onTap: _showFiltroPeriodo),
+          const SizedBox(width: 8),
+          _filterChip(
+              label: 'Escola',
+              active: _model.escolaFiltro != null,
+              onTap: _showFiltroEscola),
+          const Spacer(),
+          if (_model.temFiltroAtivo)
+            GestureDetector(
+              onTap: () {
+                _model.limparFiltros();
+                safeSetState(() {});
+              },
+              child: Text('Limpar',
+                  style: FlutterFlowTheme.of(context).bodySmall.override(
+                        font: GoogleFonts.inter(fontWeight: FontWeight.w600),
+                        color: _primary)),
+            ),
+          const SizedBox(width: 8),
+          _countBadge(),
+        ],
+      ),
+    );
+  }
+
+  Widget _filterChip(
+      {required String label,
+      required bool active,
+      required VoidCallback onTap}) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          color: active ? _primary : Colors.transparent,
+          borderRadius: BorderRadius.circular(20),
+          border:
+              Border.all(color: active ? _primary : Colors.grey.shade300, width: 1.5),
+        ),
+        child: Text(
+          label,
+          style: FlutterFlowTheme.of(context).bodySmall.override(
+                font: GoogleFonts.inter(fontWeight: FontWeight.w600),
+                color: active ? Colors.white : _primaryText),
+        ),
+      ),
+    );
+  }
+
+  Widget _countBadge() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration:
+          BoxDecoration(color: _primary, borderRadius: BorderRadius.circular(16)),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text('${_model.total}',
+              style: FlutterFlowTheme.of(context).bodySmall.override(
+                    font: GoogleFonts.inter(fontWeight: FontWeight.w700),
+                    color: Colors.white)),
+          const SizedBox(width: 4),
+          const Icon(Icons.person_rounded, color: Colors.white, size: 14),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBody() {
+    if (_model.isLoading) {
+      return Center(
+          child: CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation(_primary)));
+    }
+    if (_model.erro != null && _model.lista.isEmpty) {
+      return _buildErro();
+    }
+    if (_model.lista.isEmpty) {
+      return _buildVazio();
+    }
+    return RefreshIndicator(
+      color: _primary,
+      onRefresh: () async {
+        await _model.carregar();
+        safeSetState(() {});
+      },
+      child: ListView.separated(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        itemCount: _model.lista.length,
+        separatorBuilder: (_, __) =>
+            Divider(height: 1, color: Colors.grey.shade100, indent: 72),
+        itemBuilder: (_, i) => _buildItem(_model.lista[i]),
+      ),
+    );
+  }
+
+  Widget _buildItem(PassageiroItem p) {
+    return InkWell(
+      onTap: () => _abrirForm(p.id),
+      borderRadius: BorderRadius.circular(8),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 10),
+        child: Row(
+          children: [
+            _avatar(p),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    p.nome,
+                    style: FlutterFlowTheme.of(context).bodyMedium.override(
+                          font: GoogleFonts.inter(fontWeight: FontWeight.w600),
+                          color: _primaryText),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  if (p.escola != null && p.escola!.isNotEmpty) ...[
+                    const SizedBox(height: 2),
+                    Text(
+                      p.escola!,
+                      style: FlutterFlowTheme.of(context).bodySmall.override(
+                            font: GoogleFonts.inter(), color: _secondaryText),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ],
+              ),
+            ),
+            if (p.periodo != null)
+              Padding(
+                padding: const EdgeInsets.only(right: 4),
+                child: Text(
+                  p.periodo!,
+                  style: FlutterFlowTheme.of(context).bodySmall.override(
+                        font: GoogleFonts.inter(), color: _secondaryText),
+                ),
+              ),
+            Icon(Icons.chevron_right_rounded, color: _secondaryText, size: 20),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _avatar(PassageiroItem p) {
+    if (p.foto != null && p.foto!.isNotEmpty) {
+      return CircleAvatar(radius: 24, backgroundImage: NetworkImage(p.foto!));
+    }
+    return CircleAvatar(
+      radius: 24,
+      backgroundColor: _primary.withValues(alpha: 0.12),
+      child: Text(
+        p.iniciais,
+        style: FlutterFlowTheme.of(context).bodyMedium.override(
+              font: GoogleFonts.inter(fontWeight: FontWeight.w700),
+              color: _primary),
+      ),
+    );
+  }
+
+  Widget _buildVazio() {
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.people_outline_rounded,
+              size: 64, color: _secondaryText.withValues(alpha: 0.4)),
+          const SizedBox(height: 12),
+          Text('Nenhum passageiro encontrado',
+              style: FlutterFlowTheme.of(context)
+                  .bodyMedium
+                  .override(font: GoogleFonts.inter(), color: _secondaryText)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildErro() {
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.error_outline_rounded,
+              size: 48, color: Colors.red.shade300),
+          const SizedBox(height: 12),
+          Text('Erro ao carregar',
+              style: FlutterFlowTheme.of(context).titleSmall.override(
+                    font: GoogleFonts.interTight(), color: _primaryText)),
+          const SizedBox(height: 16),
+          ElevatedButton(
+            onPressed: () async {
+              await _model.carregar();
+              safeSetState(() {});
+            },
+            style: ElevatedButton.styleFrom(
+                backgroundColor: _primary,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8))),
+            child: const Text('Tentar novamente',
+                style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ── Filter sheets ────────────────────────────────
+  void _showFiltroPeriodo() {
+    _showFilterSheet(
+      titulo: 'Período',
+      opcoes: _model.periodosDisponiveis,
+      labelTodos: 'Todos os períodos',
+      selecionado: _model.periodoFiltro,
+      onConfirm: (v) {
+        _model.periodoFiltro = v;
+        safeSetState(() {});
+      },
+    );
+  }
+
+  void _showFiltroEscola() {
+    _showFilterSheet(
+      titulo: 'Escola',
+      opcoes: _model.escolasDisponiveis,
+      labelTodos: 'Todas as escolas',
+      selecionado: _model.escolaFiltro,
+      onConfirm: (v) {
+        _model.escolaFiltro = v;
+        safeSetState(() {});
+      },
+    );
+  }
+
+  void _showFilterSheet({
+    required String titulo,
+    required List<String> opcoes,
+    required String labelTodos,
+    required String? selecionado,
+    required void Function(String?) onConfirm,
+  }) {
+    String? temp = selecionado;
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: _bg,
+      shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      builder: (_) => StatefulBuilder(
+        builder: (ctx, setS) => Padding(
+          padding: const EdgeInsets.fromLTRB(24, 20, 24, 32),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(titulo,
+                  style: FlutterFlowTheme.of(context).titleMedium.override(
+                        font: GoogleFonts.interTight(fontWeight: FontWeight.w700),
+                        color: _primaryText)),
+              const SizedBox(height: 20),
+              _filterOption(
+                  label: labelTodos,
+                  active: temp == null,
+                  onTap: () => setS(() => temp = null)),
+              ...opcoes.map((o) => _filterOption(
+                    label: o,
+                    active: temp == o,
+                    onTap: () => setS(() => temp = o),
+                  )),
+              const SizedBox(height: 20),
+              Row(children: [
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: () {
+                      onConfirm(null);
+                      Navigator.pop(ctx);
+                    },
+                    style: OutlinedButton.styleFrom(
+                        side: BorderSide(color: _primary),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12)),
+                        padding: const EdgeInsets.symmetric(vertical: 14)),
+                    child: Text('Limpar filtros',
+                        style: TextStyle(
+                            color: _primary, fontWeight: FontWeight.w600)),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      onConfirm(temp);
+                      Navigator.pop(ctx);
+                    },
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: _primary,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12)),
+                        padding: const EdgeInsets.symmetric(vertical: 14)),
+                    child: const Text('Confirmar',
+                        style: TextStyle(
+                            color: Colors.white, fontWeight: FontWeight.w600)),
+                  ),
+                ),
+              ]),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _filterOption(
+      {required String label,
+      required bool active,
+      required VoidCallback onTap}) {
+    return InkWell(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        child: Row(
+          children: [
+            Expanded(
+              child: Text(
+                label,
+                style: FlutterFlowTheme.of(context).bodyMedium.override(
+                      font: GoogleFonts.inter(
+                          fontWeight:
+                              active ? FontWeight.w700 : FontWeight.normal),
+                      color: active ? _primaryText : _secondaryText),
+              ),
+            ),
+            if (active) Icon(Icons.check_rounded, color: _primary, size: 20),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _abrirForm(int? passageiroId) async {
+    await context.pushNamed(
+      PassageiroFormMWidget.routeName,
+      queryParameters: passageiroId != null
+          ? {'passageiroId': passageiroId.toString()}
+          : {},
+    );
+    await _model.carregar();
+    safeSetState(() {});
+  }
+}

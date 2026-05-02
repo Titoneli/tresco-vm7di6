@@ -10,7 +10,7 @@ import 'package:download/download.dart';
 
 Future csvExport(
   String languageCode,
-  List<ExportDataTypeStruct> userData,
+  List<dynamic> userData,
 ) async {
   // These are the steps to make this custom action work:
   // 1. Build an action anywhere in your project which calls this custom action.

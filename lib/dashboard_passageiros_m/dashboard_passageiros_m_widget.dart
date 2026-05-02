@@ -472,9 +472,75 @@ class _DashboardPassageirosMWidgetState
                       ),
                     ),
                   ),
+                  Divider(height: 1, color: Colors.grey.shade100, indent: 16, endIndent: 16),
+                  InkWell(
+                    onTap: _confirmarSair,
+                    borderRadius: BorderRadius.circular(12.0),
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 14.0),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 40.0,
+                            height: 40.0,
+                            decoration: BoxDecoration(
+                              color: Colors.red.shade50,
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                            child: Icon(Icons.logout_rounded,
+                                color: Colors.red.shade400, size: 22.0),
+                          ),
+                          SizedBox(width: 14.0),
+                          Expanded(
+                            child: Text(
+                              'Sair',
+                              style: FlutterFlowTheme.of(context).bodyMedium.override(
+                                    font: GoogleFonts.inter(fontWeight: FontWeight.w500),
+                                    color: Colors.red.shade400),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _confirmarSair() {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text('Sair',
+            style: GoogleFonts.interTight(fontWeight: FontWeight.w700)),
+        content: Text('Deseja encerrar a sessão?',
+            style: GoogleFonts.inter(fontSize: 14)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text('Cancelar',
+                style: TextStyle(
+                    color: FlutterFlowTheme.of(context).secondaryText)),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(ctx);
+              FFAppState().idEmpresa = 0;
+              FFAppState().idUsuario = 0;
+              FFAppState().nomeUsuario = '';
+              context.goNamed(LoginWidget.routeName);
+            },
+            style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red.shade400,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8))),
+            child: Text('Sair', style: GoogleFonts.inter(fontWeight: FontWeight.w600)),
           ),
         ],
       ),

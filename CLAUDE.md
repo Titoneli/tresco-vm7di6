@@ -119,6 +119,17 @@ class NomeDoServicoService {
 - `develop` → sua branch de trabalho (sempre trabalhe aqui)
 - `main` / `flutterflow` → exclusiva do FlutterFlow (nunca commitar direto)
 
+### Deploy via FlutterFlow
+⚠️ **O FlutterFlow faz deploy a partir da branch `develop` no GitHub.**
+Commits feitos localmente mas não enviados ao remote **não aparecem no TestFlight/Play Store**.
+
+Sempre que terminar uma sessão de trabalho ou antes de pedir um deploy:
+```bash
+git push origin develop
+```
+
+Nunca assumir que o deploy vai pegar as últimas alterações sem confirmar que o push foi feito.
+
 ### Commits
 Use prefixos semânticos:
 ```
@@ -132,6 +143,7 @@ chore: atualiza dependências
 - Nenhum arquivo de `lib/flutter_flow/`, `lib/pages/` ou `lib/main.dart` foi modificado
 - O app compila sem erros: `flutter build apk --debug`
 - Não há imports quebrados
+- `git push origin develop` foi executado antes de solicitar deploy
 
 ---
 

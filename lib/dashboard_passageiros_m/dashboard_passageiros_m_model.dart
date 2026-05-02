@@ -14,10 +14,10 @@ class DashboardPassageirosMModel
   // Home tab data
   VivanDashboardResumo? homeResumo;
   int totalEscolas = 0;
+  int totalPassageiros = 0;
   List<VivanMensalidade> mensalidadesEmAberto = [];
   bool isLoadingHome = false;
 
-  int get totalPassageiros => homeResumo?.totalPassageiros ?? 0;
   double get totalAReceber => homeResumo?.totalAReceber ?? 0;
 
   String get mesReferenciaAtual =>
@@ -35,11 +35,13 @@ class DashboardPassageirosMModel
           motorista: motoristaId,
           mesReferencia: mesReferenciaAtual,
         ),
+        VivanLocator.service.getPassageiros(motorista: motoristaId, limit: 1),
       ]);
       homeResumo = results[0] as VivanDashboardResumo;
       totalEscolas = (results[1] as List<VivanEscola>).length;
       final allMens = (results[2] as VivanPaginatedResponse<VivanMensalidade>).data;
       mensalidadesEmAberto = allMens.where((m) => !m.isPago && !m.isAbonado).toList();
+      totalPassageiros = (results[3] as VivanPaginatedResponse<VivanPassageiro>).total;
     } catch (e) {
       debugPrint('Erro fetchHomeData: $e');
     }

@@ -24,7 +24,8 @@ class DashboardPassageirosMWidget extends StatefulWidget {
 }
 
 class _DashboardPassageirosMWidgetState
-    extends State<DashboardPassageirosMWidget> {
+    extends State<DashboardPassageirosMWidget>
+    with WidgetsBindingObserver {
   late DashboardPassageirosMModel _model;
   final scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -32,20 +33,35 @@ class _DashboardPassageirosMWidgetState
   void initState() {
     super.initState();
     _model = createModel(context, () => DashboardPassageirosMModel());
+    WidgetsBinding.instance.addObserver(this);
     SchedulerBinding.instance.addPostFrameCallback((_) async {
       if (FFAppState().idEmpresa == 0) {
         context.pushNamed(LoginWidget.routeName);
         return;
       }
-      await _model.fetchHomeData(FFAppState().idUsuario);
-      if (mounted) setState(() {});
+      await _refresh();
     });
   }
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _model.dispose();
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _refresh();
+    }
+  }
+
+  Future<void> _refresh() async {
+    if (!mounted) return;
+    setState(() => _model.isLoadingHome = true);
+    await _model.fetchHomeData(FFAppState().idUsuario);
+    if (mounted) setState(() {});
   }
 
   @override
@@ -143,10 +159,7 @@ class _DashboardPassageirosMWidgetState
     final currency = NumberFormat.currency(locale: 'pt_BR', symbol: 'R\$');
     return RefreshIndicator(
       color: FlutterFlowTheme.of(context).primary,
-      onRefresh: () async {
-        await _model.fetchHomeData(FFAppState().idUsuario);
-        if (mounted) setState(() {});
-      },
+      onRefresh: _refresh,
       child: SingleChildScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
         child: Column(
@@ -298,7 +311,7 @@ class _DashboardPassageirosMWidgetState
                                 Container(
                                   width: 40.0, height: 40.0,
                                   decoration: BoxDecoration(
-                                    color: statusColor.withOpacity(0.1),
+                                    color: statusColor.withValues(alpha: 0.1),
                                     borderRadius: BorderRadius.circular(10.0),
                                   ),
                                   child: Icon(Icons.receipt_long_rounded, color: statusColor, size: 20.0),
@@ -323,7 +336,7 @@ class _DashboardPassageirosMWidgetState
                                   Container(
                                     padding: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                                     decoration: BoxDecoration(
-                                      color: statusColor.withOpacity(0.1),
+                                      color: statusColor.withValues(alpha: 0.1),
                                       borderRadius: BorderRadius.circular(20),
                                     ),
                                     child: Text(statusLabel,
@@ -363,7 +376,7 @@ class _DashboardPassageirosMWidgetState
       children: [
         Container(
           width: 48.0, height: 48.0,
-          decoration: BoxDecoration(color: color.withOpacity(0.1), borderRadius: BorderRadius.circular(12.0)),
+          decoration: BoxDecoration(color: color.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(12.0)),
           child: Icon(icon, color: color, size: 24.0),
         ),
         SizedBox(height: 8.0),
@@ -438,7 +451,7 @@ class _DashboardPassageirosMWidgetState
                             width: 40.0,
                             height: 40.0,
                             decoration: BoxDecoration(
-                              color: FlutterFlowTheme.of(context).primary.withOpacity(0.1),
+                              color: FlutterFlowTheme.of(context).primary.withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(10.0),
                             ),
                             child: Icon(Icons.people_rounded,

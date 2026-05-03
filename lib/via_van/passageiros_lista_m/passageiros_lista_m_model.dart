@@ -84,7 +84,7 @@ class PassageirosListaMModel
     isLoading = true;
     erro = null;
     try {
-      final json = await VivanHttp.get('/passageiros');
+      final json = await VivanHttp.get('/passageiros?motorista=${FFAppState().idUsuario}');
       final data = (json is Map ? json['data'] : json) as List? ?? [];
       _todos = data
           .map((e) => PassageiroItem.fromJson(e as Map<String, dynamic>))

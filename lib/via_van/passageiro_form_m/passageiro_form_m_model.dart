@@ -19,7 +19,7 @@ class PassageiroFormMModel extends FlutterFlowModel<PassageiroFormMWidget> {
 
   Future<void> loadEscolas() async {
     try {
-      final res = await VivanHttp.get('/escolas');
+      final res = await VivanHttp.get('/escolas?motorista=${FFAppState().idUsuario}');
       final lista = res is List ? res : (res is Map ? (res['data'] ?? []) : []);
       _escolaIds.clear();
       escolas = (lista as List)

@@ -558,6 +558,7 @@ class _DashboardPassageirosMWidgetState
           _model.pageViewController?.animateToPage(index,
               duration: Duration(milliseconds: 200), curve: Curves.easeInOut);
         });
+        if (index == 0) _refresh();
       },
       child: Column(
         mainAxisSize: MainAxisSize.min,

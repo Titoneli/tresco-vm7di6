@@ -20,12 +20,12 @@ class DashboardPassageirosMModel
 
   double get totalAReceber => homeResumo?.totalAReceber ?? 0;
 
-  String get mesReferenciaAtual =>
-      DateFormat('yyyy-MM').format(DateTime.now());
   String get mesReferenciaApiFormat =>
       DateFormat('MM/yyyy').format(DateTime.now());
 
   Future<void> fetchHomeData(int motoristaId) async {
+    if (motoristaId == 0) motoristaId = FFAppState().idUsuario;
+    if (motoristaId == 0) return;
     isLoadingHome = true;
     try {
       final results = await Future.wait([
@@ -33,7 +33,7 @@ class DashboardPassageirosMModel
         VivanLocator.service.getEscolas(motoristaId),
         VivanLocator.service.getMensalidades(
           motorista: motoristaId,
-          mesReferencia: mesReferenciaAtual,
+          mesReferencia: mesReferenciaApiFormat,
         ),
         VivanLocator.service.getPassageiros(motorista: motoristaId, limit: 1),
       ]);

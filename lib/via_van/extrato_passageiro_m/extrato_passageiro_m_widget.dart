@@ -44,9 +44,11 @@ class _ExtratoPassageiroMWidgetState extends State<ExtratoPassageiroMWidget> {
       final result = await VivanLocator.service.getMensalidades(
         motorista: FFAppState().idUsuario,
         passageiro: widget.passageiroId,
-        limit: 200,
+        limit: 500,
       );
-      final all = result.data;
+      final all = result.data
+          .where((m) => m.idPassageiro == widget.passageiroId)
+          .toList();
       setState(() {
         _mensalidades = all.where((m) {
           if (m.dtVencimento == null) return true;

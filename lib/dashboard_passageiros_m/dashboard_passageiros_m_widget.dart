@@ -516,7 +516,7 @@ class _DashboardPassageirosMWidgetState
                 final info = snap.data;
                 final label = info != null
                     ? 'ViVan v${info.version}+${info.buildNumber}'
-                    : 'ViVan v8.1.0+2';
+                    : 'ViVan';
                 return Text(
                   label,
                   style: GoogleFonts.inter(

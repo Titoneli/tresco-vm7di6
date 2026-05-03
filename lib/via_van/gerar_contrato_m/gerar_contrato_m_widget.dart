@@ -611,6 +611,7 @@ class _GerarContratoMWidgetState extends State<GerarContratoMWidget> {
       final c = VivanContrato(
         idMotorista: FFAppState().idUsuario,
         idPassageiro: widget.passageiroId,
+        idResponsavel: _responsavel?.idResponsavel,
         valMensal: valor,
         diaVencimento: diaVenc,
         dtInicio: _vigenciaInicio != null
@@ -620,16 +621,21 @@ class _GerarContratoMWidgetState extends State<GerarContratoMWidget> {
             ? DateFormat('yyyy-MM-dd').format(_vigenciaFim!)
             : null,
         percentualMulta: double.tryParse(
-            _jurosMultaCtrl.text.replaceAll(',', '.').replaceAll('%', '')),
+                _jurosMultaCtrl.text.replaceAll(',', '.').replaceAll('%', '')) ??
+            2.0,
         percentualJurosDia: double.tryParse(
-            _jurosMesCtrl.text.replaceAll(',', '.').replaceAll('%', '')),
+                _jurosMesCtrl.text.replaceAll(',', '.').replaceAll('%', '')) ??
+            0.0333,
+        domFormaPagamento: 'OUTROS',
+        domCondicaoPagamento: 'Mensal',
         status: 'RASCUNHO',
       );
-      await VivanLocator.service.createContrato(c);
+      final criado = await VivanLocator.service.createContrato(c);
+      await VivanLocator.service.ativarContrato(criado.idContrato!);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-              content: Text('Contrato criado com sucesso!'),
+              content: Text('Contrato gerado e ativado com sucesso!'),
               backgroundColor: Color(0xFF2F8D2F)),
         );
         Navigator.pop(context);

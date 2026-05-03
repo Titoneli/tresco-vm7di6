@@ -18,7 +18,7 @@ class FinanceiroTabModel extends ChangeNotifier {
   final searchController = TextEditingController();
 
   String get mesReferencia =>
-      '${selectedYear}-${selectedMonth.toString().padLeft(2, '0')}';
+      '${selectedMonth.toString().padLeft(2, '0')}/$selectedYear';
 
   // ── Summary getters ────────────────────────────────
 

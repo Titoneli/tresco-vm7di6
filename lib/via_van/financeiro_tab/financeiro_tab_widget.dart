@@ -585,7 +585,7 @@ class _FinanceiroTabWidgetState extends State<FinanceiroTabWidget> {
                           setSheetState(() { isSaving = true; erroSalvar = null; });
                           try {
                             if (isEdit) {
-                              final mesRef = '${_model.selectedYear}-${_model.selectedMonth.toString().padLeft(2, '0')}';
+                              final mesRef = '${_model.selectedMonth.toString().padLeft(2, '0')}/${_model.selectedYear}';
                               await VivanLocator.service.updateDespesa(editing.idDespesa!, VivanDespesa(
                                 idDespesa: editing.idDespesa,
                                 idMotorista: editing.idMotorista ?? FFAppState().idUsuario,
@@ -597,7 +597,7 @@ class _FinanceiroTabWidgetState extends State<FinanceiroTabWidget> {
                               ));
                             } else if (isRecorrente) {
                               for (int m = mesInicial; m <= mesFinal; m++) {
-                                final mesRef = '${_model.selectedYear}-${m.toString().padLeft(2, '0')}';
+                                final mesRef = '${m.toString().padLeft(2, '0')}/${_model.selectedYear}';
                                 final dtVenc = DateTime(_model.selectedYear, m, diaVencimento);
                                 await VivanLocator.service.createDespesa(VivanDespesa(
                                   idMotorista: FFAppState().idUsuario, tipoLancamento: tipo, categoria: selectedCategoria!,
@@ -608,7 +608,7 @@ class _FinanceiroTabWidgetState extends State<FinanceiroTabWidget> {
                                 ));
                               }
                             } else {
-                              final mesRef = '${_model.selectedYear}-${_model.selectedMonth.toString().padLeft(2, '0')}';
+                              final mesRef = '${_model.selectedMonth.toString().padLeft(2, '0')}/${_model.selectedYear}';
                               await VivanLocator.service.createDespesa(VivanDespesa(
                                 idMotorista: FFAppState().idUsuario, tipoLancamento: tipo, categoria: selectedCategoria!,
                                 descricao: descricaoCtrl.text, valor: valor, mesReferencia: mesRef,

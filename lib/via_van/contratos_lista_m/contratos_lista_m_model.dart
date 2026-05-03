@@ -25,8 +25,11 @@ class ContratosListaMModel extends FlutterFlowModel<ContratosListaMWidget> {
         status: status,
         passageiro: passageiro,
       );
-      contratos = result.data;
-      total = result.total;
+      // Filtro client-side: API ignora param passageiro e retorna todos do motorista
+      contratos = passageiro != null
+          ? result.data.where((c) => c.idPassageiro == passageiro).toList()
+          : result.data;
+      total = contratos.length;
     } catch (e) {
       debugPrint('Erro ao buscar contratos: $e');
       contratos = [];

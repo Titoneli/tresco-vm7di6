@@ -223,7 +223,7 @@ class _RenovarMensalidadesMWidgetState
       final now = DateTime.now();
       int criadas = 0;
       for (int mes = now.month; mes <= 12; mes++) {
-        final mesRef = DateFormat('yyyy-MM').format(DateTime(now.year, mes));
+        final mesRef = DateFormat('MM/yyyy').format(DateTime(now.year, mes));
         if (mesesExistentes.contains(mesRef)) continue;
         await VivanHttp.post('/mensalidades', {
           'idContrato': contrato.idContrato,

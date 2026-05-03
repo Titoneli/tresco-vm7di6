@@ -29,7 +29,7 @@ class MensalidadesTabModel extends ChangeNotifier {
   }
 
   String get mesReferencia =>
-      '$selectedYear-${selectedMonth.toString().padLeft(2, '0')}';
+      '${selectedMonth.toString().padLeft(2, '0')}/$selectedYear';
 
   // ── Search ──────────────────────────────────
   String _searchQuery = '';

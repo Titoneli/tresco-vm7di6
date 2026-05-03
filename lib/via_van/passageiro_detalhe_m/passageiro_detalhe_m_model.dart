@@ -44,7 +44,10 @@ class PassageiroDetalheMModel
         passageiro: passageiroId,
         limit: 50,
       );
-      contratos = result.data;
+      // Filtro client-side: API ignora o param passageiro e retorna todos do motorista
+      contratos = result.data
+          .where((c) => c.idPassageiro == passageiroId)
+          .toList();
     } catch (e) {
       debugPrint('Erro ao buscar contratos: $e');
     }

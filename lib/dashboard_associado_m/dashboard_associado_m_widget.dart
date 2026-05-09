@@ -522,13 +522,11 @@ class _DashboardAssociadoMWidgetState extends State<DashboardAssociadoMWidget>
                                                                             Row(
                                                                               mainAxisSize: MainAxisSize.max,
                                                                               children: [
-                                                                                  Padding(
+                                                                                  Expanded(
+                                                                                    child: Padding(
                                                                                     padding: EdgeInsets.all(6.0),
                                                                                     child: Container(
                                                                                       height: 100.0,
-                                                                                      constraints: BoxConstraints(
-                                                                                        maxWidth: 270.0,
-                                                                                      ),
                                                                                       decoration: BoxDecoration(
                                                                                         color: FlutterFlowTheme.of(context).secondaryBackground,
                                                                                         borderRadius: BorderRadius.circular(8.0),
@@ -626,13 +624,12 @@ class _DashboardAssociadoMWidgetState extends State<DashboardAssociadoMWidget>
                                                                                       ),
                                                                                     ),
                                                                                   ),
-                                                                                  Padding(
+                                                                                  ),
+                                                                                  Expanded(
+                                                                                    child: Padding(
                                                                                     padding: EdgeInsets.all(6.0),
                                                                                     child: Container(
                                                                                       height: 100.0,
-                                                                                      constraints: BoxConstraints(
-                                                                                        maxWidth: 270.0,
-                                                                                      ),
                                                                                       decoration: BoxDecoration(
                                                                                         color: FlutterFlowTheme.of(context).secondaryBackground,
                                                                                         borderRadius: BorderRadius.circular(8.0),
@@ -732,6 +729,7 @@ class _DashboardAssociadoMWidgetState extends State<DashboardAssociadoMWidget>
                                                                                         ),
                                                                                       ),
                                                                                     ),
+                                                                                  ),
                                                                                   ),
                                                                               ],
                                                                             ),

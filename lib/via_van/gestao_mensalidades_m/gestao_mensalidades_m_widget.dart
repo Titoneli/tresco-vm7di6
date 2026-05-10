@@ -218,7 +218,7 @@ class _GestaoMensalidadesMWidgetState
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
           child: Text(
-            'Selecione abaixo as mensalidades para editar',
+            'Apenas mensalidades em aberto podem ser editadas',
             style: GoogleFonts.inter(fontSize: 13, color: _secondaryText),
           ),
         ),
@@ -237,7 +237,8 @@ class _GestaoMensalidadesMWidgetState
 
   Widget _buildRow(VivanMensalidade m) {
     final id = m.idMensalidade ?? 0;
-    final selected = _selecionadas.contains(id);
+    final editavel = m.isPendente || m.isAtrasado;
+    final selected = editavel && _selecionadas.contains(id);
     final venc = m.dtVencimento != null
         ? DateFormat('dd/MM/yyyy').format(DateTime.parse(m.dtVencimento!))
         : '';
@@ -245,46 +246,76 @@ class _GestaoMensalidadesMWidgetState
     final valor = NumberFormat.currency(locale: 'pt_BR', symbol: 'R\$')
         .format(m.valOriginal ?? 0);
 
-    return InkWell(
-      onTap: () {
-        setState(() {
-          if (selected) {
-            _selecionadas.remove(id);
-          } else {
-            _selecionadas.add(id);
-          }
-        });
-      },
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        child: Row(
-          children: [
-            Icon(
-              selected
-                  ? Icons.radio_button_checked
-                  : Icons.radio_button_unchecked,
-              color: selected ? _primary : _secondaryText,
-              size: 22,
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Text(venc,
+    final (statusLabel, statusColor) = _statusBadge(m);
+
+    return Opacity(
+      opacity: editavel ? 1.0 : 0.45,
+      child: InkWell(
+        onTap: editavel
+            ? () {
+                setState(() {
+                  if (selected) {
+                    _selecionadas.remove(id);
+                  } else {
+                    _selecionadas.add(id);
+                  }
+                });
+              }
+            : null,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          child: Row(
+            children: [
+              Icon(
+                selected
+                    ? Icons.radio_button_checked
+                    : Icons.radio_button_unchecked,
+                color: editavel
+                    ? (selected ? _primary : _secondaryText)
+                    : Colors.grey.shade400,
+                size: 22,
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(venc,
+                    style: GoogleFonts.inter(fontSize: 14, color: _primaryText)),
+              ),
+              Text(mes,
+                  style: GoogleFonts.inter(fontSize: 13, color: _secondaryText)),
+              const SizedBox(width: 8),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+                decoration: BoxDecoration(
+                  color: statusColor.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Text(
+                  statusLabel,
                   style: GoogleFonts.inter(
-                      fontSize: 14, color: _primaryText)),
-            ),
-            Text(mes,
-                style: GoogleFonts.inter(
-                    fontSize: 13, color: _secondaryText)),
-            const SizedBox(width: 12),
-            Text(valor,
-                style: GoogleFonts.inter(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: _primaryText)),
-          ],
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                      color: statusColor),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Text(valor,
+                  style: GoogleFonts.inter(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: _primaryText)),
+            ],
+          ),
         ),
       ),
     );
+  }
+
+  (String, Color) _statusBadge(VivanMensalidade m) {
+    if (m.isPago) return ('Pago', Colors.green.shade600);
+    if (m.isAtrasado) return ('Atrasado', Colors.red.shade600);
+    if (m.isAbonado) return ('Abonado', Colors.blue.shade600);
+    if (m.status == 'CANCELADO') return ('Cancelado', Colors.grey.shade600);
+    return ('Pendente', Colors.orange.shade700);
   }
 
   Widget _buildFooter() {

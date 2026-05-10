@@ -385,7 +385,7 @@ class _GestaoMensalidadesMWidgetState
                 keyboardType: const TextInputType.numberWithOptions(decimal: true),
                 autofocus: true,
                 decoration: InputDecoration(
-                  hintText: 'Novo valor R\$',
+                  hintText: '0,00',
                   prefixText: 'R\$ ',
                   filled: true,
                   fillColor: FlutterFlowTheme.of(context).primaryBackground,

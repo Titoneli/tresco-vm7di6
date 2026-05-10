@@ -177,8 +177,6 @@ class PassageiroFormMModel extends FlutterFlowModel<PassageiroFormMWidget> {
         respWpp = respWhatsappCtrl.text.trim();
       }
       final respCpf = respCpfCtrl.text.trim();
-      bool responsavelSalvo = _responsavelId != null;
-
       if (passageiroId != null && respNome.isNotEmpty) {
         final rBody = <String, dynamic>{
           'nomeResponsavel': respNome,
@@ -189,33 +187,39 @@ class PassageiroFormMModel extends FlutterFlowModel<PassageiroFormMWidget> {
           await VivanHttp.put(
               '/passageiros/$passageiroId/responsaveis/$_responsavelId',
               rBody);
-          responsavelSalvo = true;
         } else {
           final r = await VivanHttp.post(
               '/passageiros/$passageiroId/responsaveis', rBody);
           if (r is Map) {
             _responsavelId =
                 int.tryParse(r['idResponsavel']?.toString() ?? '');
-            responsavelSalvo = true;
           }
         }
       }
 
-      // Contrato — somente no wizard (criação), exige responsável salvo e valor preenchido.
-      // O backend POST /passageiros/:id/contratos já cria contrato + mensalidades em uma única chamada.
+      // Contrato — somente no wizard (criação), quando valor preenchido.
+      // POST /passageiros/:id/contratos cria contrato + ativa + mensalidades atomicamente.
       if (!isEdit &&
           passageiroId != null &&
-          responsavelSalvo &&
           valorCtrl.text.trim().isNotEmpty) {
         final valor =
             double.tryParse(valorCtrl.text.replaceAll(',', '.')) ?? 0;
+        final agora = DateTime.now();
+        final inicio = vigenciaInicio ?? DateTime(agora.year, agora.month);
+        final fim = vigenciaFim ?? DateTime(inicio.year + 1, inicio.month);
         final cBody = <String, dynamic>{
-          'valorMensalidade': valor,
-          if (diaPagamento != null) 'diaPagamento': diaPagamento,
-          if (vigenciaInicio != null)
-            'vigenciaInicio': DateFormat('yyyy-MM').format(vigenciaInicio!),
-          if (vigenciaFim != null)
-            'vigenciaFim': DateFormat('yyyy-MM').format(vigenciaFim!),
+          'idMotorista': FFAppState().idUsuario,
+          'idPassageiro': passageiroId,
+          if (_responsavelId != null) 'idResponsavel': _responsavelId,
+          'valMensal': valor,
+          'diaVencimento': diaPagamento ?? 5,
+          'dtInicio': DateFormat('yyyy-MM-dd').format(DateTime(inicio.year, inicio.month, 1)),
+          'dtTermino': DateFormat('yyyy-MM-dd').format(DateTime(fim.year, fim.month + 1, 0)),
+          'domFormaPagamento': 'OUTROS',
+          'domCondicaoPagamento': 'Mensal',
+          'percentualMulta': 2.0,
+          'percentualJurosDia': 0.0333,
+          'status': 'RASCUNHO',
         };
         final c = await VivanHttp.post(
             '/passageiros/$passageiroId/contratos', cBody);

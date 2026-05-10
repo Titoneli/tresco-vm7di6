@@ -317,25 +317,16 @@ class _PassageiroFormMWidgetState extends State<PassageiroFormMWidget> {
   }
 
   Future<void> _onDeletePassageiro() async {
-    final confirm = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Apagar Passageiro'),
-        content: const Text(
-            'Esta ação não pode ser desfeita. Deseja apagar este passageiro?'),
-        actions: [
-          TextButton(
-              onPressed: () => Navigator.pop(ctx, false),
-              child: const Text('Cancelar')),
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            child: Text('Apagar',
-                style: TextStyle(
-                    color: FlutterFlowTheme.of(context).error)),
-          ),
-        ],
+    final nome = _model.nomeCtrl.text.trim();
+
+    final confirm = await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(
+        fullscreenDialog: true,
+        builder: (_) => _ConfirmDeletePassageiroPage(nomePassageiro: nome),
       ),
     );
+
     if (confirm == true && mounted) {
       setState(() => _model.isSaving = true);
       final ok = await _model.deletar();
@@ -1164,6 +1155,186 @@ class _PassageiroFormMWidgetState extends State<PassageiroFormMWidget> {
               ),
             ),
             const SizedBox(height: 16),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────
+// Tela fullscreen de confirmação de exclusão de passageiro
+// ─────────────────────────────────────────────────────────────
+class _ConfirmDeletePassageiroPage extends StatelessWidget {
+  const _ConfirmDeletePassageiroPage({required this.nomePassageiro});
+
+  final String nomePassageiro;
+
+  static const _bullets = [
+    'O passageiro não ficará mais visível na lista de passageiros.',
+    'As mensalidades pendentes e em atraso serão canceladas automaticamente.',
+    'Somente as mensalidades já pagas ou abonadas serão mantidas no histórico.',
+    'Não será possível reativar este passageiro — será necessário cadastrá-lo novamente.',
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = FlutterFlowTheme.of(context);
+    final primary = theme.primary;
+    final bg = theme.primaryBackground;
+    final primaryText = theme.primaryText;
+    final secondaryText = theme.secondaryText;
+    final error = theme.error;
+
+    return Scaffold(
+      backgroundColor: bg,
+      body: SafeArea(
+        child: Column(
+          children: [
+            // Header
+            Container(
+              height: 56,
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              decoration: BoxDecoration(
+                color: bg,
+                border: Border(bottom: BorderSide(color: Colors.grey.shade100)),
+              ),
+              child: Row(
+                children: [
+                  GestureDetector(
+                    onTap: () => Navigator.pop(context, false),
+                    child: Text(
+                      'Voltar',
+                      style: FlutterFlowTheme.of(context).bodyMedium.override(
+                            font: GoogleFonts.inter(fontWeight: FontWeight.w500),
+                            color: primary),
+                    ),
+                  ),
+                  Expanded(
+                    child: Center(
+                      child: Text(
+                        'Apagar Passageiro',
+                        style: FlutterFlowTheme.of(context).titleMedium.override(
+                              font: GoogleFonts.interTight(
+                                  fontWeight: FontWeight.w700),
+                              color: primaryText),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 48),
+                ],
+              ),
+            ),
+            // Body
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.fromLTRB(24, 32, 24, 24),
+                child: Column(
+                  children: [
+                    // Icon with red badge
+                    Stack(
+                      alignment: Alignment.bottomRight,
+                      children: [
+                        Container(
+                          width: 96,
+                          height: 96,
+                          decoration: BoxDecoration(
+                            color: primary.withValues(alpha: 0.12),
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            Icons.person_rounded,
+                            size: 56,
+                            color: primary.withValues(alpha: 0.5),
+                          ),
+                        ),
+                        CircleAvatar(
+                          radius: 14,
+                          backgroundColor: error,
+                          child: const Icon(Icons.remove,
+                              color: Colors.white, size: 16),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 24),
+                    // Title
+                    Text(
+                      'Tem certeza que deseja apagar o(a) passageiro(a)',
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.interTight(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w700,
+                          color: primaryText),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      '"$nomePassageiro"?',
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.interTight(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w700,
+                          color: error),
+                    ),
+                    const SizedBox(height: 28),
+                    // Warning label
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        'Leia com atenção:',
+                        style: GoogleFonts.inter(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: secondaryText),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    // Bullets
+                    ..._bullets.map((text) => Padding(
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Icon(Icons.warning_amber_rounded,
+                                  color: Colors.orange.shade600, size: 20),
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: Text(
+                                  text,
+                                  style: GoogleFonts.inter(
+                                      fontSize: 14, color: primaryText),
+                                ),
+                              ),
+                            ],
+                          ),
+                        )),
+                  ],
+                ),
+              ),
+            ),
+            // Footer — Apagar button
+            Container(
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+              decoration: BoxDecoration(
+                color: bg,
+                border: Border(top: BorderSide(color: Colors.grey.shade100)),
+              ),
+              child: ElevatedButton(
+                onPressed: () => Navigator.pop(context, true),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: error,
+                  minimumSize: const Size(double.infinity, 52),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12)),
+                ),
+                child: const Text(
+                  'Apagar',
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 16),
+                ),
+              ),
+            ),
           ],
         ),
       ),

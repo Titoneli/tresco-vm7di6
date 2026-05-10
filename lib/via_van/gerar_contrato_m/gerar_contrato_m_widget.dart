@@ -1,3 +1,4 @@
+import 'dart:ui' as ui;
 import 'package:ff_theme/flutter_flow/flutter_flow_theme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -7,6 +8,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/vivan/vivan.dart';
+import '/via_van/clausulas_contrato_m/clausula_storage.dart';
 
 class GerarContratoMWidget extends StatefulWidget {
   const GerarContratoMWidget({
@@ -607,6 +609,11 @@ class _GerarContratoMWidgetState extends State<GerarContratoMWidget> {
     if (_isSaving) return;
     setState(() => _isSaving = true);
     try {
+      // Captura e salva a assinatura do motorista (reutilizada em todos os contratos)
+      if (_points.isNotEmpty) {
+        await _salvarAssinatura();
+      }
+
       // Só cria o contrato se ainda não foi criado (evita duplicata em retry)
       if (_contratoId == null) {
         final valor =
@@ -656,6 +663,68 @@ class _GerarContratoMWidgetState extends State<GerarContratoMWidget> {
       }
     } finally {
       if (mounted) setState(() => _isSaving = false);
+    }
+  }
+
+  Future<void> _salvarAssinatura() async {
+    try {
+      // Bounding box dos pontos para recortar a área utilizada
+      double minX = double.infinity, minY = double.infinity;
+      double maxX = double.negativeInfinity, maxY = double.negativeInfinity;
+      for (final p in _points) {
+        if (p == null) continue;
+        if (p.dx < minX) minX = p.dx;
+        if (p.dy < minY) minY = p.dy;
+        if (p.dx > maxX) maxX = p.dx;
+        if (p.dy > maxY) maxY = p.dy;
+      }
+      // Fallback para tamanho fixo se só um ponto
+      if (minX == maxX) { minX -= 1; maxX += 1; }
+      if (minY == maxY) { minY -= 1; maxY += 1; }
+
+      const padding = 8.0;
+      final width = (maxX - minX + padding * 2).ceilToDouble();
+      final height = (maxY - minY + padding * 2).ceilToDouble();
+
+      final recorder = ui.PictureRecorder();
+      final canvas = Canvas(
+          recorder,
+          Rect.fromLTWH(0, 0, width, height));
+
+      // Fundo branco
+      canvas.drawRect(
+          Rect.fromLTWH(0, 0, width, height),
+          Paint()..color = Colors.white);
+
+      final paint = Paint()
+        ..color = Colors.black
+        ..strokeWidth = 2.5
+        ..strokeCap = StrokeCap.round
+        ..strokeJoin = StrokeJoin.round
+        ..style = PaintingStyle.stroke;
+
+      final offsetX = -minX + padding;
+      final offsetY = -minY + padding;
+
+      for (int i = 0; i < _points.length - 1; i++) {
+        if (_points[i] != null && _points[i + 1] != null) {
+          canvas.drawLine(
+            _points[i]!.translate(offsetX, offsetY),
+            _points[i + 1]!.translate(offsetX, offsetY),
+            paint,
+          );
+        }
+      }
+
+      final img = await recorder
+          .endRecording()
+          .toImage(width.toInt(), height.toInt());
+      final data = await img.toByteData(format: ui.ImageByteFormat.png);
+      if (data != null) {
+        await SignatureStorage.save(data.buffer.asUint8List());
+      }
+    } catch (e) {
+      debugPrint('_salvarAssinatura: $e');
     }
   }
 

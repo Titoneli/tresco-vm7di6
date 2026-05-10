@@ -7,6 +7,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '../_vivan_http.dart';
+import '/via_van/clausulas_contrato_m/clausula_storage.dart';
 import 'passageiro_form_m_model.dart';
 export 'passageiro_form_m_model.dart';
 
@@ -331,6 +332,10 @@ class _PassageiroFormMWidgetState extends State<PassageiroFormMWidget> {
       setState(() => _model.isSaving = true);
       final ok = await _model.deletar();
       if (ok && mounted) {
+        if (widget.passageiroId != null) {
+          await PdfStorage.remove(widget.passageiroId!);
+        }
+        if (!mounted) return;
         Navigator.pop(context, 'deleted');
       } else if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(

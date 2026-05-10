@@ -1,7 +1,10 @@
+import 'dart:io';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/via_van/gerar_contrato_m/gerar_contrato_m_widget.dart';
-import '/via_van/contrato_detalhe_m/contrato_detalhe_m_widget.dart';
-import '../_vivan_http.dart';
+import '/via_van/clausulas_contrato_m/clausulas_contrato_m_widget.dart';
+import '/via_van/clausulas_contrato_m/clausula_storage.dart';
+import '/via_van/clausulas_contrato_m/preview_contrato_m_widget.dart';
+import '/vivan/vivan.dart';
 import 'package:ff_theme/flutter_flow/flutter_flow_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -255,237 +258,90 @@ class _ContratosListaMWidgetState extends State<ContratosListaMWidget> {
     );
   }
 
-  void _openVerModelo() {
+  Future<void> _openVerModelo() async {
     final contrato = _model.contratoAtivo;
-    if (contrato == null || contrato.idContrato == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Nenhum contrato ativo encontrado')));
-      return;
+    final clausulas = await ClausulaStorage.load();
+    final meta = contrato != null
+        ? await PdfStorage.getMeta(widget.passageiroId)
+        : null;
+
+    if (!mounted) return;
+
+    if (meta != null && await File(meta.filePath).exists()) {
+      final stale = await PdfStorage.isStale(widget.passageiroId, clausulas);
+      if (!mounted) return;
+      if (stale) {
+        final gerar = await showDialog<bool>(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            title: Text('Cláusulas alteradas',
+                style: GoogleFonts.interTight(fontWeight: FontWeight.w700)),
+            content: Text(
+              'As cláusulas foram alteradas desde ${DateFormat('dd/MM/yyyy').format(meta.geradoEm)}. Deseja gerar um novo PDF?',
+              style: GoogleFonts.inter(fontSize: 14),
+            ),
+            actions: [
+              TextButton(
+                  onPressed: () => Navigator.pop(ctx, false),
+                  child: const Text('Não, usar o antigo')),
+              ElevatedButton(
+                onPressed: () => Navigator.pop(ctx, true),
+                style: ElevatedButton.styleFrom(backgroundColor: _primary),
+                child: Text('Sim, gerar novo',
+                    style: GoogleFonts.inter(color: Colors.white)),
+              ),
+            ],
+          ),
+        );
+        if (!mounted) return;
+        _navigateToPreview(gerar == true ? null : meta.filePath, contrato);
+      } else {
+        _navigateToPreview(meta.filePath, contrato);
+      }
+    } else {
+      _navigateToPreview(null, contrato);
     }
+  }
+
+  void _navigateToPreview(String? pdfPath, VivanContrato? contrato) {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) =>
-            ContratoDetalheMWidget(contratoId: contrato.idContrato),
+        builder: (_) => PreviewContratoMWidget(
+          passageiroId: widget.passageiroId,
+          nomePassageiro: widget.nomePassageiro,
+          pdfPath: pdfPath,
+          nomeResponsavel: contrato?.nomeResponsavel ?? '',
+          valMensal: contrato?.valMensal,
+          dtInicio: contrato?.dtInicio != null
+              ? DateTime.tryParse(contrato!.dtInicio!)
+              : null,
+          dtTermino: contrato?.dtTermino != null
+              ? DateTime.tryParse(contrato!.dtTermino!)
+              : null,
+          diaVencimento: contrato?.diaVencimento,
+        ),
       ),
     );
   }
 
   void _showEditarContratoSheet() {
-    final contrato = _model.contratoAtivo;
-    if (contrato == null || contrato.idContrato == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Nenhum contrato ativo encontrado')));
-      return;
-    }
-
-    final valorCtrl = TextEditingController(
-        text: contrato.valMensal?.toStringAsFixed(2) ?? '');
-    int? diaVenc = contrato.diaVencimento;
-    bool isSaving = false;
-
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: _bg,
-      shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
-      builder: (ctx) => StatefulBuilder(
-        builder: (ctx, setSheet) => Padding(
-          padding: EdgeInsets.fromLTRB(
-              24, 20, 24, MediaQuery.of(ctx).viewInsets.bottom + 24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('Editar Contrato',
-                  style: GoogleFonts.interTight(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
-                      color: _primaryText)),
-              const SizedBox(height: 16),
-              Text('Valor Mensal (R\$)',
-                  style: GoogleFonts.inter(
-                      fontSize: 13, color: _secondaryText)),
-              const SizedBox(height: 6),
-              TextFormField(
-                controller: valorCtrl,
-                keyboardType:
-                    const TextInputType.numberWithOptions(decimal: true),
-                autofocus: true,
-                decoration: InputDecoration(
-                  hintText: '0,00',
-                  prefixText: 'R\$ ',
-                  filled: true,
-                  fillColor:
-                      FlutterFlowTheme.of(context).secondaryBackground,
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(color: Colors.grey.shade200)),
-                  enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(color: Colors.grey.shade200)),
-                  focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(color: _primary, width: 1.5)),
-                ),
-              ),
-              const SizedBox(height: 16),
-              Text('Dia de Vencimento',
-                  style: GoogleFonts.inter(
-                      fontSize: 13, color: _secondaryText)),
-              const SizedBox(height: 6),
-              GestureDetector(
-                onTap: () async {
-                  int? temp = diaVenc;
-                  await showModalBottomSheet(
-                    context: ctx,
-                    backgroundColor: _bg,
-                    shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.vertical(
-                            top: Radius.circular(20))),
-                    builder: (_) => StatefulBuilder(
-                      builder: (_, setD) => Padding(
-                        padding:
-                            const EdgeInsets.fromLTRB(24, 20, 24, 32),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text('Dia de Vencimento',
-                                style: GoogleFonts.interTight(
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: 16,
-                                    color: _primaryText)),
-                            const SizedBox(height: 12),
-                            SizedBox(
-                              height: 180,
-                              child: ListWheelScrollView.useDelegate(
-                                itemExtent: 44,
-                                physics:
-                                    const FixedExtentScrollPhysics(),
-                                controller: FixedExtentScrollController(
-                                    initialItem: (temp ?? 1) - 1),
-                                onSelectedItemChanged: (i) =>
-                                    setD(() => temp = i + 1),
-                                childDelegate:
-                                    ListWheelChildBuilderDelegate(
-                                  childCount: 28, // máx 28 para evitar problemas com meses curtos (REGRAS)
-                                  builder: (_, i) => Center(
-                                    child: Text('Dia ${i + 1}',
-                                        style: TextStyle(
-                                            fontSize: 18,
-                                            color: temp == i + 1
-                                                ? _primary
-                                                : _secondaryText,
-                                            fontWeight: temp == i + 1
-                                                ? FontWeight.w700
-                                                : FontWeight.normal)),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 12),
-                            ElevatedButton(
-                              onPressed: () {
-                                setSheet(() => diaVenc = temp ?? 1);
-                                Navigator.pop(ctx);
-                              },
-                              style: ElevatedButton.styleFrom(
-                                  backgroundColor: _primary,
-                                  minimumSize:
-                                      const Size(double.infinity, 48),
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius:
-                                          BorderRadius.circular(12))),
-                              child: const Text('Confirmar',
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w600)),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  );
-                },
-                child: Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 16, vertical: 14),
-                  decoration: BoxDecoration(
-                    color: FlutterFlowTheme.of(context).secondaryBackground,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.grey.shade200),
-                  ),
-                  child: Text(
-                    diaVenc != null ? 'Dia $diaVenc de cada mês' : 'Selecionar',
-                    style: GoogleFonts.inter(
-                        color: diaVenc != null
-                            ? _primaryText
-                            : _secondaryText),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: isSaving
-                    ? null
-                    : () async {
-                        final valor = double.tryParse(
-                            valorCtrl.text.replaceAll(',', '.'));
-                        if (valor == null) return;
-                        setSheet(() => isSaving = true);
-                        try {
-                          await VivanHttp.put(
-                              '/contratos/${contrato.idContrato}', {
-                            'valMensal': valor,
-                            if (diaVenc != null) 'diaVencimento': diaVenc,
-                          });
-                          await _model.fetchContratos(
-                            FFAppState().idUsuario,
-                            passageiro: widget.passageiroId > 0
-                                ? widget.passageiroId
-                                : null,
-                          );
-                          if (ctx.mounted) Navigator.pop(ctx);
-                          if (mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                    content: const Text(
-                                        'Contrato atualizado!'),
-                                    backgroundColor: _primary));
-                          }
-                        } catch (e) {
-                          setSheet(() => isSaving = false);
-                          if (ctx.mounted) {
-                            ScaffoldMessenger.of(ctx).showSnackBar(SnackBar(
-                                content: Text(
-                                    'Erro: ${e.toString().replaceFirst('Exception: ', '')}')));
-                          }
-                        }
-                      },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: _primary,
-                  minimumSize: const Size(double.infinity, 48),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12)),
-                ),
-                child: isSaving
-                    ? const SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(
-                            color: Colors.white, strokeWidth: 2))
-                    : const Text('Salvar',
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w600)),
-              ),
-            ],
-          ),
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ClausulasContratoMWidget(
+          passageiroId: widget.passageiroId,
+          nomePassageiro: widget.nomePassageiro,
+          contrato: _model.contratoAtivo,
         ),
       ),
-    );
+    ).then((_) async {
+      await _model.fetchContratos(
+        FFAppState().idUsuario,
+        passageiro: widget.passageiroId > 0 ? widget.passageiroId : null,
+      );
+      if (mounted) safeSetState(() {});
+    });
   }
 
   void _showTutorial() {
@@ -542,7 +398,7 @@ class _ContratosListaMWidgetState extends State<ContratosListaMWidget> {
         title: Text('Voltar Modelo Padrão',
             style: GoogleFonts.interTight(fontWeight: FontWeight.w700)),
         content: Text(
-            'Deseja restaurar o modelo padrão do ViVan? As personalizações serão perdidas.',
+            'Deseja restaurar o modelo padrão do ViVan? Todas as suas alterações de cláusulas serão perdidas.',
             style: GoogleFonts.inter(fontSize: 14)),
         actions: [
           TextButton(
@@ -550,13 +406,16 @@ class _ContratosListaMWidgetState extends State<ContratosListaMWidget> {
             child: const Text('Cancelar'),
           ),
           ElevatedButton(
-            onPressed: () {
+            onPressed: () async {
               Navigator.pop(ctx);
-              ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Modelo padrão restaurado')));
+              await ClausulaStorage.resetToDefaults();
+              if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    content: const Text('Modelo padrão restaurado com sucesso'),
+                    backgroundColor: _primary));
+              }
             },
-            style: ElevatedButton.styleFrom(
-                backgroundColor: FlutterFlowTheme.of(context).primary),
+            style: ElevatedButton.styleFrom(backgroundColor: _primary),
             child: Text('Confirmar',
                 style: GoogleFonts.inter(color: Colors.white)),
           ),

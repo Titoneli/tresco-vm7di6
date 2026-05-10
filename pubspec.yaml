@@ -169,6 +169,11 @@ dependencies:
   webview_flutter_wkwebview: 3.22.0
   xml: 6.5.0
 
+  # PDF generation, sharing and hash
+  pdf: ^3.10.0
+  printing: ^5.12.0
+  crypto: ^3.0.3
+
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.0

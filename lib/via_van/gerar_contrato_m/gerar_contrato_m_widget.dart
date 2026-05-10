@@ -26,6 +26,7 @@ class _GerarContratoMWidgetState extends State<GerarContratoMWidget> {
   int _step = 0;
   bool _isLoading = true;
   bool _isSaving = false;
+  int? _contratoId;
 
   // Step 1 — Motorista
   final _nomeMotoristaCtrl = TextEditingController();
@@ -603,35 +604,40 @@ class _GerarContratoMWidgetState extends State<GerarContratoMWidget> {
   }
 
   Future<void> _gerarContrato() async {
+    if (_isSaving) return;
     setState(() => _isSaving = true);
     try {
-      final valor =
-          double.tryParse(_valorCtrl.text.replaceAll(',', '.')) ?? 0;
-      final diaVenc = int.tryParse(_diaVencCtrl.text) ?? 5;
-      final c = VivanContrato(
-        idMotorista: FFAppState().idUsuario,
-        idPassageiro: widget.passageiroId,
-        idResponsavel: _responsavel?.idResponsavel,
-        valMensal: valor,
-        diaVencimento: diaVenc,
-        dtInicio: _vigenciaInicio != null
-            ? DateFormat('yyyy-MM-dd').format(_vigenciaInicio!)
-            : null,
-        dtTermino: _vigenciaFim != null
-            ? DateFormat('yyyy-MM-dd').format(_vigenciaFim!)
-            : null,
-        percentualMulta: double.tryParse(
-                _jurosMultaCtrl.text.replaceAll(',', '.').replaceAll('%', '')) ??
-            2.0,
-        percentualJurosDia: double.tryParse(
-                _jurosMesCtrl.text.replaceAll(',', '.').replaceAll('%', '')) ??
-            0.0333,
-        domFormaPagamento: 'OUTROS',
-        domCondicaoPagamento: 'Mensal',
-        status: 'RASCUNHO',
-      );
-      final criado = await VivanLocator.service.createContrato(c);
-      await VivanLocator.service.ativarContrato(criado.idContrato!);
+      // Só cria o contrato se ainda não foi criado (evita duplicata em retry)
+      if (_contratoId == null) {
+        final valor =
+            double.tryParse(_valorCtrl.text.replaceAll(',', '.')) ?? 0;
+        final diaVenc = int.tryParse(_diaVencCtrl.text) ?? 5;
+        final c = VivanContrato(
+          idMotorista: FFAppState().idUsuario,
+          idPassageiro: widget.passageiroId,
+          idResponsavel: _responsavel?.idResponsavel,
+          valMensal: valor,
+          diaVencimento: diaVenc,
+          dtInicio: _vigenciaInicio != null
+              ? DateFormat('yyyy-MM-dd').format(_vigenciaInicio!)
+              : null,
+          dtTermino: _vigenciaFim != null
+              ? DateFormat('yyyy-MM-dd').format(_vigenciaFim!)
+              : null,
+          percentualMulta: double.tryParse(
+                  _jurosMultaCtrl.text.replaceAll(',', '.').replaceAll('%', '')) ??
+              2.0,
+          percentualJurosDia: double.tryParse(
+                  _jurosMesCtrl.text.replaceAll(',', '.').replaceAll('%', '')) ??
+              0.0333,
+          domFormaPagamento: 'OUTROS',
+          domCondicaoPagamento: 'Mensal',
+          status: 'RASCUNHO',
+        );
+        final criado = await VivanLocator.service.createContrato(c);
+        _contratoId = criado.idContrato;
+      }
+      await VivanLocator.service.ativarContrato(_contratoId!);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(

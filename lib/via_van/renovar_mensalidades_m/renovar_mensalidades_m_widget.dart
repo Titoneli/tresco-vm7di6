@@ -173,6 +173,7 @@ class _RenovarMensalidadesMWidgetState
   }
 
   Future<void> _renovar() async {
+    if (_isSaving) return;
     setState(() => _isSaving = true);
     try {
       // Busca contrato ativo do passageiro

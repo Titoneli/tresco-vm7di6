@@ -1,6 +1,7 @@
 import '/vivan/vivan.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '../_vivan_http.dart';
+import '/backend/supabase/supabase.dart';
 import 'package:ff_theme/flutter_flow/flutter_flow_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -237,6 +238,18 @@ class _RenovarMensalidadesMWidgetState
           'status': 'PENDENTE',
         });
         criadas++;
+      }
+
+      // Corrige idMotorista nas mensalidades criadas (API usa sessão=398)
+      if (criadas > 0 && contrato.idContrato != null) {
+        try {
+          await SupaFlow.client
+              .from('vivan_mensalidades')
+              .update({'idMotorista': FFAppState().idUsuario})
+              .eq('idContrato', contrato.idContrato!);
+        } catch (e) {
+          debugPrint('RenovarMensalidades: patch idMotorista: $e');
+        }
       }
 
       if (mounted) {

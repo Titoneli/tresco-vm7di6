@@ -9,6 +9,7 @@ import 'package:provider/provider.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/vivan/vivan.dart';
 import '/via_van/clausulas_contrato_m/clausula_storage.dart';
+import '/backend/supabase/supabase.dart';
 
 class GerarContratoMWidget extends StatefulWidget {
   const GerarContratoMWidget({
@@ -647,6 +648,20 @@ class _GerarContratoMWidgetState extends State<GerarContratoMWidget> {
         _contratoId = criado.idContrato;
       }
       await VivanLocator.service.ativarContrato(_contratoId!);
+      // Corrige idMotorista no contrato e mensalidades geradas (API usa sessão=398)
+      final motoristaId = FFAppState().idUsuario;
+      try {
+        await SupaFlow.client
+            .from('vivan_contratos')
+            .update({'idMotorista': motoristaId})
+            .eq('idContrato', _contratoId!);
+        await SupaFlow.client
+            .from('vivan_mensalidades')
+            .update({'idMotorista': motoristaId})
+            .eq('idContrato', _contratoId!);
+      } catch (e) {
+        debugPrint('GerarContrato: patch idMotorista: $e');
+      }
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(

@@ -17,9 +17,21 @@ class VivanApiClient {
 
   static String? _accessToken;
   static bool _isLoggingIn = false;
+  static String? _usuario;
+  static String? _senha;
 
   static void setAccessToken(String? token) {
     _accessToken = token;
+  }
+
+  /// Define as credenciais reais do motorista logado.
+  /// Deve ser chamado logo após o login no app.
+  static void setCredentials(String usuario, String senha) {
+    if (usuario.isEmpty || senha.isEmpty) return;
+    if (usuario == _usuario && senha == _senha) return;
+    _usuario = usuario;
+    _senha = senha;
+    _accessToken = null; // força re-login com as novas credenciais
   }
 
   static bool get isAuthenticated => _accessToken != null;
@@ -29,13 +41,16 @@ class VivanApiClient {
         if (_accessToken != null) 'Cookie': 'access_token=$_accessToken',
       };
 
-  /// Auto-login com credenciais fixas do motorista ViVan.
+  /// Auto-login com as credenciais do motorista atual (ou fallback para config).
   Future<void> _ensureToken() async {
     if (_accessToken != null) return;
     if (_isLoggingIn) return;
     _isLoggingIn = true;
     try {
-      await login(VivanConfig.usuario, VivanConfig.senha);
+      await login(
+        _usuario ?? VivanConfig.usuario,
+        _senha ?? VivanConfig.senha,
+      );
     } catch (e) {
       debugPrint('VivanApiClient: auto-login failed: $e');
     } finally {

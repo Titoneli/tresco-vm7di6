@@ -40,7 +40,10 @@ class _DashboardPassageirosMWidgetState
         context.pushNamed(LoginWidget.routeName);
         return;
       }
-      await _refresh();
+      // Chama diretamente para não cair na guard de concorrência (isLoadingHome já é true)
+      _lastRefresh = DateTime.now();
+      await _model.fetchHomeData(FFAppState().idUsuario);
+      if (mounted) setState(() {});
     });
   }
 

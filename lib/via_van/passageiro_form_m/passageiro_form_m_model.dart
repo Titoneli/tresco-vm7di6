@@ -18,22 +18,51 @@ class PassageiroFormMModel extends FlutterFlowModel<PassageiroFormMWidget> {
   List<String> escolas = [];
   final Map<String, int> _escolaIds = {};
 
+  // Busca escolas direto no Supabase para garantir filtro correto por idMotorista.
+  // A API ViVan usa sessão da conta de serviço (398) e pode retornar escolas de
+  // outros motoristas quando chamada via /escolas?motorista=X.
   Future<void> loadEscolas() async {
     try {
-      final res = await VivanHttp.get('/escolas?motorista=${FFAppState().idUsuario}');
-      final lista = res is List ? res : (res is Map ? (res['data'] ?? []) : []);
+      final rows = await SupaFlow.client
+          .from('vivan_escolas')
+          .select('idEscola, nomeEscola')
+          .eq('idMotorista', FFAppState().idUsuario)
+          .order('nomeEscola');
       _escolaIds.clear();
-      escolas = (lista as List)
-          .map((e) => (e as Map)['nomeEscola']?.toString() ?? '')
+      escolas = (rows as List)
+          .map((r) => (r as Map)['nomeEscola']?.toString() ?? '')
           .where((s) => s.isNotEmpty)
           .toList();
-      for (final e in lista) {
-        final nome = (e as Map)['nomeEscola']?.toString() ?? '';
-        final id = int.tryParse(e['idEscola']?.toString() ?? '');
+      for (final r in rows) {
+        final nome = (r as Map)['nomeEscola']?.toString() ?? '';
+        final id = (r)['idEscola'] as int?;
         if (nome.isNotEmpty && id != null) _escolaIds[nome] = id;
       }
     } catch (e) {
       debugPrint('PassageiroForm.loadEscolas: $e');
+    }
+  }
+
+  // Cria escola via API e imediatamente corrige idMotorista no Supabase.
+  // Retorna true se criou com sucesso.
+  Future<bool> criarNovaEscola(String nome) async {
+    try {
+      final res = await VivanHttp.post('/escolas', {
+        'nomeEscola': nome,
+        'idMotorista': FFAppState().idUsuario,
+      });
+      final newId = int.tryParse((res as Map)['idEscola']?.toString() ?? '');
+      if (newId != null) {
+        await SupaFlow.client
+            .from('vivan_escolas')
+            .update({'idMotorista': FFAppState().idUsuario})
+            .eq('idEscola', newId);
+      }
+      await loadEscolas();
+      return true;
+    } catch (e) {
+      debugPrint('PassageiroForm.criarNovaEscola: $e');
+      return false;
     }
   }
 

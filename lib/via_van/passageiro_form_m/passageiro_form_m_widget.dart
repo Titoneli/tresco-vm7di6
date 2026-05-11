@@ -6,7 +6,6 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '/flutter_flow/flutter_flow_util.dart';
-import '../_vivan_http.dart';
 import '/via_van/clausulas_contrato_m/clausula_storage.dart';
 import 'passageiro_form_m_model.dart';
 export 'passageiro_form_m_model.dart';
@@ -887,15 +886,14 @@ class _PassageiroFormMWidgetState extends State<PassageiroFormMWidget> {
                         final nome = ctrl.text.trim();
                         if (nome.isEmpty) return;
                         setSheet(() { isSaving = true; erro = null; });
-                        try {
-                          await VivanHttp.post('/escolas', {'nomeEscola': nome});
-                          await _model.loadEscolas();
+                        final ok = await _model.criarNovaEscola(nome);
+                        if (ok) {
                           if (ctx.mounted) Navigator.pop(ctx);
                           setState(() => _model.setEscolaNome(nome));
-                        } catch (e) {
+                        } else {
                           setSheet(() {
                             isSaving = false;
-                            erro = e.toString().replaceFirst('Exception: ', '');
+                            erro = 'Erro ao criar escola';
                           });
                         }
                       },

@@ -144,6 +144,7 @@ class PassageiroFormMModel extends FlutterFlowModel<PassageiroFormMWidget> {
       } else {
         body = {
           'nomePassageiro': nomeCtrl.text.trim(),
+          'idMotorista': FFAppState().idUsuario,
           if (escolaId != null) 'idEscola': escolaId
           else if (escolaNome?.isNotEmpty == true) 'nomeEscola': escolaNome,
           if (periodo != null) 'domTurno': periodo,

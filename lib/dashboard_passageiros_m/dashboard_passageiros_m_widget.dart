@@ -1,7 +1,6 @@
 import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/index.dart';
-import '/vivan/vivan.dart';
 import '/via_van/financeiro_tab/financeiro_tab_widget.dart';
 import '/via_van/mensalidades_tab/mensalidades_tab_widget.dart';
 import '/via_van/passageiros_tab/passageiros_tab_widget.dart';
@@ -41,11 +40,6 @@ class _DashboardPassageirosMWidgetState
         context.pushNamed(LoginWidget.routeName);
         return;
       }
-      // Autentica o cliente ViVan com as credenciais reais do motorista logado
-      VivanApiClient.setCredentials(
-        FFAppState().usuario,
-        FFAppState().senha,
-      );
       // Chama diretamente para não cair na guard de concorrência (isLoadingHome já é true)
       _lastRefresh = DateTime.now();
       await _model.fetchHomeData(FFAppState().idUsuario);

@@ -212,18 +212,9 @@ class PassageiroFormMModel extends FlutterFlowModel<PassageiroFormMWidget> {
         savedP = await VivanHttp.post('/passageiros', body);
         passageiroId =
             int.tryParse((savedP as Map)['idPassageiro']?.toString() ?? '');
-        // API ignora idMotorista no body e usa o da sessão (398).
-        // Corrige direto no Supabase com o motorista logado.
-        if (passageiroId != null) {
-          try {
-            await SupaFlow.client
-                .from('vivan_passageiros')
-                .update({'idMotorista': FFAppState().idUsuario})
-                .eq('idPassageiro', passageiroId!);
-          } catch (e) {
-            debugPrint('PassageiroForm: patch passageiro idMotorista: $e');
-          }
-        }
+        // Patch Supabase é feito DEPOIS de todas as chamadas à API ViVan
+        // (responsável + contrato), pois a API valida idMotorista da sessão (398)
+        // vs passageiro. Se corrigirmos agora, o POST /contratos falha com 500.
       }
 
       // Responsável — no edit mode, usa campos divididos; no wizard, usa campo único
@@ -294,20 +285,30 @@ class PassageiroFormMModel extends FlutterFlowModel<PassageiroFormMWidget> {
           _contratoId = int.tryParse(
               (c['contrato'] as Map?)?['idContrato']?.toString() ?? '');
         }
-        // API usa sessão da conta de serviço (398); corrige idMotorista no Supabase.
-        if (_contratoId != null) {
-          try {
+      }
+
+      // Patches Supabase após todas as chamadas à API ViVan.
+      // Feitos no final para não alterar idMotorista do passageiro antes dos
+      // POSTs de contrato e responsável (a API valida ownership pela sessão=398).
+      if (!isEdit && passageiroId != null) {
+        try {
+          final motoristaId = FFAppState().idUsuario;
+          await SupaFlow.client
+              .from('vivan_passageiros')
+              .update({'idMotorista': motoristaId})
+              .eq('idPassageiro', passageiroId!);
+          if (_contratoId != null) {
             await SupaFlow.client
                 .from('vivan_contratos')
-                .update({'idMotorista': FFAppState().idUsuario})
+                .update({'idMotorista': motoristaId})
                 .eq('idContrato', _contratoId!);
             await SupaFlow.client
                 .from('vivan_mensalidades')
-                .update({'idMotorista': FFAppState().idUsuario})
+                .update({'idMotorista': motoristaId})
                 .eq('idContrato', _contratoId!);
-          } catch (e) {
-            debugPrint('PassageiroForm: patch contrato/mensalidades idMotorista: $e');
           }
+        } catch (e) {
+          debugPrint('PassageiroForm: patch idMotorista: $e');
         }
       }
 

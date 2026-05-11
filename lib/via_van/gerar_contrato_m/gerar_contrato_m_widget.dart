@@ -64,6 +64,8 @@ class _GerarContratoMWidgetState extends State<GerarContratoMWidget> {
 
   // Step 5 — Assinatura
   final List<Offset?> _points = [];
+  final _scrollController = ScrollController();
+  bool _isDrawing = false;
 
   VivanResponsavel? _responsavel;
 
@@ -152,6 +154,7 @@ class _GerarContratoMWidgetState extends State<GerarContratoMWidget> {
     _valorTotalCtrl.dispose();
     _jurosMultaCtrl.dispose();
     _jurosMesCtrl.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -178,6 +181,8 @@ class _GerarContratoMWidgetState extends State<GerarContratoMWidget> {
                     _buildStepIndicator(),
                     Expanded(
                       child: SingleChildScrollView(
+                        controller: _scrollController,
+                        physics: _isDrawing ? const NeverScrollableScrollPhysics() : null,
                         padding: const EdgeInsets.fromLTRB(24, 20, 24, 100),
                         child: _buildCurrentStep(),
                       ),
@@ -504,13 +509,11 @@ class _GerarContratoMWidgetState extends State<GerarContratoMWidget> {
           child: ClipRRect(
             borderRadius: BorderRadius.circular(12),
             child: GestureDetector(
-              onPanUpdate: (details) {
-                final box = context.findRenderObject() as RenderBox?;
-                if (box == null) return;
-                final local = details.localPosition;
-                setState(() => _points.add(local));
-              },
-              onPanEnd: (_) => setState(() => _points.add(null)),
+              behavior: HitTestBehavior.opaque,
+              onPanDown:   (_) => setState(() => _isDrawing = true),
+              onPanUpdate: (d) => setState(() => _points.add(d.localPosition)),
+              onPanEnd:    (_) => setState(() { _points.add(null); _isDrawing = false; }),
+              onPanCancel: ()  => setState(() => _isDrawing = false),
               child: CustomPaint(
                 painter: _SignaturePainter(_points, _primary),
                 child: Container(),
@@ -619,18 +622,17 @@ class _GerarContratoMWidgetState extends State<GerarContratoMWidget> {
         final valor =
             double.tryParse(_valorCtrl.text.replaceAll(',', '.')) ?? 0;
         final diaVenc = int.tryParse(_diaVencCtrl.text) ?? 5;
+        final agora = DateTime.now();
+        final inicio = _vigenciaInicio ?? agora;
+        final fim    = _vigenciaFim    ?? DateTime(agora.year, 12, 31);
         final c = VivanContrato(
           idMotorista: FFAppState().idUsuario,
           idPassageiro: widget.passageiroId,
           idResponsavel: _responsavel?.idResponsavel,
           valMensal: valor,
           diaVencimento: diaVenc,
-          dtInicio: _vigenciaInicio != null
-              ? DateFormat('yyyy-MM-dd').format(_vigenciaInicio!)
-              : null,
-          dtTermino: _vigenciaFim != null
-              ? DateFormat('yyyy-MM-dd').format(_vigenciaFim!)
-              : null,
+          dtInicio: DateFormat('yyyy-MM-dd').format(inicio),
+          dtTermino: DateFormat('yyyy-MM-dd').format(fim),
           percentualMulta: double.tryParse(
                   _jurosMultaCtrl.text.replaceAll(',', '.').replaceAll('%', '')) ??
               2.0,

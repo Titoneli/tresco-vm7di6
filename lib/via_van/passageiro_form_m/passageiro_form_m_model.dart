@@ -272,8 +272,8 @@ class PassageiroFormMModel extends FlutterFlowModel<PassageiroFormMWidget> {
         final valor =
             double.tryParse(valorCtrl.text.replaceAll(',', '.')) ?? 0;
         final agora = DateTime.now();
-        final inicio = vigenciaInicio ?? DateTime(agora.year, agora.month);
-        final fim = vigenciaFim ?? DateTime(inicio.year + 1, inicio.month);
+        final inicio = vigenciaInicio ?? agora;
+        final fim    = vigenciaFim    ?? DateTime(agora.year, 12, 31);
         final cBody = <String, dynamic>{
           'idMotorista': FFAppState().idUsuario,
           'idPassageiro': passageiroId,
@@ -293,6 +293,21 @@ class PassageiroFormMModel extends FlutterFlowModel<PassageiroFormMWidget> {
         if (c is Map) {
           _contratoId = int.tryParse(
               (c['contrato'] as Map?)?['idContrato']?.toString() ?? '');
+        }
+        // API usa sessão da conta de serviço (398); corrige idMotorista no Supabase.
+        if (_contratoId != null) {
+          try {
+            await SupaFlow.client
+                .from('vivan_contratos')
+                .update({'idMotorista': FFAppState().idUsuario})
+                .eq('idContrato', _contratoId!);
+            await SupaFlow.client
+                .from('vivan_mensalidades')
+                .update({'idMotorista': FFAppState().idUsuario})
+                .eq('idContrato', _contratoId!);
+          } catch (e) {
+            debugPrint('PassageiroForm: patch contrato/mensalidades idMotorista: $e');
+          }
         }
       }
 

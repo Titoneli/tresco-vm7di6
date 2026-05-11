@@ -521,6 +521,25 @@ class _PassageiroFormMWidgetState extends State<PassageiroFormMWidget> {
           duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
       setState(() => _model.step++);
     } else {
+      if (!_model.isEdit && _model.valorCtrl.text.trim().isEmpty) {
+        final confirmar = await showDialog<bool>(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            title: const Text('Salvar sem contrato?'),
+            content: const Text(
+                'Você não preencheu o valor mensal. O passageiro será salvo sem gerar contrato e mensalidades.'),
+            actions: [
+              TextButton(
+                  onPressed: () => Navigator.pop(ctx, false),
+                  child: const Text('Voltar')),
+              TextButton(
+                  onPressed: () => Navigator.pop(ctx, true),
+                  child: const Text('Continuar')),
+            ],
+          ),
+        );
+        if (confirmar != true) return;
+      }
       setState(() => _model.isSaving = true);
       final ok = await _model.salvar();
       if (ok && mounted) {

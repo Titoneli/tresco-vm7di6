@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '/flutter_flow/flutter_flow_util.dart';
-import '/via_van/_vivan_http.dart';
+import '/backend/supabase/supabase.dart';
 
 class PassageiroTabItem {
   final int id;
@@ -96,19 +96,28 @@ class PassageirosTabModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  // Consulta Supabase diretamente para garantir filtro real por idMotorista.
+  // A API ViVan usa sessão da conta de serviço (398) e não filtra corretamente.
   Future<void> carregar() async {
     isLoading = true;
     erro = null;
     notifyListeners();
     try {
-      final json = await VivanHttp.get('/passageiros?motorista=${FFAppState().idUsuario}');
-      final data = (json is Map ? json['data'] : json) as List? ?? [];
-      _todos = data
-          .map((e) => PassageiroTabItem.fromJson(e as Map<String, dynamic>))
-          .where((p) =>
-              p.idMotorista == null ||
-              p.idMotorista == FFAppState().idUsuario)
-          .toList();
+      final rows = await SupaFlow.client
+          .from('vivan_passageiros')
+          .select('idPassageiro, nomePassageiro, idMotorista, domTurno, vivan_escolas(nomeEscola)')
+          .eq('idMotorista', FFAppState().idUsuario)
+          .order('nomePassageiro');
+      _todos = (rows as List).map((r) {
+        final escolaMap = r['vivan_escolas'] as Map?;
+        return PassageiroTabItem(
+          id: r['idPassageiro'] as int,
+          idMotorista: r['idMotorista'] as int?,
+          nome: r['nomePassageiro']?.toString() ?? '',
+          escola: escolaMap?['nomeEscola']?.toString(),
+          periodo: r['domTurno']?.toString(),
+        );
+      }).toList();
     } catch (e) {
       debugPrint('PassageirosTab.carregar: $e');
       erro = 'Erro ao carregar passageiros';

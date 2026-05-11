@@ -317,6 +317,16 @@ class PassageiroFormMModel extends FlutterFlowModel<PassageiroFormMWidget> {
     } catch (e) {
       debugPrint('PassageiroForm.salvar: $e');
       erro = e.toString();
+      // Garante patch do passageiro mesmo se contrato ou outro passo falhar,
+      // para que o passageiro apareça corretamente na aba do motorista.
+      if (!isEdit && passageiroId != null) {
+        try {
+          await SupaFlow.client
+              .from('vivan_passageiros')
+              .update({'idMotorista': FFAppState().idUsuario})
+              .eq('idPassageiro', passageiroId!);
+        } catch (_) {}
+      }
       isSaving = false;
       return false;
     }

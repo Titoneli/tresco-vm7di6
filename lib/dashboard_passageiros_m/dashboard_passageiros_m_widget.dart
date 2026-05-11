@@ -28,6 +28,7 @@ class _DashboardPassageirosMWidgetState
     with WidgetsBindingObserver {
   late DashboardPassageirosMModel _model;
   final scaffoldKey = GlobalKey<ScaffoldState>();
+  DateTime? _lastRefresh;
 
   @override
   void initState() {
@@ -53,12 +54,15 @@ class _DashboardPassageirosMWidgetState
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
-      _refresh();
+      final stale = _lastRefresh == null ||
+          DateTime.now().difference(_lastRefresh!).inMinutes >= 2;
+      if (stale) _refresh();
     }
   }
 
   Future<void> _refresh() async {
-    if (!mounted) return;
+    if (!mounted || _model.isLoadingHome) return;
+    _lastRefresh = DateTime.now();
     setState(() => _model.isLoadingHome = true);
     await _model.fetchHomeData(FFAppState().idUsuario);
     if (mounted) setState(() {});
@@ -204,32 +208,35 @@ class _DashboardPassageirosMWidgetState
                                 font: GoogleFonts.interTight(fontWeight: FontWeight.w600),
                                 color: FlutterFlowTheme.of(context).primaryText)),
                       SizedBox(height: 16.0),
-                      _model.isLoadingHome
-                          ? Center(child: Padding(
-                              padding: EdgeInsets.symmetric(vertical: 16.0),
-                              child: CircularProgressIndicator(
-                                  color: FlutterFlowTheme.of(context).primary, strokeWidth: 2)))
-                          : Row(
-                              mainAxisSize: MainAxisSize.max,
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              children: [
-                                _buildResumoItem(context,
-                                    icon: Icons.people_rounded,
-                                    label: 'Passageiros',
-                                    value: '${_model.totalPassageiros}',
-                                    color: FlutterFlowTheme.of(context).primary),
-                                _buildResumoItem(context,
-                                    icon: Icons.school_rounded,
-                                    label: 'Escolas',
-                                    value: '${_model.totalEscolas}',
-                                    color: Color(0xFF4B7BEC)),
-                                _buildResumoItem(context,
-                                    icon: Icons.attach_money_rounded,
-                                    label: 'A Receber',
-                                    value: currency.format(_model.totalAReceber),
-                                    color: FlutterFlowTheme.of(context).success),
-                              ],
-                            ),
+                      if (_model.isLoadingHome)
+                        Center(child: Padding(
+                            padding: EdgeInsets.symmetric(vertical: 16.0),
+                            child: CircularProgressIndicator(
+                                color: FlutterFlowTheme.of(context).primary, strokeWidth: 2)))
+                      else if (_model.hasError)
+                        _buildErrorWidget()
+                      else
+                        Row(
+                          mainAxisSize: MainAxisSize.max,
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            _buildResumoItem(context,
+                                icon: Icons.people_rounded,
+                                label: 'Passageiros',
+                                value: '${_model.totalPassageiros}',
+                                color: FlutterFlowTheme.of(context).primary),
+                            _buildResumoItem(context,
+                                icon: Icons.school_rounded,
+                                label: 'Escolas',
+                                value: '${_model.totalEscolas}',
+                                color: Color(0xFF4B7BEC)),
+                            _buildResumoItem(context,
+                                icon: Icons.attach_money_rounded,
+                                label: 'A Receber',
+                                value: currency.format(_model.totalAReceber),
+                                color: FlutterFlowTheme.of(context).success),
+                          ],
+                        ),
                     ],
                   ),
                 ),
@@ -273,19 +280,21 @@ class _DashboardPassageirosMWidgetState
                       SizedBox(height: 12.0),
                       if (_model.isLoadingHome)
                         Center(child: Padding(
-                            padding: EdgeInsets.symmetric(vertical: 16.0),
+                            padding: const EdgeInsets.symmetric(vertical: 16.0),
                             child: CircularProgressIndicator(
                                 color: FlutterFlowTheme.of(context).primary, strokeWidth: 2)))
+                      else if (_model.hasError)
+                        _buildErrorWidget()
                       else if (_model.mensalidadesEmAberto.isEmpty)
                         Center(
                           child: Padding(
-                            padding: EdgeInsets.symmetric(vertical: 24.0),
+                            padding: const EdgeInsets.symmetric(vertical: 24.0),
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Icon(Icons.check_circle_outline_rounded,
                                     color: FlutterFlowTheme.of(context).success, size: 48.0),
-                                SizedBox(height: 8.0),
+                                const SizedBox(height: 8.0),
                                 Text('Nenhuma mensalidade em aberto',
                                     style: FlutterFlowTheme.of(context).bodyMedium.override(
                                           font: GoogleFonts.inter(),
@@ -295,59 +304,7 @@ class _DashboardPassageirosMWidgetState
                           ),
                         )
                       else
-                        ListView.separated(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemCount: _model.mensalidadesEmAberto.length,
-                          separatorBuilder: (_, __) => Divider(height: 1),
-                          itemBuilder: (ctx, i) {
-                            final m = _model.mensalidadesEmAberto[i];
-                            final isAtrasado = m.isAtrasado;
-                            final statusColor = isAtrasado ? Color(0xFFF56565) : Color(0xFFED8936);
-                            final statusLabel = isAtrasado ? 'Atrasado' : 'Pendente';
-                            return Padding(
-                              padding: EdgeInsets.symmetric(vertical: 10.0),
-                              child: Row(children: [
-                                Container(
-                                  width: 40.0, height: 40.0,
-                                  decoration: BoxDecoration(
-                                    color: statusColor.withValues(alpha: 0.1),
-                                    borderRadius: BorderRadius.circular(10.0),
-                                  ),
-                                  child: Icon(Icons.receipt_long_rounded, color: statusColor, size: 20.0),
-                                ),
-                                SizedBox(width: 12.0),
-                                Expanded(child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(m.nomePassageiro ?? '—',
-                                        style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600,
-                                            color: FlutterFlowTheme.of(context).primaryText)),
-                                    if (m.dtVencimento != null)
-                                      Text('Vence: ${_formatDate(m.dtVencimento!)}',
-                                          style: GoogleFonts.inter(fontSize: 12,
-                                              color: FlutterFlowTheme.of(context).secondaryText)),
-                                  ],
-                                )),
-                                Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
-                                  Text(currency.format(m.valOriginal ?? 0),
-                                      style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w700,
-                                          color: statusColor)),
-                                  Container(
-                                    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                                    decoration: BoxDecoration(
-                                      color: statusColor.withValues(alpha: 0.1),
-                                      borderRadius: BorderRadius.circular(20),
-                                    ),
-                                    child: Text(statusLabel,
-                                        style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600,
-                                            color: statusColor)),
-                                  ),
-                                ]),
-                              ]),
-                            );
-                          },
-                        ),
+                        _buildMensalidadesList(currency),
                     ],
                   ),
                 ),
@@ -390,6 +347,124 @@ class _DashboardPassageirosMWidgetState
     );
   }
 
+
+  Widget _buildErrorWidget() {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 16.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.wifi_off_rounded,
+                color: FlutterFlowTheme.of(context).secondaryText, size: 36.0),
+            const SizedBox(height: 8.0),
+            Text('Erro ao carregar dados',
+                style: GoogleFonts.inter(
+                    fontSize: 13,
+                    color: FlutterFlowTheme.of(context).secondaryText)),
+            const SizedBox(height: 8.0),
+            TextButton(
+              onPressed: _refresh,
+              child: Text('Tentar novamente',
+                  style: GoogleFonts.inter(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: FlutterFlowTheme.of(context).primary)),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMensalidadesList(NumberFormat currency) {
+    final exibidas = _model.mensalidadesEmAberto.take(5).toList();
+    final total = _model.mensalidadesEmAberto.length;
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        ListView.separated(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: exibidas.length,
+          separatorBuilder: (_, __) => const Divider(height: 1),
+          itemBuilder: (ctx, i) {
+            final m = exibidas[i];
+            final isAtrasado = m.isAtrasado;
+            final statusColor = isAtrasado ? const Color(0xFFF56565) : const Color(0xFFED8936);
+            final statusLabel = isAtrasado ? 'Atrasado' : 'Pendente';
+            return InkWell(
+              onTap: () => setState(() {
+                _model.paginaAtiva = 2;
+                _model.pageViewController?.animateToPage(2,
+                    duration: const Duration(milliseconds: 200),
+                    curve: Curves.easeInOut);
+              }),
+              borderRadius: BorderRadius.circular(8),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 10.0),
+                child: Row(children: [
+                  Container(
+                    width: 40.0, height: 40.0,
+                    decoration: BoxDecoration(
+                      color: statusColor.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                    child: Icon(Icons.receipt_long_rounded, color: statusColor, size: 20.0),
+                  ),
+                  const SizedBox(width: 12.0),
+                  Expanded(child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(m.nomePassageiro ?? '—',
+                          style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600,
+                              color: FlutterFlowTheme.of(context).primaryText)),
+                      if (m.dtVencimento != null)
+                        Text('Vence: ${_formatDate(m.dtVencimento!)}',
+                            style: GoogleFonts.inter(fontSize: 12,
+                                color: FlutterFlowTheme.of(context).secondaryText)),
+                    ],
+                  )),
+                  Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
+                    Text(currency.format(m.valOriginal ?? 0),
+                        style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w700,
+                            color: statusColor)),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: statusColor.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Text(statusLabel,
+                          style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600,
+                              color: statusColor)),
+                    ),
+                  ]),
+                ]),
+              ),
+            );
+          },
+        ),
+        if (total > 5)
+          Padding(
+            padding: const EdgeInsets.only(top: 8.0),
+            child: TextButton(
+              onPressed: () => setState(() {
+                _model.paginaAtiva = 2;
+                _model.pageViewController?.animateToPage(2,
+                    duration: const Duration(milliseconds: 200),
+                    curve: Curves.easeInOut);
+              }),
+              child: Text('Ver todas ($total)',
+                  style: GoogleFonts.inter(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: FlutterFlowTheme.of(context).primary)),
+            ),
+          ),
+      ],
+    );
+  }
 
   Widget _buildBottomNav(BuildContext context) {
     return Container(

@@ -8,7 +8,6 @@ class DashboardPassageirosMModel
     extends FlutterFlowModel<DashboardPassageirosMWidget> {
   final unfocusNode = FocusNode();
   int paginaAtiva = 0;
-  bool isLoading = true;
   PageController? pageViewController;
 
   // Home tab data
@@ -16,7 +15,8 @@ class DashboardPassageirosMModel
   int totalEscolas = 0;
   int totalPassageiros = 0;
   List<VivanMensalidade> mensalidadesEmAberto = [];
-  bool isLoadingHome = false;
+  bool isLoadingHome = true;
+  bool hasError = false;
 
   double get totalAReceber =>
       mensalidadesEmAberto.fold(0.0, (sum, m) => sum + (m.valOriginal ?? 0));
@@ -26,27 +26,30 @@ class DashboardPassageirosMModel
 
   Future<void> fetchHomeData(int motoristaId) async {
     if (motoristaId == 0) motoristaId = FFAppState().idUsuario;
-    if (motoristaId == 0) return;
+    if (motoristaId == 0) { isLoadingHome = false; return; }
     isLoadingHome = true;
     try {
+      hasError = false;
       final results = await Future.wait([
         VivanLocator.service.getDashboardResumo(motoristaId, mesReferenciaApiFormat),
         VivanLocator.service.getEscolas(motoristaId),
         VivanLocator.service.getMensalidades(
           motorista: motoristaId,
-          mesReferencia: mesReferenciaApiFormat,
+          limit: 500,
         ),
-        VivanLocator.service.getPassageiros(motorista: motoristaId, limit: 200),
       ]);
       homeResumo = results[0] as VivanDashboardResumo;
       totalEscolas = (results[1] as List<VivanEscola>).length;
       final allMens = (results[2] as VivanPaginatedResponse<VivanMensalidade>).data;
-      mensalidadesEmAberto = allMens.where((m) => !m.isPago && !m.isAbonado).toList();
-      totalPassageiros = (results[3] as VivanPaginatedResponse<VivanPassageiro>).data.length;
+      mensalidadesEmAberto = allMens.where((m) => !m.isPago && !m.isAbonado).toList()
+        ..sort((a, b) => (a.dtVencimento ?? '').compareTo(b.dtVencimento ?? ''));
+      totalPassageiros = homeResumo?.passageirosAtivos ?? 0;
     } catch (e) {
       debugPrint('Erro fetchHomeData: $e');
+      hasError = true;
+    } finally {
+      isLoadingHome = false;
     }
-    isLoadingHome = false;
   }
 
   @override

@@ -241,22 +241,30 @@ class PassageiroFormMModel extends FlutterFlowModel<PassageiroFormMWidget> {
           if (respWpp.isNotEmpty) 'whatsAppResponsavel': respWpp,
           if (respCpf.isNotEmpty) 'cpfResponsavel': respCpf,
         };
-        if (_responsavelId != null) {
-          await VivanHttp.put(
-              '/passageiros/$passageiroId/responsaveis/$_responsavelId',
-              rBody);
-        } else {
-          final r = await VivanHttp.post(
-              '/passageiros/$passageiroId/responsaveis', rBody);
-          if (r is Map) {
-            _responsavelId =
-                int.tryParse(r['idResponsavel']?.toString() ?? '');
+        try {
+          if (_responsavelId != null) {
+            await VivanHttp.put(
+                '/passageiros/$passageiroId/responsaveis/$_responsavelId',
+                rBody);
+          } else {
+            final r = await VivanHttp.post(
+                '/passageiros/$passageiroId/responsaveis', rBody);
+            if (r is Map) {
+              _responsavelId =
+                  int.tryParse(r['idResponsavel']?.toString() ?? '');
+            }
           }
+        } catch (e) {
+          // API exige cpfResponsavel — se falhar, continua sem responsável
+          debugPrint('PassageiroForm: responsavel error (continuando): $e');
         }
       }
 
       // Contrato — somente no wizard (criação), quando valor preenchido.
-      // POST /passageiros/:id/contratos cria contrato + ativa + mensalidades atomicamente.
+      // Usa POST /contratos + POST /contratos/:id/ativar (fluxo não-atômico):
+      // - valMensal é o campo correto neste endpoint
+      // - dtTermino é respeitado → gera mensalidades para o período completo
+      // - idMotorista do body é salvo corretamente (sem necessitar patch Supabase)
       if (!isEdit &&
           passageiroId != null &&
           valorCtrl.text.trim().isNotEmpty) {
@@ -279,11 +287,12 @@ class PassageiroFormMModel extends FlutterFlowModel<PassageiroFormMWidget> {
           'percentualJurosDia': 0.0333,
           'status': 'RASCUNHO',
         };
-        final c = await VivanHttp.post(
-            '/passageiros/$passageiroId/contratos', cBody);
+        final c = await VivanHttp.post('/contratos', cBody);
         if (c is Map) {
-          _contratoId = int.tryParse(
-              (c['contrato'] as Map?)?['idContrato']?.toString() ?? '');
+          _contratoId = int.tryParse(c['idContrato']?.toString() ?? '');
+        }
+        if (_contratoId != null) {
+          await VivanHttp.post('/contratos/$_contratoId/ativar', {});
         }
       }
 

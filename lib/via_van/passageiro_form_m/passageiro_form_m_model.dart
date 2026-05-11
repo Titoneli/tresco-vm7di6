@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '/flutter_flow/flutter_flow_util.dart';
+import '/backend/supabase/supabase.dart';
 import '../_vivan_http.dart';
 import 'passageiro_form_m_widget.dart' show PassageiroFormMWidget;
 
@@ -154,7 +155,17 @@ class PassageiroFormMModel extends FlutterFlowModel<PassageiroFormMWidget> {
             });
             resolvedEscolaId = int.tryParse(
                 (escolaRes as Map)['idEscola']?.toString() ?? '');
-          } catch (_) {}
+            // API ignora idMotorista no body e usa o da sessão (398).
+            // Corrige direto no Supabase com o motorista logado.
+            if (resolvedEscolaId != null) {
+              await SupaFlow.client
+                  .from('vivan_escolas')
+                  .update({'idMotorista': FFAppState().idUsuario})
+                  .eq('idEscola', resolvedEscolaId);
+            }
+          } catch (e) {
+            debugPrint('PassageiroForm: patch escola idMotorista: $e');
+          }
         }
         body = {
           'nomePassageiro': nomeCtrl.text.trim(),
@@ -172,6 +183,18 @@ class PassageiroFormMModel extends FlutterFlowModel<PassageiroFormMWidget> {
         savedP = await VivanHttp.post('/passageiros', body);
         passageiroId =
             int.tryParse((savedP as Map)['idPassageiro']?.toString() ?? '');
+        // API ignora idMotorista no body e usa o da sessão (398).
+        // Corrige direto no Supabase com o motorista logado.
+        if (passageiroId != null) {
+          try {
+            await SupaFlow.client
+                .from('vivan_passageiros')
+                .update({'idMotorista': FFAppState().idUsuario})
+                .eq('idPassageiro', passageiroId!);
+          } catch (e) {
+            debugPrint('PassageiroForm: patch passageiro idMotorista: $e');
+          }
+        }
       }
 
       // Responsável — no edit mode, usa campos divididos; no wizard, usa campo único

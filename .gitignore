@@ -21,3 +21,9 @@ temp/
 **/node_modules/
 # PDFs e zips
 *.zip
+
+# Android signing — NUNCA commitar
+android/key.properties
+android/*.jks
+*.jks
+*.keystore

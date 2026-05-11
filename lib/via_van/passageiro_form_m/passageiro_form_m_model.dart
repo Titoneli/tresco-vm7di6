@@ -142,10 +142,24 @@ class PassageiroFormMModel extends FlutterFlowModel<PassageiroFormMWidget> {
           if (periodo != null) 'domTurno': periodo,
         };
       } else {
+        // Criar escola separadamente para garantir idMotorista correto no banco.
+        // Se usarmos nomeEscola no body, o servidor cria a escola com idMotorista
+        // da conta de serviço (398) e ela some do picker do motorista depois.
+        int? resolvedEscolaId = escolaId;
+        if (resolvedEscolaId == null && escolaNome?.isNotEmpty == true) {
+          try {
+            final escolaRes = await VivanHttp.post('/escolas', {
+              'nomeEscola': escolaNome,
+              'idMotorista': FFAppState().idUsuario,
+            });
+            resolvedEscolaId = int.tryParse(
+                (escolaRes as Map)['idEscola']?.toString() ?? '');
+          } catch (_) {}
+        }
         body = {
           'nomePassageiro': nomeCtrl.text.trim(),
           'idMotorista': FFAppState().idUsuario,
-          if (escolaId != null) 'idEscola': escolaId
+          if (resolvedEscolaId != null) 'idEscola': resolvedEscolaId
           else if (escolaNome?.isNotEmpty == true) 'nomeEscola': escolaNome,
           if (periodo != null) 'domTurno': periodo,
         };

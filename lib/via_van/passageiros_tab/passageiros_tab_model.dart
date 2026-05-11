@@ -4,6 +4,7 @@ import '/via_van/_vivan_http.dart';
 
 class PassageiroTabItem {
   final int id;
+  final int? idMotorista;
   final String nome;
   final String? escola;
   final String? periodo;
@@ -11,6 +12,7 @@ class PassageiroTabItem {
 
   PassageiroTabItem({
     required this.id,
+    this.idMotorista,
     required this.nome,
     this.escola,
     this.periodo,
@@ -20,6 +22,7 @@ class PassageiroTabItem {
   factory PassageiroTabItem.fromJson(Map<String, dynamic> j) =>
       PassageiroTabItem(
         id: int.tryParse(j['idPassageiro']?.toString() ?? '0') ?? 0,
+        idMotorista: int.tryParse(j['idMotorista']?.toString() ?? ''),
         nome: j['nomePassageiro']?.toString() ?? '',
         escola: j['nomeEscola']?.toString(),
         periodo: j['periodo']?.toString(),
@@ -102,6 +105,9 @@ class PassageirosTabModel extends ChangeNotifier {
       final data = (json is Map ? json['data'] : json) as List? ?? [];
       _todos = data
           .map((e) => PassageiroTabItem.fromJson(e as Map<String, dynamic>))
+          .where((p) =>
+              p.idMotorista == null ||
+              p.idMotorista == FFAppState().idUsuario)
           .toList();
     } catch (e) {
       debugPrint('PassageirosTab.carregar: $e');

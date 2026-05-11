@@ -28,7 +28,14 @@ class PassageiroDetalheMModel
   Future<void> fetchPassageiro(int passageiroId) async {
     isLoading = true;
     try {
-      passageiro = await VivanLocator.service.getPassageiro(passageiroId);
+      final p = await VivanLocator.service.getPassageiro(passageiroId);
+      // Validação de ownership: rejeita passageiro de outro motorista
+      if (p.idMotorista != null && p.idMotorista != FFAppState().idUsuario) {
+        debugPrint('fetchPassageiro: passageiro $passageiroId não pertence ao motorista logado');
+        isLoading = false;
+        return;
+      }
+      passageiro = p;
       responsaveis = await VivanLocator.service.getResponsaveis(passageiroId);
     } catch (e) {
       debugPrint('Erro ao buscar passageiro: $e');

@@ -1,6 +1,6 @@
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
-import '/vivan/vivan.dart';
+import '/vivan/models/vivan_models.dart';
 import 'package:ff_theme/flutter_flow/flutter_flow_theme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -257,9 +257,10 @@ class _MensalidadesTabWidgetState extends State<MensalidadesTabWidget> {
           FFButtonWidget(
             onPressed: selectedForma == null ? null : () async {
               try {
-                await VivanLocator.service.pagamentoManual(m.idMensalidade!,
+                await _model.pagamentoManual(m.idMensalidade!,
                     valorPago: m.valOriginal ?? 0,
-                    formaPagamento: selectedForma!);
+                    formaPagamento: selectedForma!,
+                    dtVencimento: m.dtVencimento);
                 if (ctx.mounted) Navigator.pop(ctx);
                 _reload();
                 if (mounted) {

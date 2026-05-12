@@ -1,6 +1,6 @@
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
-import '/vivan/vivan.dart';
+import '/vivan/models/vivan_models.dart';
 import 'package:ff_theme/flutter_flow/flutter_flow_theme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -217,7 +217,7 @@ class _FinanceiroTabWidgetState extends State<FinanceiroTabWidget> {
             },
             onDismissed: (_) async {
               try {
-                await VivanLocator.service.deleteDespesa(d.idDespesa!);
+                await _model.deleteDespesa(d.idDespesa!);
                 _reload();
                 if (mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -368,7 +368,7 @@ class _FinanceiroTabWidgetState extends State<FinanceiroTabWidget> {
             onPressed: () async {
               Navigator.pop(ctx);
               try {
-                await VivanLocator.service.deleteDespesa(d.idDespesa!);
+                await _model.deleteDespesa(d.idDespesa!);
                 _reload();
                 if (mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -586,7 +586,7 @@ class _FinanceiroTabWidgetState extends State<FinanceiroTabWidget> {
                           try {
                             if (isEdit) {
                               final mesRef = '${_model.selectedMonth.toString().padLeft(2, '0')}/${_model.selectedYear}';
-                              await VivanLocator.service.updateDespesa(editing.idDespesa!, VivanDespesa(
+                              await _model.updateDespesa(editing.idDespesa!, VivanDespesa(
                                 idDespesa: editing.idDespesa,
                                 idMotorista: editing.idMotorista ?? FFAppState().idUsuario,
                                 tipoLancamento: tipo, categoria: selectedCategoria!,
@@ -599,7 +599,7 @@ class _FinanceiroTabWidgetState extends State<FinanceiroTabWidget> {
                               for (int m = mesInicial; m <= mesFinal; m++) {
                                 final mesRef = '${m.toString().padLeft(2, '0')}/${_model.selectedYear}';
                                 final dtVenc = DateTime(_model.selectedYear, m, diaVencimento);
-                                await VivanLocator.service.createDespesa(VivanDespesa(
+                                await _model.createDespesa(VivanDespesa(
                                   idMotorista: FFAppState().idUsuario, tipoLancamento: tipo, categoria: selectedCategoria!,
                                   descricao: descricaoCtrl.text, valor: valor, mesReferencia: mesRef,
                                   dtVencimento: dtVenc.toIso8601String().substring(0, 10),
@@ -609,7 +609,7 @@ class _FinanceiroTabWidgetState extends State<FinanceiroTabWidget> {
                               }
                             } else {
                               final mesRef = '${_model.selectedMonth.toString().padLeft(2, '0')}/${_model.selectedYear}';
-                              await VivanLocator.service.createDespesa(VivanDespesa(
+                              await _model.createDespesa(VivanDespesa(
                                 idMotorista: FFAppState().idUsuario, tipoLancamento: tipo, categoria: selectedCategoria!,
                                 descricao: descricaoCtrl.text, valor: valor, mesReferencia: mesRef,
                                 dtVencimento: dataPagamento.toIso8601String().substring(0, 10),

@@ -1,8 +1,7 @@
-import '/vivan/vivan.dart';
+import '/backend/supabase/supabase.dart';
 import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
-import '/index.dart';
 import 'package:ff_theme/flutter_flow/flutter_flow_theme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -187,18 +186,26 @@ class _ContratoDetalheMWidgetState extends State<ContratoDetalheMWidget> {
                 try {
                   final valor = double.tryParse(
                       _model.valorTextController!.text.replaceAll(',', '.'));
-                  final c = VivanContrato(
-                    idMotorista: FFAppState().idUsuario,
-                    idPassageiro: _model.selectedPassageiroId,
-                    valMensal: valor,
-                    dtInicio: _model.dataInicioTextController!.text.trim().isEmpty
-                        ? null : _model.dataInicioTextController!.text.trim(),
-                    dtTermino: _model.dataFimTextController!.text.trim().isEmpty
-                        ? null : _model.dataFimTextController!.text.trim(),
-                    observacoes: _model.condicoesTextController!.text,
-                    status: 'RASCUNHO',
-                  );
-                  await VivanLocator.service.createContrato(c);
+                  final numContrato = await SupaFlow.client
+                      .rpc('vivan_next_num_contrato');
+                  await SupaFlow.client.from('vivan_contratos').insert({
+                    'numContrato': numContrato,
+                    'idMotorista': FFAppState().idUsuario,
+                    'idPassageiro': _model.selectedPassageiroId,
+                    if (valor != null) 'valMensal': valor,
+                    if (_model.dataInicioTextController!.text.trim().isNotEmpty)
+                      'dtInicio': _model.dataInicioTextController!.text.trim(),
+                    if (_model.dataFimTextController!.text.trim().isNotEmpty)
+                      'dtTermino': _model.dataFimTextController!.text.trim(),
+                    if (_model.condicoesTextController!.text.isNotEmpty)
+                      'observacoes': _model.condicoesTextController!.text,
+                    'domFormaPagamento': 'OUTROS',
+                    'domCondicaoPagamento': 'Mensal',
+                    'percentualMulta': 2.0,
+                    'percentualJurosDia': 0.0333,
+                    'diaVencimento': 5,
+                    'status': 'RASCUNHO',
+                  });
                   context.safePop();
                 } catch (e) {
                   ScaffoldMessenger.of(context).showSnackBar(

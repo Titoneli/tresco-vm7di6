@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '/flutter_flow/flutter_flow_util.dart';
-import '/vivan/vivan.dart';
-import '../_vivan_http.dart';
+import '/vivan/models/vivan_models.dart';
+import '/backend/supabase/supabase.dart';
 import 'clausula_storage.dart';
 import 'editar_clausula_m_widget.dart';
 import 'adicionar_clausula_m_widget.dart';
@@ -542,11 +542,14 @@ class _ClausulasContratoMWidgetState extends State<ClausulasContratoMWidget> {
                         if (valor == null) return;
                         setSheet(() => isSaving = true);
                         try {
-                          await VivanHttp.put(
-                              '/contratos/${contrato.idContrato}', {
+                          await SupaFlow.client
+                              .from('vivan_contratos')
+                              .update({
                             'valMensal': valor,
                             if (diaVenc != null) 'diaVencimento': diaVenc,
-                          });
+                          })
+                              .eq('idContrato', contrato.idContrato!)
+                              .eq('idMotorista', FFAppState().idUsuario);
                           if (ctx.mounted) Navigator.pop(ctx);
                           if (mounted) {
                             ScaffoldMessenger.of(context).showSnackBar(SnackBar(

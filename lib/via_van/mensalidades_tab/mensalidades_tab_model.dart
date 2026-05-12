@@ -1,6 +1,7 @@
-import '/flutter_flow/flutter_flow_util.dart';
-import '/vivan/vivan.dart';
 import 'package:flutter/material.dart';
+import '/flutter_flow/flutter_flow_util.dart';
+import '/backend/supabase/supabase.dart';
+import '/vivan/models/vivan_models.dart';
 import 'package:intl/intl.dart';
 
 class MensalidadesTabModel extends ChangeNotifier {
@@ -59,18 +60,53 @@ class MensalidadesTabModel extends ChangeNotifier {
     errorMessage = null;
     notifyListeners();
     try {
-      final result = await VivanLocator.service.getMensalidades(
-        motorista: motoristaId,
-        mesReferencia: mesReferencia,
-        limit: 200,
-      );
-      mensalidades = result.data;
+      final rows = await SupaFlow.client
+          .from('vivan_mensalidades')
+          .select('*, vivan_passageiros(nomePassageiro), vivan_contratos(numContrato)')
+          .eq('idMotorista', motoristaId)
+          .eq('mesReferencia', mesReferencia)
+          .order('idMensalidade');
+
+      mensalidades = (rows as List).map((row) {
+        final r = Map<String, dynamic>.from(row as Map);
+        final passMap = r.remove('vivan_passageiros') as Map?;
+        final contMap = r.remove('vivan_contratos') as Map?;
+        if (passMap != null) r['nomePassageiro'] = passMap['nomePassageiro'];
+        if (contMap != null) r['numContrato'] = contMap['numContrato']?.toString();
+        return VivanMensalidade.fromJson(r);
+      }).toList();
     } catch (e) {
       errorMessage = e.toString();
-      debugPrint('Erro ao carregar mensalidades: $e');
+      debugPrint('MensalidadesTab.loadMensalidades: $e');
     }
     isLoading = false;
     notifyListeners();
+  }
+
+  // ── Pagamento manual ────────────────────────
+  Future<void> pagamentoManual(
+    int mensalidadeId, {
+    required double valorPago,
+    required String formaPagamento,
+    String? dtVencimento,
+  }) async {
+    final hoje = DateTime.now();
+    final dtPagamento = DateFormat('yyyy-MM-dd').format(hoje);
+    String status = 'PAGO';
+    if (dtVencimento != null) {
+      final venc = DateTime.tryParse(dtVencimento);
+      if (venc != null && hoje.isAfter(venc)) status = 'PAGO_ATRASO';
+    }
+    await SupaFlow.client
+        .from('vivan_mensalidades')
+        .update({
+          'valPago': valorPago,
+          'formaPagamento': formaPagamento,
+          'dtPagamento': dtPagamento,
+          'status': status,
+        })
+        .eq('idMensalidade', mensalidadeId)
+        .eq('idMotorista', FFAppState().idUsuario);
   }
 
   void changeMonth(int month) {

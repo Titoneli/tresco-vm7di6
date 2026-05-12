@@ -1,6 +1,6 @@
 import '/alunos/bts_aluno_adicionar/bts_aluno_adicionar_widget.dart';
 import '/backend/supabase/supabase.dart';
-import '/vivan/vivan.dart';
+import '/vivan/models/vivan_models.dart';
 import '/escolas/bts_turmas/bts_turmas_widget.dart';
 import '/flutter_flow/flutter_flow_drop_down.dart';
 import '/flutter_flow/flutter_flow_icon_button.dart';
@@ -48,21 +48,68 @@ class DashboardMotoristaViaVanMModel
   String get placaVeiculo => dashboardCapacidade?.placaVeiculo ?? '';
   Map<String, int> get ocupacaoPorTurno => dashboardCapacidade?.ocupacao ?? {};
 
-  /// Fetch dashboard data from API
+  /// Fetch dashboard data via Supabase RPC + direct queries
   Future<void> fetchDashboardData(int motoristaId) async {
     isLoadingDashboard = true;
     final mesRef = DateFormat('MM/yyyy').format(DateTime.now());
     try {
       final results = await Future.wait([
-        VivanLocator.service.getDashboardResumo(motoristaId, mesRef),
-        VivanLocator.service.getCapacidade(motoristaId),
+        _fetchResumo(motoristaId, mesRef),
+        _fetchCapacidade(motoristaId),
       ]);
-      dashboardResumo = results[0] as VivanDashboardResumo;
-      dashboardCapacidade = results[1] as VivanCapacidade;
+      dashboardResumo = results[0] as VivanDashboardResumo?;
+      dashboardCapacidade = results[1] as VivanCapacidade?;
     } catch (e) {
-      debugPrint('Erro ao buscar dashboard: $e');
+      debugPrint('DashboardMotoristaViVan.fetchDashboardData: $e');
     }
     isLoadingDashboard = false;
+  }
+
+  Future<VivanDashboardResumo?> _fetchResumo(int motoristaId, String mesRef) async {
+    try {
+      final result = await SupaFlow.client.rpc(
+        'vivan_dashboard_motorista_resumo',
+        params: {'p_motorista_id': motoristaId, 'p_mes_referencia': mesRef},
+      );
+      if (result == null) return null;
+      return VivanDashboardResumo.fromJson(Map<String, dynamic>.from(result as Map));
+    } catch (e) {
+      debugPrint('DashboardMotoristaViVan._fetchResumo: $e');
+      return null;
+    }
+  }
+
+  Future<VivanCapacidade?> _fetchCapacidade(int motoristaId) async {
+    try {
+      // Ocupação por turno: conta passageiros agrupados por domTurno em Dart
+      final passRows = await SupaFlow.client
+          .from('vivan_passageiros')
+          .select('domTurno')
+          .eq('idMotorista', motoristaId);
+      final ocupacao = <String, int>{};
+      for (final r in passRows as List) {
+        final turno = (r as Map)['domTurno']?.toString() ?? 'Indefinido';
+        ocupacao[turno] = (ocupacao[turno] ?? 0) + 1;
+      }
+
+      // Dados do veículo (tabela pode não existir — ignora se falhar)
+      Map<String, dynamic>? veiculo;
+      try {
+        final veicRows = await SupaFlow.client
+            .from('vivan_veiculos')
+            .select('capacidade, placa')
+            .eq('idMotorista', motoristaId)
+            .limit(1);
+        if ((veicRows as List).isNotEmpty) {
+          veiculo = Map<String, dynamic>.from(veicRows.first as Map);
+        }
+      } catch (_) {}
+
+      return VivanCapacidade(veiculo: veiculo, ocupacao: ocupacao);
+    } catch (e) {
+      debugPrint('DashboardMotoristaViVan._fetchCapacidade: $e');
+      return null;
+    }
   }
 
   ///  State fields for stateful widgets in this page.

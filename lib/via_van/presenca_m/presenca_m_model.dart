@@ -1,5 +1,6 @@
 import '/flutter_flow/flutter_flow_util.dart';
-import '/vivan/vivan.dart';
+import '/vivan/models/vivan_models.dart';
+import '/backend/supabase/supabase.dart';
 import 'presenca_m_widget.dart' show PresencaMWidget;
 import 'package:flutter/material.dart';
 
@@ -39,19 +40,22 @@ class PresencaMModel extends FlutterFlowModel<PresencaMWidget> {
     isLoading = true;
     final hoje = DateFormat('yyyy-MM-dd').format(DateTime.now());
     try {
-      final result = await VivanLocator.service.getPresencas(
-        motorista: motoristaId,
-        dtPresenca: hoje,
-      );
-      presencas = result.data;
-      // Initialize presencaMap from existing records
+      final rows = await SupaFlow.client
+          .from('vivan_presencas')
+          .select()
+          .eq('idMotorista', motoristaId)
+          .eq('dtPresenca', hoje);
+      presencas = (rows as List)
+          .map((r) => VivanPresenca.fromJson(Map<String, dynamic>.from(r as Map)))
+          .toList();
+      presencaMap.clear();
       for (final p in presencas) {
         if (p.idPassageiro != null) {
           presencaMap[p.idPassageiro!] = p.tipoPresenca;
         }
       }
     } catch (e) {
-      debugPrint('Erro ao buscar presenças: $e');
+      debugPrint('PresencaM.fetchPresencasHoje: $e');
       presencas = [];
     }
     isLoading = false;
@@ -60,13 +64,18 @@ class PresencaMModel extends FlutterFlowModel<PresencaMWidget> {
   Future<void> fetchHistorico(int motoristaId, String dataInicio, String dataFim) async {
     isLoading = true;
     try {
-      final result = await VivanLocator.service.getPresencas(
-        motorista: motoristaId,
-        dtPresenca: dataInicio, // TODO: API should support date range
-      );
-      presencas = result.data;
+      final rows = await SupaFlow.client
+          .from('vivan_presencas')
+          .select()
+          .eq('idMotorista', motoristaId)
+          .gte('dtPresenca', dataInicio)
+          .lte('dtPresenca', dataFim)
+          .order('dtPresenca', ascending: false);
+      presencas = (rows as List)
+          .map((r) => VivanPresenca.fromJson(Map<String, dynamic>.from(r as Map)))
+          .toList();
     } catch (e) {
-      debugPrint('Erro ao buscar histórico: $e');
+      debugPrint('PresencaM.fetchHistorico: $e');
       presencas = [];
     }
     isLoading = false;
@@ -76,19 +85,22 @@ class PresencaMModel extends FlutterFlowModel<PresencaMWidget> {
     isSending = true;
     final hoje = DateFormat('yyyy-MM-dd').format(DateTime.now());
     try {
-      final registros = presencaMap.entries.map((e) => VivanPresenca(
-        idPassageiro: e.key,
-        idMotorista: motoristaId,
-        dtPresenca: hoje,
-        tipoPresenca: e.value,
-        latRegistro: latitude,
-        lngRegistro: longitude,
-      )).toList();
-      await VivanLocator.service.enviarPresencasLote(registros);
+      final registros = presencaMap.entries.map((e) => {
+        'idPassageiro': e.key,
+        'idMotorista': motoristaId,
+        'dtPresenca': hoje,
+        'tipoPresenca': e.value,
+        if (latitude != null) 'latRegistro': latitude,
+        if (longitude != null) 'lngRegistro': longitude,
+      }).toList();
+      await SupaFlow.client.from('vivan_presencas').upsert(
+        registros,
+        onConflict: 'idMotorista,idPassageiro,dtPresenca',
+      );
       isSending = false;
       return true;
     } catch (e) {
-      debugPrint('Erro ao enviar presenças: $e');
+      debugPrint('PresencaM.enviarPresencasLote: $e');
       isSending = false;
       return false;
     }

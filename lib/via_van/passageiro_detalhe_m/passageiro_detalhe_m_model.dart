@@ -1,7 +1,8 @@
-import '/flutter_flow/flutter_flow_util.dart';
-import '/vivan/vivan.dart';
-import 'passageiro_detalhe_m_widget.dart' show PassageiroDetalheMWidget;
 import 'package:flutter/material.dart';
+import '/flutter_flow/flutter_flow_util.dart';
+import '/backend/supabase/supabase.dart';
+import '/vivan/models/vivan_models.dart';
+import 'passageiro_detalhe_m_widget.dart' show PassageiroDetalheMWidget;
 
 class PassageiroDetalheMModel
     extends FlutterFlowModel<PassageiroDetalheMWidget> {
@@ -11,7 +12,6 @@ class PassageiroDetalheMModel
   List<VivanContrato> contratos = [];
   bool isLoadingContratos = false;
 
-  // Computed fields
   String get nome => passageiro?.nomePassageiro ?? '';
   String get cpf => passageiro?.cpfPassageiro ?? '';
   String get escola => passageiro?.nomeEscola ?? '';
@@ -28,17 +28,32 @@ class PassageiroDetalheMModel
   Future<void> fetchPassageiro(int passageiroId) async {
     isLoading = true;
     try {
-      final p = await VivanLocator.service.getPassageiro(passageiroId);
-      // Validação de ownership: rejeita passageiro de outro motorista
-      if (p.idMotorista != null && p.idMotorista != FFAppState().idUsuario) {
-        debugPrint('fetchPassageiro: passageiro $passageiroId não pertence ao motorista logado');
+      final rows = await SupaFlow.client
+          .from('vivan_passageiros')
+          .select('*, vivan_escolas(nomeEscola)')
+          .eq('idPassageiro', passageiroId)
+          .eq('idMotorista', FFAppState().idUsuario)
+          .limit(1);
+
+      if ((rows as List).isEmpty) {
         isLoading = false;
         return;
       }
-      passageiro = p;
-      responsaveis = await VivanLocator.service.getResponsaveis(passageiroId);
+      final r = Map<String, dynamic>.from(rows.first as Map);
+      final escolaMap = r.remove('vivan_escolas') as Map?;
+      if (escolaMap != null) r['nomeEscola'] = escolaMap['nomeEscola'];
+      passageiro = VivanPassageiro.fromJson(r);
+
+      final respRows = await SupaFlow.client
+          .from('vivan_responsaveis')
+          .select()
+          .eq('idPassageiro', passageiroId);
+      responsaveis = (respRows as List)
+          .map((row) => VivanResponsavel.fromJson(
+              Map<String, dynamic>.from(row as Map)))
+          .toList();
     } catch (e) {
-      debugPrint('Erro ao buscar passageiro: $e');
+      debugPrint('PassageiroDetalhe.fetchPassageiro: $e');
     }
     isLoading = false;
   }
@@ -46,27 +61,32 @@ class PassageiroDetalheMModel
   Future<void> fetchContratos(int motoristaId, int passageiroId) async {
     isLoadingContratos = true;
     try {
-      final result = await VivanLocator.service.getContratos(
-        motorista: motoristaId,
-        passageiro: passageiroId,
-        limit: 50,
-      );
-      // Filtro client-side: API ignora o param passageiro e retorna todos do motorista
-      contratos = result.data
-          .where((c) => c.idPassageiro == passageiroId)
+      final rows = await SupaFlow.client
+          .from('vivan_contratos')
+          .select()
+          .eq('idPassageiro', passageiroId)
+          .eq('idMotorista', motoristaId)
+          .order('idContrato', ascending: false);
+      contratos = (rows as List)
+          .map((row) => VivanContrato.fromJson(
+              Map<String, dynamic>.from(row as Map)))
           .toList();
     } catch (e) {
-      debugPrint('Erro ao buscar contratos: $e');
+      debugPrint('PassageiroDetalhe.fetchContratos: $e');
     }
     isLoadingContratos = false;
   }
 
   Future<void> deleteResponsavel(int passageiroId, int responsavelId) async {
     try {
-      await VivanLocator.service.deleteResponsavel(passageiroId, responsavelId);
+      await SupaFlow.client
+          .from('vivan_responsaveis')
+          .delete()
+          .eq('idResponsavel', responsavelId)
+          .eq('idPassageiro', passageiroId);
       responsaveis.removeWhere((r) => r.idResponsavel == responsavelId);
     } catch (e) {
-      debugPrint('Erro ao excluir responsável: $e');
+      debugPrint('PassageiroDetalhe.deleteResponsavel: $e');
     }
   }
 }

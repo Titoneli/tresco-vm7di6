@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/backend/supabase/supabase.dart';
-import '../_vivan_http.dart';
 import 'passageiro_form_m_widget.dart' show PassageiroFormMWidget;
 
 class PassageiroFormMModel extends FlutterFlowModel<PassageiroFormMWidget> {
@@ -11,16 +10,13 @@ class PassageiroFormMModel extends FlutterFlowModel<PassageiroFormMWidget> {
   String? erro;
 
   // ── Step 1 — Passageiro ──────────────────────────
-  final nomeCtrl = TextEditingController(); // nome completo (wizard + edit)
+  final nomeCtrl = TextEditingController();
   String? escolaNome;
   int? escolaId;
   String? periodo;
   List<String> escolas = [];
   final Map<String, int> _escolaIds = {};
 
-  // Busca escolas direto no Supabase para garantir filtro correto por idMotorista.
-  // A API ViVan usa sessão da conta de serviço (398) e pode retornar escolas de
-  // outros motoristas quando chamada via /escolas?motorista=X.
   Future<void> loadEscolas() async {
     try {
       final rows = await SupaFlow.client
@@ -43,29 +39,6 @@ class PassageiroFormMModel extends FlutterFlowModel<PassageiroFormMWidget> {
     }
   }
 
-  // Cria escola via API e imediatamente corrige idMotorista no Supabase.
-  // Retorna true se criou com sucesso.
-  Future<bool> criarNovaEscola(String nome) async {
-    try {
-      final res = await VivanHttp.post('/escolas', {
-        'nomeEscola': nome,
-        'idMotorista': FFAppState().idUsuario,
-      });
-      final newId = int.tryParse((res as Map)['idEscola']?.toString() ?? '');
-      if (newId != null) {
-        await SupaFlow.client
-            .from('vivan_escolas')
-            .update({'idMotorista': FFAppState().idUsuario})
-            .eq('idEscola', newId);
-      }
-      await loadEscolas();
-      return true;
-    } catch (e) {
-      debugPrint('PassageiroForm.criarNovaEscola: $e');
-      return false;
-    }
-  }
-
   void setEscolaNome(String? nome) {
     escolaNome = nome;
     escolaId = nome != null ? _escolaIds[nome] : null;
@@ -74,8 +47,8 @@ class PassageiroFormMModel extends FlutterFlowModel<PassageiroFormMWidget> {
   static const periodos = ['Integral', 'Manhã', 'Tarde', 'Noite'];
 
   // ── Step 2 — Responsável (wizard + edit) ─────────
-  final respNomeCtrl = TextEditingController();    // nome completo
-  final respWhatsappCtrl = TextEditingController(); // WhatsApp / telefone
+  final respNomeCtrl = TextEditingController();
+  final respWhatsappCtrl = TextEditingController();
   final respCpfCtrl = TextEditingController();
 
   // ── Step 3 — Contrato (wizard) ───────────────────
@@ -105,7 +78,6 @@ class PassageiroFormMModel extends FlutterFlowModel<PassageiroFormMWidget> {
   // ── IDs modo edição ──────────────────────────────
   int? passageiroId;
   int? _responsavelId;
-  int? _contratoId;
 
   bool get isEdit => passageiroId != null;
 
@@ -113,40 +85,52 @@ class PassageiroFormMModel extends FlutterFlowModel<PassageiroFormMWidget> {
   Future<void> carregar(int id) async {
     passageiroId = id;
     try {
-      final json = await VivanHttp.get('/passageiros/$id');
-      final p = json as Map<String, dynamic>;
+      // Passageiro com JOIN de escola
+      final rows = await SupaFlow.client
+          .from('vivan_passageiros')
+          .select('*, vivan_escolas(nomeEscola)')
+          .eq('idPassageiro', id)
+          .eq('idMotorista', FFAppState().idUsuario)
+          .limit(1);
 
-      final nomeCompleto = p['nomePassageiro']?.toString() ?? '';
+      if ((rows as List).isEmpty) return;
+      final r = Map<String, dynamic>.from(rows.first as Map);
+      final escolaMap = r.remove('vivan_escolas') as Map?;
+
+      final nomeCompleto = r['nomePassageiro']?.toString() ?? '';
       nomeCtrl.text = nomeCompleto;
       final partes = nomeCompleto.split(' ');
       primeiroNomeEditCtrl.text = partes.first;
       sobrenomeEditCtrl.text = partes.skip(1).join(' ');
 
-      escolaNome = p['nomeEscola']?.toString();
-      escolaId = int.tryParse(p['idEscola']?.toString() ?? '');
-      periodo = p['domTurno']?.toString() ?? p['periodo']?.toString();
+      escolaNome = escolaMap?['nomeEscola']?.toString() ?? r['nomeEscola']?.toString();
+      escolaId = r['idEscola'] as int?;
+      periodo = r['domTurno']?.toString();
 
-      final dtn = p['dtNascimento']?.toString();
+      final dtn = r['dtNascimento']?.toString();
       dtNascimento = dtn != null ? DateTime.tryParse(dtn) : null;
 
       // Responsável
       try {
-        final resps = await VivanHttp.get('/passageiros/$id/responsaveis');
-        final lista = (resps is Map ? resps['data'] : resps) as List? ?? [];
-        if (lista.isNotEmpty) {
-          final r = lista.first as Map<String, dynamic>;
-          _responsavelId = int.tryParse(r['idResponsavel']?.toString() ?? '');
-          final nomeResp = r['nomeResponsavel']?.toString() ?? '';
+        final respRows = await SupaFlow.client
+            .from('vivan_responsaveis')
+            .select()
+            .eq('idPassageiro', id)
+            .limit(1);
+        if ((respRows as List).isNotEmpty) {
+          final resp = Map<String, dynamic>.from(respRows.first as Map);
+          _responsavelId = resp['idResponsavel'] as int?;
+          final nomeResp = resp['nomeResponsavel']?.toString() ?? '';
           respNomeCtrl.text = nomeResp;
           final respPartes = nomeResp.split(' ');
           respNomeEditCtrl.text = respPartes.first;
           respSobrenomeEditCtrl.text = respPartes.skip(1).join(' ');
-          final wpp = r['whatsAppResponsavel']?.toString() ?? '';
+          final wpp = resp['whatsAppResponsavel']?.toString() ?? '';
           respWhatsappCtrl.text = wpp;
           final spaceIdx = wpp.indexOf(' ');
           respDddCtrl.text = spaceIdx > 0 ? wpp.substring(0, spaceIdx) : '';
           respTelCtrl.text = spaceIdx > 0 ? wpp.substring(spaceIdx + 1) : wpp;
-          respCpfCtrl.text = r['cpfResponsavel']?.toString() ?? '';
+          respCpfCtrl.text = resp['cpfResponsavel']?.toString() ?? '';
         }
       } catch (_) {}
     } catch (e) {
@@ -159,186 +143,125 @@ class PassageiroFormMModel extends FlutterFlowModel<PassageiroFormMWidget> {
     isSaving = true;
     erro = null;
     try {
-      final Map<String, dynamic> body;
       if (isEdit) {
-        final nomeEdit =
-            '${primeiroNomeEditCtrl.text} ${sobrenomeEditCtrl.text}'.trim();
-        final resolvedEscolaId = escolaId ?? _escolaIds[escolaNome ?? ''];
-        body = {
-          'nomePassageiro': nomeEdit.isNotEmpty ? nomeEdit : nomeCtrl.text.trim(),
-          if (dtNascimento != null)
-            'dtNascimento': dtNascimento!.toIso8601String().substring(0, 10),
-          if (resolvedEscolaId != null) 'idEscola': resolvedEscolaId,
-          if (periodo != null) 'domTurno': periodo,
-        };
+        await _salvarEdit();
       } else {
-        // Criar escola separadamente para garantir idMotorista correto no banco.
-        // Se usarmos nomeEscola no body, o servidor cria a escola com idMotorista
-        // da conta de serviço (398) e ela some do picker do motorista depois.
-        int? resolvedEscolaId = escolaId;
-        if (resolvedEscolaId == null && escolaNome?.isNotEmpty == true) {
-          try {
-            final escolaRes = await VivanHttp.post('/escolas', {
-              'nomeEscola': escolaNome,
-              'idMotorista': FFAppState().idUsuario,
-            });
-            resolvedEscolaId = int.tryParse(
-                (escolaRes as Map)['idEscola']?.toString() ?? '');
-            // API ignora idMotorista no body e usa o da sessão (398).
-            // Corrige direto no Supabase com o motorista logado.
-            if (resolvedEscolaId != null) {
-              await SupaFlow.client
-                  .from('vivan_escolas')
-                  .update({'idMotorista': FFAppState().idUsuario})
-                  .eq('idEscola', resolvedEscolaId);
-            }
-          } catch (e) {
-            debugPrint('PassageiroForm: patch escola idMotorista: $e');
-          }
-        }
-        body = {
-          'nomePassageiro': nomeCtrl.text.trim(),
-          'idMotorista': FFAppState().idUsuario,
-          if (resolvedEscolaId != null) 'idEscola': resolvedEscolaId
-          else if (escolaNome?.isNotEmpty == true) 'nomeEscola': escolaNome,
-          if (periodo != null) 'domTurno': periodo,
-        };
+        await _salvarNovo();
       }
-
-      dynamic savedP;
-      if (isEdit) {
-        savedP = await VivanHttp.put('/passageiros/$passageiroId', body);
-      } else {
-        savedP = await VivanHttp.post('/passageiros', body);
-        passageiroId =
-            int.tryParse((savedP as Map)['idPassageiro']?.toString() ?? '');
-        // Patch Supabase é feito DEPOIS de todas as chamadas à API ViVan
-        // (responsável + contrato), pois a API valida idMotorista da sessão (398)
-        // vs passageiro. Se corrigirmos agora, o POST /contratos falha com 500.
-      }
-
-      // Responsável — no edit mode, usa campos divididos; no wizard, usa campo único
-      final String respNome;
-      final String respWpp;
-      if (isEdit) {
-        final nomeR =
-            '${respNomeEditCtrl.text} ${respSobrenomeEditCtrl.text}'.trim();
-        respNome = nomeR.isNotEmpty ? nomeR : respNomeCtrl.text.trim();
-        final ddd = respDddCtrl.text.trim();
-        final tel = respTelCtrl.text.trim();
-        final wppJoin = ddd.isNotEmpty && tel.isNotEmpty
-            ? '$ddd $tel'
-            : (ddd.isNotEmpty ? ddd : tel);
-        respWpp = wppJoin.isNotEmpty ? wppJoin : respWhatsappCtrl.text.trim();
-      } else {
-        respNome = respNomeCtrl.text.trim();
-        respWpp = respWhatsappCtrl.text.trim();
-      }
-      final respCpf = respCpfCtrl.text.trim();
-      if (passageiroId != null && respNome.isNotEmpty) {
-        final rBody = <String, dynamic>{
-          'nomeResponsavel': respNome,
-          if (respWpp.isNotEmpty) 'whatsAppResponsavel': respWpp,
-          if (respCpf.isNotEmpty) 'cpfResponsavel': respCpf,
-        };
-        try {
-          if (_responsavelId != null) {
-            await VivanHttp.put(
-                '/passageiros/$passageiroId/responsaveis/$_responsavelId',
-                rBody);
-          } else {
-            final r = await VivanHttp.post(
-                '/passageiros/$passageiroId/responsaveis', rBody);
-            if (r is Map) {
-              _responsavelId =
-                  int.tryParse(r['idResponsavel']?.toString() ?? '');
-            }
-          }
-        } catch (e) {
-          // API exige cpfResponsavel — se falhar, continua sem responsável
-          debugPrint('PassageiroForm: responsavel error (continuando): $e');
-        }
-      }
-
-      // Contrato — somente no wizard (criação), quando valor preenchido.
-      // Usa POST /contratos + POST /contratos/:id/ativar (fluxo não-atômico):
-      // - valMensal é o campo correto neste endpoint
-      // - dtTermino é respeitado → gera mensalidades para o período completo
-      // - idMotorista do body é salvo corretamente (sem necessitar patch Supabase)
-      if (!isEdit &&
-          passageiroId != null &&
-          valorCtrl.text.trim().isNotEmpty) {
-        final valor =
-            double.tryParse(valorCtrl.text.replaceAll(',', '.')) ?? 0;
-        final agora = DateTime.now();
-        final inicio = vigenciaInicio ?? agora;
-        final fim    = vigenciaFim    ?? DateTime(agora.year, 12, 31);
-        final cBody = <String, dynamic>{
-          'idMotorista': FFAppState().idUsuario,
-          'idPassageiro': passageiroId,
-          if (_responsavelId != null) 'idResponsavel': _responsavelId,
-          'valMensal': valor,
-          'diaVencimento': diaPagamento ?? 5,
-          'dtInicio': DateFormat('yyyy-MM-dd').format(DateTime(inicio.year, inicio.month, 1)),
-          'dtTermino': DateFormat('yyyy-MM-dd').format(DateTime(fim.year, fim.month + 1, 0)),
-          'domFormaPagamento': 'OUTROS',
-          'domCondicaoPagamento': 'Mensal',
-          'percentualMulta': 2.0,
-          'percentualJurosDia': 0.0333,
-          'status': 'RASCUNHO',
-        };
-        final c = await VivanHttp.post('/contratos', cBody);
-        if (c is Map) {
-          _contratoId = int.tryParse(c['idContrato']?.toString() ?? '');
-        }
-        if (_contratoId != null) {
-          await VivanHttp.post('/contratos/$_contratoId/ativar', {});
-        }
-      }
-
-      // Patches Supabase após todas as chamadas à API ViVan.
-      // Feitos no final para não alterar idMotorista do passageiro antes dos
-      // POSTs de contrato e responsável (a API valida ownership pela sessão=398).
-      if (!isEdit && passageiroId != null) {
-        try {
-          final motoristaId = FFAppState().idUsuario;
-          await SupaFlow.client
-              .from('vivan_passageiros')
-              .update({'idMotorista': motoristaId})
-              .eq('idPassageiro', passageiroId!);
-          if (_contratoId != null) {
-            await SupaFlow.client
-                .from('vivan_contratos')
-                .update({'idMotorista': motoristaId})
-                .eq('idContrato', _contratoId!);
-            await SupaFlow.client
-                .from('vivan_mensalidades')
-                .update({'idMotorista': motoristaId})
-                .eq('idContrato', _contratoId!);
-          }
-        } catch (e) {
-          debugPrint('PassageiroForm: patch idMotorista: $e');
-        }
-      }
-
       isSaving = false;
       return true;
     } catch (e) {
       debugPrint('PassageiroForm.salvar: $e');
       erro = e.toString();
-      // Garante patch do passageiro mesmo se contrato ou outro passo falhar,
-      // para que o passageiro apareça corretamente na aba do motorista.
-      if (!isEdit && passageiroId != null) {
-        try {
-          await SupaFlow.client
-              .from('vivan_passageiros')
-              .update({'idMotorista': FFAppState().idUsuario})
-              .eq('idPassageiro', passageiroId!);
-        } catch (_) {}
-      }
       isSaving = false;
       return false;
     }
+  }
+
+  Future<void> _salvarEdit() async {
+    final nomeEdit =
+        '${primeiroNomeEditCtrl.text} ${sobrenomeEditCtrl.text}'.trim();
+    final resolvedEscolaId = escolaId ?? _escolaIds[escolaNome ?? ''];
+
+    await SupaFlow.client
+        .from('vivan_passageiros')
+        .update({
+          'nomePassageiro':
+              nomeEdit.isNotEmpty ? nomeEdit : nomeCtrl.text.trim(),
+          if (dtNascimento != null)
+            'dtNascimento': dtNascimento!.toIso8601String().substring(0, 10),
+          if (resolvedEscolaId != null) 'idEscola': resolvedEscolaId,
+          if (periodo != null) 'domTurno': periodo,
+        })
+        .eq('idPassageiro', passageiroId!)
+        .eq('idMotorista', FFAppState().idUsuario);
+
+    // Responsável
+    final nomeR =
+        '${respNomeEditCtrl.text} ${respSobrenomeEditCtrl.text}'.trim();
+    final respNome = nomeR.isNotEmpty ? nomeR : respNomeCtrl.text.trim();
+    final ddd = respDddCtrl.text.trim();
+    final tel = respTelCtrl.text.trim();
+    final respWpp = ddd.isNotEmpty && tel.isNotEmpty
+        ? '$ddd $tel'
+        : (ddd.isNotEmpty ? ddd : tel);
+    final respCpf = respCpfCtrl.text.trim();
+
+    if (respNome.isNotEmpty) {
+      final rBody = <String, dynamic>{
+        'nomeResponsavel': respNome,
+        'idPassageiro': passageiroId,
+        if (respWpp.isNotEmpty) 'whatsAppResponsavel': respWpp,
+        if (respCpf.isNotEmpty) 'cpfResponsavel': respCpf,
+      };
+      if (_responsavelId != null) {
+        await SupaFlow.client
+            .from('vivan_responsaveis')
+            .update(rBody)
+            .eq('idResponsavel', _responsavelId!)
+            .eq('idPassageiro', passageiroId!);
+      } else {
+        final r = await SupaFlow.client
+            .from('vivan_responsaveis')
+            .insert(rBody)
+            .select('idResponsavel')
+            .single();
+        _responsavelId = r['idResponsavel'] as int?;
+      }
+    }
+  }
+
+  Future<void> _salvarNovo() async {
+    final motoristaId = FFAppState().idUsuario;
+
+    // Escola nova: INSERT direto
+    int? resolvedEscolaId = escolaId;
+    if (resolvedEscolaId == null && escolaNome?.isNotEmpty == true) {
+      final row = await SupaFlow.client
+          .from('vivan_escolas')
+          .insert({'nomeEscola': escolaNome, 'idMotorista': motoristaId})
+          .select('idEscola')
+          .single();
+      resolvedEscolaId = row['idEscola'] as int?;
+      if (resolvedEscolaId != null) _escolaIds[escolaNome!] = resolvedEscolaId;
+    }
+
+    final respNome = respNomeCtrl.text.trim();
+    final respWpp = respWhatsappCtrl.text.trim();
+    final respCpf = respCpfCtrl.text.trim();
+    final valorStr = valorCtrl.text.trim();
+    final valor = valorStr.isNotEmpty
+        ? (double.tryParse(valorStr.replaceAll(',', '.')) ?? 0)
+        : 0.0;
+    final agora = DateTime.now();
+    final inicio = vigenciaInicio ?? agora;
+    final fim = vigenciaFim ?? DateTime(agora.year, 12, 31);
+    final dtInicio =
+        DateFormat('yyyy-MM-dd').format(DateTime(inicio.year, inicio.month, 1));
+    final dtTermino =
+        DateFormat('yyyy-MM-dd').format(DateTime(fim.year, fim.month + 1, 0));
+
+    // Chama RPC atômica que cria passageiro + responsável + contrato + mensalidades
+    final result = await SupaFlow.client.rpc(
+      'vivan_criar_passageiro_completo',
+      params: {
+        'p_motorista_id': motoristaId,
+        'p_nome': nomeCtrl.text.trim(),
+        'p_escola_id': resolvedEscolaId,
+        'p_turno': periodo,
+        'p_resp_nome': respNome.isNotEmpty ? respNome : null,
+        'p_resp_cpf': respCpf.isNotEmpty ? respCpf : null,
+        'p_resp_wpp': respWpp.isNotEmpty ? respWpp : null,
+        'p_valor': valor > 0 ? valor : null,
+        'p_dia_venc': diaPagamento ?? 5,
+        'p_dt_inicio': dtInicio,
+        'p_dt_termino': dtTermino,
+      },
+    );
+
+    final res = result as Map;
+    passageiroId = res['idPassageiro'] as int?;
+    _responsavelId = res['idResponsavel'] as int?;
   }
 
   // ── Deletar ──────────────────────────────────────
@@ -346,7 +269,10 @@ class PassageiroFormMModel extends FlutterFlowModel<PassageiroFormMWidget> {
     isSaving = true;
     erro = null;
     try {
-      await VivanHttp.delete('/passageiros/$passageiroId');
+      await SupaFlow.client.rpc('vivan_deletar_passageiro', params: {
+        'p_passageiro_id': passageiroId,
+        'p_motorista_id': FFAppState().idUsuario,
+      });
       isSaving = false;
       return true;
     } catch (e) {

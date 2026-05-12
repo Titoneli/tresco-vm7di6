@@ -1,6 +1,7 @@
-import '/flutter_flow/flutter_flow_util.dart';
-import '/vivan/vivan.dart';
 import 'package:flutter/material.dart';
+import '/flutter_flow/flutter_flow_util.dart';
+import '/backend/supabase/supabase.dart';
+import '/vivan/models/vivan_models.dart';
 import 'package:intl/intl.dart';
 
 class FinanceiroTabModel extends ChangeNotifier {
@@ -62,22 +63,53 @@ class FinanceiroTabModel extends ChangeNotifier {
     notifyListeners();
     try {
       final results = await Future.wait([
-        VivanLocator.service.getMensalidades(
-          motorista: motoristaId,
-          mesReferencia: mesReferencia,
-        ),
-        VivanLocator.service.getDespesas(
-          motorista: motoristaId,
-          mesReferencia: mesReferencia,
-        ),
+        SupaFlow.client
+            .from('vivan_mensalidades')
+            .select()
+            .eq('idMotorista', motoristaId)
+            .eq('mesReferencia', mesReferencia),
+        SupaFlow.client
+            .from('vivan_despesas')
+            .select()
+            .eq('idMotorista', motoristaId)
+            .eq('mesReferencia', mesReferencia),
       ]);
-      mensalidades = (results[0] as VivanPaginatedResponse<VivanMensalidade>).data;
-      lancamentos = (results[1] as VivanPaginatedResponse<VivanDespesa>).data;
+      mensalidades = (results[0] as List)
+          .map((r) => VivanMensalidade.fromJson(Map<String, dynamic>.from(r as Map)))
+          .toList();
+      lancamentos = (results[1] as List)
+          .map((r) => VivanDespesa.fromJson(Map<String, dynamic>.from(r as Map)))
+          .toList();
     } catch (e) {
       errorMessage = e.toString();
+      debugPrint('FinanceiroTab.loadLancamentos: $e');
     }
     isLoading = false;
     notifyListeners();
+  }
+
+  // ── Despesas CRUD ──────────────────────────────────
+
+  Future<void> createDespesa(VivanDespesa d) async {
+    final body = d.toJson()..remove('idDespesa');
+    await SupaFlow.client.from('vivan_despesas').insert(body);
+  }
+
+  Future<void> updateDespesa(int idDespesa, VivanDespesa d) async {
+    final body = d.toJson()..remove('idDespesa');
+    await SupaFlow.client
+        .from('vivan_despesas')
+        .update(body)
+        .eq('idDespesa', idDespesa)
+        .eq('idMotorista', FFAppState().idUsuario);
+  }
+
+  Future<void> deleteDespesa(int idDespesa) async {
+    await SupaFlow.client
+        .from('vivan_despesas')
+        .delete()
+        .eq('idDespesa', idDespesa)
+        .eq('idMotorista', FFAppState().idUsuario);
   }
 
   // ── Helpers ────────────────────────────────────────

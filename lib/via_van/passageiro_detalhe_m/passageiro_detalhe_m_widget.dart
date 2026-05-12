@@ -1,4 +1,4 @@
-import '/vivan/vivan.dart';
+import '/vivan/models/vivan_models.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/via_van/passageiro_form_m/passageiro_form_m_widget.dart';
 import '/via_van/extrato_passageiro_m/extrato_passageiro_m_widget.dart';

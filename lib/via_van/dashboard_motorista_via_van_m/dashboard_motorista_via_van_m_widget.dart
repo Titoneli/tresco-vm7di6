@@ -1,7 +1,7 @@
 import '/alunos/bts_aluno_adicionar/bts_aluno_adicionar_widget.dart';
 import '/backend/supabase/supabase.dart';
 import '/backend/api_requests/api_calls.dart';
-import '/vivan/vivan.dart';
+import '/vivan/models/vivan_models.dart';
 import '/escolas/bts_turmas/bts_turmas_widget.dart';
 import '/flutter_flow/flutter_flow_drop_down.dart';
 import '/flutter_flow/flutter_flow_icon_button.dart';

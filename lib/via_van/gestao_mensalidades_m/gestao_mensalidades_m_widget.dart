@@ -1,6 +1,6 @@
-import '/vivan/vivan.dart';
+import '/vivan/models/vivan_models.dart';
 import '/flutter_flow/flutter_flow_util.dart';
-import '../_vivan_http.dart';
+import '/backend/supabase/supabase.dart';
 import 'package:ff_theme/flutter_flow/flutter_flow_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -45,13 +45,15 @@ class _GestaoMensalidadesMWidgetState
       _selecionadas.clear();
     });
     try {
-      final result = await VivanLocator.service.getMensalidades(
-        motorista: FFAppState().idUsuario,
-        passageiro: widget.passageiroId,
-        limit: 500,
-      );
-      final all = result.data
-          .where((m) => m.idPassageiro == widget.passageiroId)
+      final rows = await SupaFlow.client
+          .from('vivan_mensalidades')
+          .select()
+          .eq('idMotorista', FFAppState().idUsuario)
+          .eq('idPassageiro', widget.passageiroId)
+          .order('dtVencimento')
+          .limit(500);
+      final all = (rows as List)
+          .map((r) => VivanMensalidade.fromJson(Map<String, dynamic>.from(r as Map)))
           .toList();
       setState(() {
         _mensalidades = all.where((m) {
@@ -411,9 +413,11 @@ class _GestaoMensalidadesMWidgetState
                         setSheet(() => isSaving = true);
                         try {
                           for (final id in _selecionadas) {
-                            await VivanHttp.put('/mensalidades/$id', {
-                              'valOriginal': novoValor,
-                            });
+                            await SupaFlow.client
+                                .from('vivan_mensalidades')
+                                .update({'valOriginal': novoValor})
+                                .eq('idMensalidade', id)
+                                .eq('idMotorista', FFAppState().idUsuario);
                           }
                           if (ctx.mounted) Navigator.pop(ctx);
                           await _load();

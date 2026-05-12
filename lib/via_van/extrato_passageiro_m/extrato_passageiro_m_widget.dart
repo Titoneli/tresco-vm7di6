@@ -1,5 +1,6 @@
-import '/vivan/vivan.dart';
+import '/vivan/models/vivan_models.dart';
 import '/flutter_flow/flutter_flow_util.dart';
+import '/backend/supabase/supabase.dart';
 import 'package:ff_theme/flutter_flow/flutter_flow_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -41,13 +42,15 @@ class _ExtratoPassageiroMWidgetState extends State<ExtratoPassageiroMWidget> {
   Future<void> _load() async {
     setState(() => _loading = true);
     try {
-      final result = await VivanLocator.service.getMensalidades(
-        motorista: FFAppState().idUsuario,
-        passageiro: widget.passageiroId,
-        limit: 500,
-      );
-      final all = result.data
-          .where((m) => m.idPassageiro == widget.passageiroId)
+      final rows = await SupaFlow.client
+          .from('vivan_mensalidades')
+          .select()
+          .eq('idMotorista', FFAppState().idUsuario)
+          .eq('idPassageiro', widget.passageiroId)
+          .order('dtVencimento')
+          .limit(500);
+      final all = (rows as List)
+          .map((r) => VivanMensalidade.fromJson(Map<String, dynamic>.from(r as Map)))
           .toList();
       setState(() {
         _mensalidades = all.where((m) {
@@ -424,11 +427,23 @@ class _ExtratoPassageiroMWidgetState extends State<ExtratoPassageiroMWidget> {
                     ? null
                     : () async {
                         try {
-                          await VivanLocator.service.pagamentoManual(
-                            m.idMensalidade!,
-                            valorPago: m.valOriginal ?? 0,
-                            formaPagamento: selectedForma!,
-                          );
+                          final hoje = DateTime.now();
+                          final venc = m.dtVencimento != null
+                              ? DateTime.tryParse(m.dtVencimento!)
+                              : null;
+                          final statusPgto = (venc != null && hoje.isAfter(venc))
+                              ? 'PAGO_ATRASO'
+                              : 'PAGO';
+                          await SupaFlow.client
+                              .from('vivan_mensalidades')
+                              .update({
+                            'valPago': m.valOriginal ?? 0,
+                            'formaPagamento': selectedForma!,
+                            'dtPagamento': DateFormat('yyyy-MM-dd').format(hoje),
+                            'status': statusPgto,
+                          })
+                              .eq('idMensalidade', m.idMensalidade!)
+                              .eq('idMotorista', FFAppState().idUsuario);
                           if (ctx.mounted) Navigator.pop(ctx);
                           await _load();
                           if (mounted) {

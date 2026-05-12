@@ -1,4 +1,3 @@
-import '/vivan/vivan.dart';
 import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
@@ -271,7 +270,7 @@ class _FinanceiroMWidgetState extends State<FinanceiroMWidget>
                                     padding: EdgeInsets.only(top: 8.0),
                                     child: FFButtonWidget(
                                       onPressed: () async {
-                                        await VivanLocator.service.cancelarAbono(m.idMensalidade!);
+                                        await _model.cancelarAbono(m.idMensalidade!);
                                         await _model.fetchMensalidades(FFAppState().idUsuario);
                                         safeSetState(() {});
                                       },

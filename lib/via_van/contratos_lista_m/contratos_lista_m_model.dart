@@ -1,7 +1,8 @@
-import '/flutter_flow/flutter_flow_util.dart';
-import '/vivan/vivan.dart';
-import 'contratos_lista_m_widget.dart' show ContratosListaMWidget;
 import 'package:flutter/material.dart';
+import '/flutter_flow/flutter_flow_util.dart';
+import '/backend/supabase/supabase.dart';
+import '/vivan/models/vivan_models.dart';
+import 'contratos_lista_m_widget.dart' show ContratosListaMWidget;
 
 class ContratosListaMModel extends FlutterFlowModel<ContratosListaMWidget> {
   bool isLoading = true;
@@ -20,18 +21,26 @@ class ContratosListaMModel extends FlutterFlowModel<ContratosListaMWidget> {
     isLoading = true;
     filtroStatus = status;
     try {
-      final result = await VivanLocator.service.getContratos(
-        motorista: motoristaId,
-        status: status,
-        passageiro: passageiro,
-      );
-      // Filtro client-side: API ignora param passageiro e retorna todos do motorista
-      contratos = passageiro != null
-          ? result.data.where((c) => c.idPassageiro == passageiro).toList()
-          : result.data;
+      var query = SupaFlow.client
+          .from('vivan_contratos')
+          .select('*, vivan_passageiros(nomePassageiro)')
+          .eq('idMotorista', motoristaId);
+
+      if (passageiro != null) query = query.eq('idPassageiro', passageiro);
+      if (status != null) query = query.eq('status', status);
+
+      final rows = await query.order('idContrato', ascending: false);
+
+      contratos = (rows as List).map((row) {
+        final r = Map<String, dynamic>.from(row as Map);
+        final passMap = r.remove('vivan_passageiros') as Map?;
+        if (passMap != null) r['nomePassageiro'] = passMap['nomePassageiro'];
+        return VivanContrato.fromJson(r);
+      }).toList();
+
       total = contratos.length;
     } catch (e) {
-      debugPrint('Erro ao buscar contratos: $e');
+      debugPrint('ContratosLista.fetchContratos: $e');
       contratos = [];
       total = 0;
     }
@@ -40,8 +49,7 @@ class ContratosListaMModel extends FlutterFlowModel<ContratosListaMWidget> {
 
   VivanContrato? get contratoAtivo {
     try {
-      return contratos.firstWhere(
-          (c) => c.status.toUpperCase() == 'ATIVO');
+      return contratos.firstWhere((c) => c.status.toUpperCase() == 'ATIVO');
     } catch (_) {
       return contratos.isNotEmpty ? contratos.first : null;
     }

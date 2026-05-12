@@ -1,6 +1,4 @@
-import '/vivan/vivan.dart';
 import '/flutter_flow/flutter_flow_util.dart';
-import '../_vivan_http.dart';
 import '/backend/supabase/supabase.dart';
 import 'package:ff_theme/flutter_flow/flutter_flow_theme.dart';
 import 'package:flutter/material.dart';
@@ -177,16 +175,18 @@ class _RenovarMensalidadesMWidgetState
     if (_isSaving) return;
     setState(() => _isSaving = true);
     try {
-      // Busca contrato ativo do passageiro
-      final contratos = await VivanLocator.service.getContratos(
-        motorista: FFAppState().idUsuario,
-        passageiro: widget.passageiroId,
-        limit: 20,
-      );
-      final ativo = contratos.data.where(
-          (c) => c.status.toUpperCase() == 'ATIVO').toList();
+      final motoristaId = FFAppState().idUsuario;
 
-      if (ativo.isEmpty) {
+      // Passo 1: buscar contrato ativo via Supabase direto
+      final rows = await SupaFlow.client
+          .from('vivan_contratos')
+          .select('idContrato')
+          .eq('idPassageiro', widget.passageiroId)
+          .eq('idMotorista', motoristaId)
+          .eq('status', 'ATIVO')
+          .limit(1);
+
+      if ((rows as List).isEmpty) {
         if (mounted) {
           await showDialog(
             context: context,
@@ -206,51 +206,18 @@ class _RenovarMensalidadesMWidgetState
         return;
       }
 
-      final contrato = ativo.first;
-      final diaVenc = contrato.diaVencimento ?? 5;
-      final valor = contrato.valMensal ?? 0;
+      final contratoId = rows.first['idContrato'] as int;
 
-      // Busca mensalidades existentes para não duplicar
-      final existentes = await VivanLocator.service.getMensalidades(
-        motorista: FFAppState().idUsuario,
-        passageiro: widget.passageiroId,
-        limit: 200,
+      // Passo 2: RPC que cria mensalidades faltantes (sem patch idMotorista)
+      final result = await SupaFlow.client.rpc(
+        'vivan_renovar_mensalidades',
+        params: {
+          'p_contrato_id': contratoId,
+          'p_passageiro_id': widget.passageiroId,
+          'p_motorista_id': motoristaId,
+        },
       );
-      final mesesExistentes = existentes.data
-          .where((m) => m.mesReferencia != null)
-          .map((m) => m.mesReferencia!)
-          .toSet();
-
-      // Gera mensalidades para meses restantes do ano atual
-      final now = DateTime.now();
-      int criadas = 0;
-      for (int mes = now.month; mes <= 12; mes++) {
-        final mesRef = DateFormat('MM/yyyy').format(DateTime(now.year, mes));
-        if (mesesExistentes.contains(mesRef)) continue;
-        await VivanHttp.post('/mensalidades', {
-          'idContrato': contrato.idContrato,
-          'idPassageiro': widget.passageiroId,
-          'idMotorista': FFAppState().idUsuario,
-          'mesReferencia': mesRef,
-          'dtVencimento':
-              DateFormat('yyyy-MM-dd').format(DateTime(now.year, mes, diaVenc)),
-          'valOriginal': valor,
-          'status': 'PENDENTE',
-        });
-        criadas++;
-      }
-
-      // Corrige idMotorista nas mensalidades criadas (API usa sessão=398)
-      if (criadas > 0 && contrato.idContrato != null) {
-        try {
-          await SupaFlow.client
-              .from('vivan_mensalidades')
-              .update({'idMotorista': FFAppState().idUsuario})
-              .eq('idContrato', contrato.idContrato!);
-        } catch (e) {
-          debugPrint('RenovarMensalidades: patch idMotorista: $e');
-        }
-      }
+      final criadas = ((result as Map?)?['criadas'] as num?)?.toInt() ?? 0;
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(

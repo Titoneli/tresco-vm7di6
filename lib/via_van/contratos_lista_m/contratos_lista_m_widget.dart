@@ -4,7 +4,7 @@ import '/via_van/gerar_contrato_m/gerar_contrato_m_widget.dart';
 import '/via_van/clausulas_contrato_m/clausulas_contrato_m_widget.dart';
 import '/via_van/clausulas_contrato_m/clausula_storage.dart';
 import '/via_van/clausulas_contrato_m/preview_contrato_m_widget.dart';
-import '/vivan/vivan.dart';
+import '/vivan/models/vivan_models.dart';
 import 'package:ff_theme/flutter_flow/flutter_flow_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';

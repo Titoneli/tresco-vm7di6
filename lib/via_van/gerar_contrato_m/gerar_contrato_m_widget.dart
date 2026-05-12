@@ -7,7 +7,7 @@ import 'package:flutter/scheduler.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '/flutter_flow/flutter_flow_util.dart';
-import '/vivan/vivan.dart';
+import '/vivan/models/vivan_models.dart';
 import '/via_van/clausulas_contrato_m/clausula_storage.dart';
 import '/backend/supabase/supabase.dart';
 
@@ -102,14 +102,33 @@ class _GerarContratoMWidgetState extends State<GerarContratoMWidget> {
 
   Future<void> _loadData() async {
     try {
-      final p = await VivanLocator.service.getPassageiro(widget.passageiroId);
-      final resps =
-          await VivanLocator.service.getResponsaveis(widget.passageiroId);
+      final results = await Future.wait([
+        SupaFlow.client
+            .from('vivan_passageiros')
+            .select('*, vivan_escolas(nomeEscola)')
+            .eq('idPassageiro', widget.passageiroId)
+            .limit(1),
+        SupaFlow.client
+            .from('vivan_responsaveis')
+            .select()
+            .eq('idPassageiro', widget.passageiroId)
+            .limit(1),
+      ]);
       if (mounted) {
         setState(() {
-          _responsavel = resps.isNotEmpty ? resps.first : null;
-          _prefillPassageiro(p);
-          if (_responsavel != null) _prefillResponsavel(_responsavel!);
+          final pRows = results[0] as List;
+          if (pRows.isNotEmpty) {
+            final r = Map<String, dynamic>.from(pRows.first as Map);
+            final escolaMap = r.remove('vivan_escolas') as Map?;
+            if (escolaMap != null) r['nomeEscola'] = escolaMap['nomeEscola'];
+            _prefillPassageiro(VivanPassageiro.fromJson(r));
+          }
+          final rRows = results[1] as List;
+          if (rRows.isNotEmpty) {
+            _responsavel = VivanResponsavel.fromJson(
+                Map<String, dynamic>.from(rRows.first as Map));
+            _prefillResponsavel(_responsavel!);
+          }
           _isLoading = false;
         });
       }
@@ -626,42 +645,45 @@ class _GerarContratoMWidgetState extends State<GerarContratoMWidget> {
         final agora = DateTime.now();
         final inicio = _vigenciaInicio ?? agora;
         final fim    = _vigenciaFim    ?? DateTime(agora.year, 12, 31);
-        final c = VivanContrato(
-          idMotorista: FFAppState().idUsuario,
-          idPassageiro: widget.passageiroId,
-          idResponsavel: _responsavel?.idResponsavel,
-          valMensal: valor,
-          diaVencimento: diaVenc,
-          dtInicio: DateFormat('yyyy-MM-dd').format(inicio),
-          dtTermino: DateFormat('yyyy-MM-dd').format(fim),
-          percentualMulta: double.tryParse(
-                  _jurosMultaCtrl.text.replaceAll(',', '.').replaceAll('%', '')) ??
-              2.0,
-          percentualJurosDia: double.tryParse(
-                  _jurosMesCtrl.text.replaceAll(',', '.').replaceAll('%', '')) ??
-              0.0333,
-          domFormaPagamento: 'OUTROS',
-          domCondicaoPagamento: 'Mensal',
-          status: 'RASCUNHO',
-        );
-        final criado = await VivanLocator.service.createContrato(c);
-        _contratoId = criado.idContrato;
-      }
-      await VivanLocator.service.ativarContrato(_contratoId!);
-      // Corrige idMotorista no contrato e mensalidades geradas (API usa sessão=398)
-      final motoristaId = FFAppState().idUsuario;
-      try {
-        await SupaFlow.client
+        final motoristaId = FFAppState().idUsuario;
+
+        // Obtém próximo numContrato via sequence atômica
+        final numContrato = await SupaFlow.client
+            .rpc('vivan_next_num_contrato');
+
+        // INSERT contrato como RASCUNHO
+        final row = await SupaFlow.client
             .from('vivan_contratos')
-            .update({'idMotorista': motoristaId})
-            .eq('idContrato', _contratoId!);
-        await SupaFlow.client
-            .from('vivan_mensalidades')
-            .update({'idMotorista': motoristaId})
-            .eq('idContrato', _contratoId!);
-      } catch (e) {
-        debugPrint('GerarContrato: patch idMotorista: $e');
+            .insert({
+              'numContrato': numContrato,
+              'idMotorista': motoristaId,
+              'idPassageiro': widget.passageiroId,
+              if (_responsavel?.idResponsavel != null)
+                'idResponsavel': _responsavel!.idResponsavel,
+              'valMensal': valor,
+              'diaVencimento': diaVenc,
+              'dtInicio': DateFormat('yyyy-MM-dd').format(inicio),
+              'dtTermino': DateFormat('yyyy-MM-dd').format(fim),
+              'percentualMulta': double.tryParse(
+                      _jurosMultaCtrl.text.replaceAll(',', '.').replaceAll('%', '')) ??
+                  2.0,
+              'percentualJurosDia': double.tryParse(
+                      _jurosMesCtrl.text.replaceAll(',', '.').replaceAll('%', '')) ??
+                  0.0333,
+              'domFormaPagamento': 'OUTROS',
+              'domCondicaoPagamento': 'Mensal',
+              'status': 'RASCUNHO',
+            })
+            .select('idContrato')
+            .single();
+        _contratoId = row['idContrato'] as int;
       }
+
+      // Ativa via RPC (gera mensalidades com idMotorista correto — sem patch necessário)
+      await SupaFlow.client.rpc('vivan_ativar_contrato', params: {
+        'p_contrato_id': _contratoId!,
+        'p_motorista_id': FFAppState().idUsuario,
+      });
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(

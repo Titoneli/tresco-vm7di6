@@ -72,7 +72,8 @@ class FinanceiroTabModel extends ChangeNotifier {
             .from('vivan_despesas')
             .select()
             .eq('idMotorista', motoristaId)
-            .eq('mesReferencia', mesReferencia),
+            .eq('mesReferencia', mesReferencia)
+            .order('dtDespesa', ascending: true),
       ]);
       mensalidades = (results[0] as List)
           .map((r) => VivanMensalidade.fromJson(Map<String, dynamic>.from(r as Map)))

@@ -66,7 +66,7 @@ class MensalidadesTabModel extends ChangeNotifier {
           .select()
           .eq('idMotorista', motoristaId)
           .eq('mesReferencia', mesReferencia)
-          .order('idMensalidade');
+          .order('dtVencimento', ascending: true);
 
       final rawList = (rows as List)
           .map((r) => Map<String, dynamic>.from(r as Map))

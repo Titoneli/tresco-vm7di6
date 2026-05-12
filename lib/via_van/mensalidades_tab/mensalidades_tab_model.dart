@@ -60,21 +60,48 @@ class MensalidadesTabModel extends ChangeNotifier {
     errorMessage = null;
     notifyListeners();
     try {
+      // Query principal sem JOINs — evita erro caso FKs não estejam configuradas
       final rows = await SupaFlow.client
           .from('vivan_mensalidades')
-          .select('*, vivan_passageiros(nomePassageiro), vivan_contratos(numContrato)')
+          .select()
           .eq('idMotorista', motoristaId)
           .eq('mesReferencia', mesReferencia)
           .order('idMensalidade');
 
-      mensalidades = (rows as List).map((row) {
-        final r = Map<String, dynamic>.from(row as Map);
-        final passMap = r.remove('vivan_passageiros') as Map?;
-        final contMap = r.remove('vivan_contratos') as Map?;
-        if (passMap != null) r['nomePassageiro'] = passMap['nomePassageiro'];
-        if (contMap != null) r['numContrato'] = contMap['numContrato']?.toString();
-        return VivanMensalidade.fromJson(r);
-      }).toList();
+      final rawList = (rows as List)
+          .map((r) => Map<String, dynamic>.from(r as Map))
+          .toList();
+
+      // Busca nomes dos passageiros em paralelo (query separada, mais segura)
+      final passIds = rawList
+          .map((r) => r['idPassageiro'] as int?)
+          .whereType<int>()
+          .toSet()
+          .toList();
+      if (passIds.isNotEmpty) {
+        try {
+          final passRows = await SupaFlow.client
+              .from('vivan_passageiros')
+              .select('idPassageiro, nomePassageiro')
+              .inFilter('idPassageiro', passIds);
+          final Map<int, String> nomes = {};
+          for (final r in passRows as List) {
+            final id = r['idPassageiro'] as int?;
+            final nome = r['nomePassageiro']?.toString();
+            if (id != null && nome != null) nomes[id] = nome;
+          }
+          for (final r in rawList) {
+            final passId = r['idPassageiro'] as int?;
+            if (passId != null && nomes.containsKey(passId)) {
+              r['nomePassageiro'] = nomes[passId];
+            }
+          }
+        } catch (_) {}
+      }
+
+      mensalidades = rawList
+          .map((r) => VivanMensalidade.fromJson(r))
+          .toList();
     } catch (e) {
       errorMessage = e.toString();
       debugPrint('MensalidadesTab.loadMensalidades: $e');

@@ -1,6 +1,6 @@
 import '/backend/supabase/supabase.dart';
 import '/flutter_flow/flutter_flow_util.dart';
-import '/vivan/vivan.dart';
+import '/vivan/models/vivan_models.dart';
 import 'package:flutter/material.dart';
 import 'dashboard_passageiros_m_widget.dart'
     show DashboardPassageirosMWidget;
@@ -23,25 +23,39 @@ class DashboardPassageirosMModel
     if (motoristaId == 0) motoristaId = FFAppState().idUsuario;
     if (motoristaId == 0) { isLoadingHome = false; return; }
     isLoadingHome = true;
+    hasError = false;
     try {
-      hasError = false;
+      final mesAtual = DateFormat('MM/yyyy').format(DateTime.now());
 
-      final raw = await SupaFlow.client.rpc(
-        'vivan_dashboard_home',
-        params: {'p_motorista_id': motoristaId},
-      );
-      final data = (raw is List ? raw.first : raw) as Map<String, dynamic>;
+      final results = await Future.wait([
+        SupaFlow.client
+            .from('vivan_passageiros')
+            .select('idPassageiro')
+            .eq('idMotorista', motoristaId),
+        SupaFlow.client
+            .from('vivan_escolas')
+            .select('idEscola')
+            .eq('idMotorista', motoristaId),
+        SupaFlow.client
+            .from('vivan_mensalidades')
+            .select()
+            .eq('idMotorista', motoristaId)
+            .inFilter('status', ['PENDENTE', 'ATRASADO'])
+            .eq('mesReferencia', mesAtual)
+            .order('dtVencimento')
+            .limit(50),
+      ]);
 
-      totalPassageiros = (data['passageiros_ativos'] as num?)?.toInt() ?? 0;
-      totalEscolas     = (data['total_escolas']      as num?)?.toInt() ?? 0;
-      totalAReceber    = (data['total_a_receber']    as num?)?.toDouble() ?? 0.0;
+      totalPassageiros = (results[0] as List).length;
+      totalEscolas     = (results[1] as List).length;
 
-      final mensRaw = data['mensalidades'] as List<dynamic>? ?? [];
-      mensalidadesEmAberto = mensRaw
-          .map((e) => VivanMensalidade.fromJson(e as Map<String, dynamic>))
+      final mens = results[2] as List;
+      mensalidadesEmAberto = mens
+          .map((r) => VivanMensalidade.fromJson(Map<String, dynamic>.from(r as Map)))
           .toList();
+      totalAReceber = mensalidadesEmAberto.fold(0.0, (s, m) => s + (m.valOriginal ?? 0));
     } catch (e) {
-      debugPrint('Erro fetchHomeData RPC: $e');
+      debugPrint('DashboardPassageiros.fetchHomeData: $e');
       hasError = true;
     } finally {
       isLoadingHome = false;

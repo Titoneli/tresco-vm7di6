@@ -30,7 +30,7 @@ class PassageiroDetalheMModel
     try {
       final rows = await SupaFlow.client
           .from('vivan_passageiros')
-          .select('*, vivan_escolas(nomeEscola)')
+          .select()
           .eq('idPassageiro', passageiroId)
           .eq('idMotorista', FFAppState().idUsuario)
           .limit(1);
@@ -40,8 +40,21 @@ class PassageiroDetalheMModel
         return;
       }
       final r = Map<String, dynamic>.from(rows.first as Map);
-      final escolaMap = r.remove('vivan_escolas') as Map?;
-      if (escolaMap != null) r['nomeEscola'] = escolaMap['nomeEscola'];
+
+      // Busca nome da escola separadamente (evita depender de FK no PostgREST)
+      final escolaId = r['idEscola'] as int?;
+      if (escolaId != null) {
+        try {
+          final esRows = await SupaFlow.client
+              .from('vivan_escolas')
+              .select('nomeEscola')
+              .eq('idEscola', escolaId)
+              .limit(1);
+          if ((esRows as List).isNotEmpty) {
+            r['nomeEscola'] = (esRows.first as Map)['nomeEscola']?.toString();
+          }
+        } catch (_) {}
+      }
       passageiro = VivanPassageiro.fromJson(r);
 
       final respRows = await SupaFlow.client

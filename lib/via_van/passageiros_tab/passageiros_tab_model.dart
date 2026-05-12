@@ -103,18 +103,45 @@ class PassageirosTabModel extends ChangeNotifier {
     erro = null;
     notifyListeners();
     try {
+      final motoristaId = FFAppState().idUsuario;
       final rows = await SupaFlow.client
           .from('vivan_passageiros')
-          .select('idPassageiro, nomePassageiro, idMotorista, domTurno, vivan_escolas(nomeEscola)')
-          .eq('idMotorista', FFAppState().idUsuario)
+          .select('idPassageiro, nomePassageiro, idMotorista, domTurno, idEscola')
+          .eq('idMotorista', motoristaId)
           .order('nomePassageiro');
-      _todos = (rows as List).map((r) {
-        final escolaMap = r['vivan_escolas'] as Map?;
+
+      final rawList = (rows as List)
+          .map((r) => Map<String, dynamic>.from(r as Map))
+          .toList();
+
+      // Busca nomes das escolas separadamente (evita depender de FK no PostgREST)
+      final escolaIds = rawList
+          .map((r) => r['idEscola'] as int?)
+          .whereType<int>()
+          .toSet()
+          .toList();
+      final Map<int, String> escolaNomes = {};
+      if (escolaIds.isNotEmpty) {
+        try {
+          final esRows = await SupaFlow.client
+              .from('vivan_escolas')
+              .select('idEscola, nomeEscola')
+              .inFilter('idEscola', escolaIds);
+          for (final r in esRows as List) {
+            final id = r['idEscola'] as int?;
+            final nome = r['nomeEscola']?.toString();
+            if (id != null && nome != null) escolaNomes[id] = nome;
+          }
+        } catch (_) {}
+      }
+
+      _todos = rawList.map((r) {
+        final escolaId = r['idEscola'] as int?;
         return PassageiroTabItem(
           id: r['idPassageiro'] as int,
           idMotorista: r['idMotorista'] as int?,
           nome: r['nomePassageiro']?.toString() ?? '',
-          escola: escolaMap?['nomeEscola']?.toString(),
+          escola: escolaId != null ? escolaNomes[escolaId] : null,
           periodo: r['domTurno']?.toString(),
         );
       }).toList();

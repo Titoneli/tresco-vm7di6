@@ -106,17 +106,15 @@ class PassageiroFormMModel extends FlutterFlowModel<PassageiroFormMWidget> {
   Future<void> carregar(int id) async {
     passageiroId = id;
     try {
-      // Passageiro com JOIN de escola
       final rows = await SupaFlow.client
           .from('vivan_passageiros')
-          .select('*, vivan_escolas(nomeEscola)')
+          .select()
           .eq('idPassageiro', id)
           .eq('idMotorista', FFAppState().idUsuario)
           .limit(1);
 
       if ((rows as List).isEmpty) return;
       final r = Map<String, dynamic>.from(rows.first as Map);
-      final escolaMap = r.remove('vivan_escolas') as Map?;
 
       final nomeCompleto = r['nomePassageiro']?.toString() ?? '';
       nomeCtrl.text = nomeCompleto;
@@ -124,8 +122,20 @@ class PassageiroFormMModel extends FlutterFlowModel<PassageiroFormMWidget> {
       primeiroNomeEditCtrl.text = partes.first;
       sobrenomeEditCtrl.text = partes.skip(1).join(' ');
 
-      escolaNome = escolaMap?['nomeEscola']?.toString() ?? r['nomeEscola']?.toString();
       escolaId = r['idEscola'] as int?;
+      // Busca nome da escola separadamente (evita depender de FK no PostgREST)
+      if (escolaId != null) {
+        try {
+          final esRows = await SupaFlow.client
+              .from('vivan_escolas')
+              .select('nomeEscola')
+              .eq('idEscola', escolaId!)
+              .limit(1);
+          if ((esRows as List).isNotEmpty) {
+            escolaNome = (esRows.first as Map)['nomeEscola']?.toString();
+          }
+        } catch (_) {}
+      }
       periodo = r['domTurno']?.toString();
 
       final dtn = r['dtNascimento']?.toString();

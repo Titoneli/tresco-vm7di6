@@ -44,6 +44,27 @@ class PassageiroFormMModel extends FlutterFlowModel<PassageiroFormMWidget> {
     escolaId = nome != null ? _escolaIds[nome] : null;
   }
 
+  Future<bool> criarNovaEscola(String nome) async {
+    try {
+      final row = await SupaFlow.client
+          .from('vivan_escolas')
+          .insert({'nomeEscola': nome, 'idMotorista': FFAppState().idUsuario})
+          .select('idEscola')
+          .single();
+      final id = row['idEscola'] as int?;
+      if (id != null) {
+        _escolaIds[nome] = id;
+        escolas = [...escolas, nome]..sort();
+        escolaNome = nome;
+        escolaId = id;
+      }
+      return id != null;
+    } catch (e) {
+      debugPrint('PassageiroForm.criarNovaEscola: $e');
+      return false;
+    }
+  }
+
   static const periodos = ['Integral', 'Manhã', 'Tarde', 'Noite'];
 
   // ── Step 2 — Responsável (wizard + edit) ─────────

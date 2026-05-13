@@ -47,7 +47,7 @@ class _ExtratoPassageiroMWidgetState extends State<ExtratoPassageiroMWidget> {
           .select()
           .eq('idMotorista', FFAppState().idUsuario)
           .eq('idPassageiro', widget.passageiroId)
-          .order('dtVencimento')
+          .order('dtVencimento', ascending: true)
           .limit(500);
       final all = (rows as List)
           .map((r) => VivanMensalidade.fromJson(Map<String, dynamic>.from(r as Map)))

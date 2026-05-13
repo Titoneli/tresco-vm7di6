@@ -39,7 +39,7 @@ class FinanceiroMModel extends FlutterFlowModel<FinanceiroMWidget> {
           .eq('idMotorista', motoristaId);
       if (mes != null) query = query.eq('mesReferencia', mes);
       if (status != null) query = query.eq('status', status);
-      final rows = await query.order('dtVencimento').limit(500);
+      final rows = await query.order('dtVencimento', ascending: true).limit(500);
       mensalidades = (rows as List)
           .map((r) => VivanMensalidade.fromJson(Map<String, dynamic>.from(r as Map)))
           .toList();
@@ -58,7 +58,7 @@ class FinanceiroMModel extends FlutterFlowModel<FinanceiroMWidget> {
           .select()
           .eq('idMotorista', motoristaId);
       if (mes != null) query = query.eq('mesReferencia', mes);
-      final rows = await query.order('dtVencimento').limit(500);
+      final rows = await query.order('dtVencimento', ascending: true).limit(500);
       despesas = (rows as List)
           .map((r) => VivanDespesa.fromJson(Map<String, dynamic>.from(r as Map)))
           .toList();

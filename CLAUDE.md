@@ -3,8 +3,8 @@
 ## Visão Geral
 App de transporte escolar desenvolvido com FlutterFlow + código customizado (módulo ViVan).
 Repo: `titoneli/tresco-vm7di6`
-Branch de trabalho: `develop`
-Deploy: gerenciado pelo FlutterFlow via merge `develop → main`
+Branch de trabalho: `vivan`
+Deploy: gerenciado pelo FlutterFlow via merge `vivan → main`
 
 ---
 
@@ -26,7 +26,7 @@ ios/                        # NÃO TOCAR — configuração gerenciada pelo FF/X
 
 > **CRÍTICO:** Nunca alterar manualmente a `version:` no `pubspec.yaml`. O FlutterFlow
 > controla o build number para cada envio ao TestFlight. Alterar manualmente causa
-> conflito de merge quando o FF tenta fazer push `develop → main` e o deploy falha com
+> conflito de merge quando o FF tenta fazer push `vivan → main` e o deploy falha com
 > "Push to FlutterFlow failed".
 
 ### Onde está o código customizado do módulo ViVan
@@ -57,22 +57,22 @@ lib/dashboard_passageiros_m/        # Dashboard principal do motorista
 ## Fluxo de Trabalho Git
 
 ### Branches
-- `develop` → branch de trabalho (sempre trabalhe aqui)
+- `vivan` → branch de trabalho (sempre trabalhe aqui)
 - `main` → exclusiva do FlutterFlow (NUNCA commitar direto)
 
 ### Como o deploy funciona (FlutterFlow)
-1. Você faz push das alterações para `origin/develop`
+1. Você faz push das alterações para `origin/vivan`
 2. No painel do FlutterFlow, você clica em **Deploy → iOS → Submit to TestFlight**
-3. O FF pega o `develop`, mescla com o código gerado por ele, cria um merge commit no `main`
+3. O FF pega o `vivan`, mescla com o código gerado por ele, cria um merge commit no `main`
 4. FF compila e envia ao TestFlight
 
-O `main` sempre terá commits de merge que o `develop` não tem (código gerado pelo FF).
+O `main` sempre terá commits de merge que o `vivan` não tem (código gerado pelo FF).
 Isso é **normal** — não tente alinhar manualmente.
 
 ### Verificar se há commits não deployados
 ```bash
 git fetch origin
-git log origin/main..origin/develop --oneline
+git log origin/main..origin/vivan --oneline
 ```
 Se a saída tiver commits, eles ainda não foram para o TestFlight.
 
@@ -82,10 +82,10 @@ Se a saída tiver commits, eles ainda não foram para o TestFlight.
 git status
 
 # 2. Confirmar que tudo foi pushed
-git push origin develop
+git push origin vivan
 
 # 3. Confirmar que não há commits locais pendentes
-git log origin/develop..HEAD --oneline
+git log origin/vivan..HEAD --oneline
 ```
 
 ### Commits
@@ -104,12 +104,12 @@ docs: atualização de documentação
 
 ### "Push to FlutterFlow failed"
 **Causa mais comum:** `pubspec.yaml` com versão alterada manualmente.
-**Diagnóstico:** `git diff origin/main origin/develop -- pubspec.yaml`
+**Diagnóstico:** `git diff origin/main origin/vivan -- pubspec.yaml`
 **Solução:** Reverter `pubspec.yaml` para a mesma versão que está no `main`.
 
 ### Branches desalinhados após "Push failed"
-O `main` pode ter merge commits que o `develop` não tem — isso é normal.
-Nunca tente fazer `git merge main` no `develop` para alinhar.
+O `main` pode ter merge commits que o `vivan` não tem — isso é normal.
+Nunca tente fazer `git merge main` no `vivan` para alinhar.
 O alinhamento acontece quando o FF faz o próximo deploy com sucesso.
 
 ---
@@ -254,7 +254,7 @@ VivanContrato(
 - [ ] Nenhum arquivo gerado pelo FlutterFlow foi modificado?
 - [ ] `pubspec.yaml` não foi alterado?
 - [ ] O tema usa `FlutterFlowTheme` para manter consistência visual?
-- [ ] O commit está na branch `develop`?
-- [ ] `git push origin develop` foi executado?
+- [ ] O commit está na branch `vivan`?
+- [ ] `git push origin vivan` foi executado?
 - [ ] `mesReferencia` usa formato `MM/yyyy` (não `yyyy-MM`)?
 - [ ] Contratos criados via `POST /contratos` têm chamada a `/ativar` logo após?

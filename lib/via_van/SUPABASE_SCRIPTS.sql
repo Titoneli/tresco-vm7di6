@@ -35,9 +35,11 @@ ORDER BY table_name, ordinal_position;
 CREATE SEQUENCE IF NOT EXISTS vivan_num_contrato_seq START WITH 1;
 
 -- Ajusta o valor inicial para não colidir com contratos já existentes:
+-- false = is_called: próximo nextval retorna exatamente este valor (não value+1)
 SELECT setval(
   'vivan_num_contrato_seq',
-  COALESCE((SELECT MAX("numContrato"::int) FROM vivan_contratos), 0) + 1
+  COALESCE((SELECT MAX("numContrato"::int) FROM vivan_contratos), 0) + 1,
+  false
 );
 
 
@@ -113,7 +115,7 @@ BEGIN
       "percentualMulta", "percentualJurosDia"
     )
     VALUES (
-      nextval('vivan_num_contrato_seq'),
+      nextval('vivan_num_contrato_seq')::int,
       p_motorista_id, v_passageiro_id, v_responsavel_id,
       p_valor, p_dia_venc, p_dt_inicio, p_dt_termino,
       'ATIVO', 'OUTROS', 'Mensal', 2.0, 0.0333
@@ -242,7 +244,7 @@ BEGIN
   END IF;
 
   v_mes := date_trunc('month', CURRENT_DATE);
-  WHILE EXTRACT(YEAR FROM v_mes) = EXTRACT(YEAR FROM CURRENT_DATE) LOOP
+  WHILE EXTRACT(YEAR FROM v_mes)::int = EXTRACT(YEAR FROM CURRENT_DATE)::int LOOP
     INSERT INTO vivan_mensalidades (
       "idContrato", "idPassageiro", "idMotorista",
       "mesReferencia", "dtVencimento", "valOriginal", status
@@ -335,7 +337,7 @@ CREATE OR REPLACE FUNCTION vivan_deletar_contrato(
   p_contrato_id  int,
   p_motorista_id int
 )
-RETURNS void
+RETURNS json
 LANGUAGE plpgsql
 SECURITY DEFINER
 AS $$
@@ -349,6 +351,8 @@ BEGIN
 
   DELETE FROM vivan_mensalidades WHERE "idContrato" = p_contrato_id;
   DELETE FROM vivan_contratos    WHERE "idContrato" = p_contrato_id;
+
+  RETURN json_build_object('idContrato', p_contrato_id, 'ok', true);
 END;
 $$;
 
@@ -363,7 +367,7 @@ CREATE OR REPLACE FUNCTION vivan_deletar_passageiro(
   p_passageiro_id int,
   p_motorista_id  int
 )
-RETURNS void
+RETURNS json
 LANGUAGE plpgsql
 SECURITY DEFINER
 AS $$
@@ -379,6 +383,8 @@ BEGIN
   DELETE FROM vivan_contratos    WHERE "idPassageiro" = p_passageiro_id;
   DELETE FROM vivan_responsaveis WHERE "idPassageiro" = p_passageiro_id;
   DELETE FROM vivan_passageiros  WHERE "idPassageiro" = p_passageiro_id;
+
+  RETURN json_build_object('idPassageiro', p_passageiro_id, 'ok', true);
 END;
 $$;
 

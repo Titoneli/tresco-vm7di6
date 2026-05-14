@@ -10,6 +10,7 @@ import '/via_van/ajuda_m/ajuda_m_widget.dart';
 import '/via_van/aniversariantes_m/aniversariantes_m_widget.dart';
 import '/via_van/contratos_lista_m/contratos_lista_m_widget.dart';
 import '/via_van/notificacoes_m/notificacoes_m_widget.dart';
+import '/via_van/escolas_m/escolas_m_widget.dart';
 import 'package:ff_theme/flutter_flow/flutter_flow_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -913,13 +914,6 @@ class _DashboardPassageirosMWidgetState
                       onTap: () {}),
                   _buildMenuDivider(),
                   _buildMenuItem(context,
-                      icon: Icons.campaign_rounded,
-                      label: 'Indique e ganhe!',
-                      color: const Color(0xFF4B7BEC),
-                      badge: 'Novo!',
-                      onTap: () {}),
-                  _buildMenuDivider(),
-                  _buildMenuItem(context,
                       icon: Icons.edit_rounded,
                       label: 'Editar Perfil',
                       color: const Color(0xFF4B7BEC),
@@ -929,7 +923,8 @@ class _DashboardPassageirosMWidgetState
                       icon: Icons.school_rounded,
                       label: 'Minhas Escolas',
                       color: const Color(0xFF4B7BEC),
-                      onTap: () => context.pushNamed('dashboardEscolaM')),
+                      onTap: () => Navigator.push(context,
+                          MaterialPageRoute(builder: (_) => const EscolasMWidget()))),
                   _buildMenuDivider(),
                   _buildMenuItem(context,
                       icon: Icons.description_rounded,
@@ -940,24 +935,6 @@ class _DashboardPassageirosMWidgetState
                   _buildMenuItem(context,
                       icon: Icons.chat_bubble_outline_rounded,
                       label: 'Mensagens',
-                      color: const Color(0xFF4B7BEC),
-                      onTap: () => context.pushNamed('dashboardMensagens')),
-                  _buildMenuDivider(),
-                  _buildMenuItem(context,
-                      icon: Icons.lock_outline_rounded,
-                      label: 'Alterar Senha',
-                      color: const Color(0xFF4B7BEC),
-                      onTap: () {}),
-                  _buildMenuDivider(),
-                  _buildMenuItem(context,
-                      icon: Icons.phone_iphone_rounded,
-                      label: 'Sobre o Aplicativo',
-                      color: const Color(0xFF4B7BEC),
-                      onTap: () {}),
-                  _buildMenuDivider(),
-                  _buildMenuItem(context,
-                      icon: Icons.settings_rounded,
-                      label: 'Privacidade',
                       color: const Color(0xFF4B7BEC),
                       onTap: () {}),
                   _buildMenuDivider(),

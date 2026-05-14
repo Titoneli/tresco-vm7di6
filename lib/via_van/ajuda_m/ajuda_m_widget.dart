@@ -109,15 +109,21 @@ class _AjudaMWidgetState extends State<AjudaMWidget> {
                 ),
                 // Header navy
                 Container(
-                  color: const Color(0xFF0D1B2A),
+                  color: Colors.white,
                   width: double.infinity,
                   padding: const EdgeInsets.fromLTRB(16, 20, 16, 24),
-                  child: Text('ViVan',
-                      style: GoogleFonts.interTight(
-                          color: Colors.white,
-                          fontSize: 28,
-                          fontWeight: FontWeight.w800,
-                          letterSpacing: 1.5)),
+                  child: Center(
+                    child: Image.asset(
+                      'assets/images/vivan_logo_transparent.png',
+                      height: 52,
+                      fit: BoxFit.contain,
+                      errorBuilder: (_, __, ___) => Text('ViVan',
+                          style: GoogleFonts.interTight(
+                              fontSize: 28,
+                              fontWeight: FontWeight.w800,
+                              color: const Color(0xFF2D4739))),
+                    ),
+                  ),
                 ),
               ],
             ),

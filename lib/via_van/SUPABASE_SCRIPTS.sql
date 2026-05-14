@@ -496,6 +496,43 @@ CREATE INDEX IF NOT EXISTS idx_vivan_notificacoes_dtcriacao
 
 
 -- =============================================================================
+-- TABELA: vivan_faq
+-- Perguntas frequentes da tela de Ajuda do app.
+-- Gerencie via Supabase — sem novo deploy de app.
+-- =============================================================================
+CREATE TABLE IF NOT EXISTS public.vivan_faq (
+  "idFaq"     bigserial NOT NULL,
+  "pergunta"  text NOT NULL,
+  "resposta"  text NOT NULL,
+  "ordem"     integer NOT NULL DEFAULT 0,
+  "ativo"     boolean NOT NULL DEFAULT true,
+  "dtCriacao" timestamp WITHOUT TIME ZONE DEFAULT now(),
+  CONSTRAINT vivan_faq_pkey PRIMARY KEY ("idFaq")
+);
+
+CREATE INDEX IF NOT EXISTS idx_vivan_faq_ordem
+  ON public.vivan_faq ("ordem");
+
+-- Conteúdo inicial (executar uma vez):
+INSERT INTO public.vivan_faq ("pergunta", "resposta", "ordem") VALUES
+('Como funciona o ViVan?',
+ 'O ViVan é um app para motoristas de van escolar gerenciarem passageiros, mensalidades e financeiro de forma simples, tudo pelo celular.',
+ 1),
+('Quais são as principais funções do ViVan?',
+ 'Cadastro de passageiros e escolas, controle de mensalidades, gestão financeira (receitas e despesas), geração de contratos e comunicação com responsáveis via WhatsApp.',
+ 2),
+('Eu preciso pagar para ter o ViVan?',
+ 'O ViVan oferece um período de experimentação gratuito. Após esse período, é necessária uma assinatura para continuar utilizando todos os recursos.',
+ 3),
+('Como faço para experimentar o ViVan?',
+ 'Baixe o app, crie sua conta de motorista e comece a usar gratuitamente no período de trial. Nenhum cartão é exigido para começar.',
+ 4),
+('Após o período de experimentação vou precisar pagar?',
+ 'Sim, após o trial você precisará de uma assinatura ativa para continuar gerenciando passageiros e mensalidades pelo ViVan.',
+ 5);
+
+
+-- =============================================================================
 -- PASSO 3 — (OPCIONAL) Atualização automática de status ATRASADO via pg_cron
 -- Verificar disponibilidade primeiro:
 --   SELECT * FROM pg_available_extensions WHERE name = 'pg_cron';

@@ -1,32 +1,79 @@
+import '/backend/supabase/supabase.dart';
 import 'package:ff_theme/flutter_flow/flutter_flow_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class AjudaMWidget extends StatelessWidget {
+// Fallback usado quando vivan_faq não está acessível
+const _kFaqFallback = [
+  (
+    'Como funciona o ViVan?',
+    'O ViVan é um app para motoristas de van escolar gerenciarem passageiros, mensalidades e financeiro de forma simples, tudo pelo celular.'
+  ),
+  (
+    'Quais são as principais funções do ViVan?',
+    'Cadastro de passageiros e escolas, controle de mensalidades, gestão financeira (receitas e despesas), geração de contratos e comunicação com responsáveis via WhatsApp.'
+  ),
+  (
+    'Eu preciso pagar para ter o ViVan?',
+    'O ViVan oferece um período de experimentação gratuito. Após esse período, é necessária uma assinatura para continuar utilizando todos os recursos.'
+  ),
+  (
+    'Como faço para experimentar o ViVan?',
+    'Baixe o app, crie sua conta de motorista e comece a usar gratuitamente no período de trial. Nenhum cartão é exigido para começar.'
+  ),
+  (
+    'Após o período de experimentação vou precisar pagar?',
+    'Sim, após o trial você precisará de uma assinatura ativa para continuar gerenciando passageiros e mensalidades pelo ViVan.'
+  ),
+];
+
+class AjudaMWidget extends StatefulWidget {
   const AjudaMWidget({super.key});
 
-  static const _faqs = [
-    (
-      'Como funciona o ViVan?',
-      'O ViVan é um app para motoristas de van escolar gerenciarem passageiros, mensalidades e financeiro de forma simples, tudo pelo celular.'
-    ),
-    (
-      'Quais são as principais funções do ViVan?',
-      'Cadastro de passageiros e escolas, controle de mensalidades, gestão financeira (receitas e despesas), geração de contratos e comunicação com responsáveis via WhatsApp.'
-    ),
-    (
-      'Eu preciso pagar para ter o ViVan?',
-      'O ViVan oferece um período de experimentação gratuito. Após esse período, é necessária uma assinatura para continuar utilizando todos os recursos.'
-    ),
-    (
-      'Como faço para experimentar o ViVan?',
-      'Baixe o app, crie sua conta de motorista e comece a usar gratuitamente no período de trial. Nenhum cartão é exigido para começar.'
-    ),
-    (
-      'Após o período de experimentação vou precisar pagar?',
-      'Sim, após o trial você precisará de uma assinatura ativa para continuar gerenciando passageiros e mensalidades pelo ViVan.'
-    ),
-  ];
+  @override
+  State<AjudaMWidget> createState() => _AjudaMWidgetState();
+}
+
+class _AjudaMWidgetState extends State<AjudaMWidget> {
+  bool _loading = true;
+  List<({String pergunta, String resposta})> _faqs = [];
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _load());
+  }
+
+  Future<void> _load() async {
+    try {
+      final rows = await SupaFlow.client
+          .from('vivan_faq')
+          .select('pergunta, resposta, ordem')
+          .eq('ativo', true)
+          .order('ordem', ascending: true) as List;
+
+      if (rows.isNotEmpty) {
+        _faqs = rows.map((r) {
+          final m = r as Map;
+          return (
+            pergunta: m['pergunta']?.toString() ?? '',
+            resposta: m['resposta']?.toString() ?? '',
+          );
+        }).toList();
+      } else {
+        _useFallback();
+      }
+    } catch (_) {
+      _useFallback();
+    }
+    if (mounted) setState(() => _loading = false);
+  }
+
+  void _useFallback() {
+    _faqs = _kFaqFallback
+        .map((t) => (pergunta: t.$1, resposta: t.$2))
+        .toList();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,38 +81,45 @@ class AjudaMWidget extends StatelessWidget {
       backgroundColor: const Color(0xFFF2F2F7),
       body: Column(
         children: [
-          // ── Header navy ──────────────────────────────────────────────────
-          Container(
-            color: const Color(0xFF0D1B2A),
-            child: SafeArea(
-              bottom: false,
-              child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    TextButton(
+          // ── "Fechar" + header navy (SafeArea fora do navy) ───────────────
+          SafeArea(
+            bottom: false,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // "Fechar" em fundo branco, acima do navy
+                Container(
+                  color: FlutterFlowTheme.of(context).primaryBackground,
+                  padding: const EdgeInsets.fromLTRB(8, 4, 8, 4),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: TextButton(
                       onPressed: () => Navigator.pop(context),
                       style: TextButton.styleFrom(
-                          padding: EdgeInsets.zero,
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 4),
                           minimumSize: const Size(0, 36)),
                       child: Text('Fechar',
                           style: GoogleFonts.inter(
-                              color: Colors.white70,
+                              color: FlutterFlowTheme.of(context).primary,
                               fontWeight: FontWeight.w500,
                               fontSize: 16)),
                     ),
-                    const SizedBox(height: 12),
-                    Text('ViVan',
-                        style: GoogleFonts.interTight(
-                            color: Colors.white,
-                            fontSize: 28,
-                            fontWeight: FontWeight.w800,
-                            letterSpacing: 1.5)),
-                  ],
+                  ),
                 ),
-              ),
+                // Header navy
+                Container(
+                  color: const Color(0xFF0D1B2A),
+                  width: double.infinity,
+                  padding: const EdgeInsets.fromLTRB(16, 20, 16, 24),
+                  child: Text('ViVan',
+                      style: GoogleFonts.interTight(
+                          color: Colors.white,
+                          fontSize: 28,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: 1.5)),
+                ),
+              ],
             ),
           ),
 
@@ -86,15 +140,27 @@ class AjudaMWidget extends StatelessWidget {
 
           // ── Lista FAQ ────────────────────────────────────────────────────
           Expanded(
-            child: ListView.builder(
-              padding: EdgeInsets.zero,
-              itemCount: _faqs.length,
-              itemBuilder: (context, i) => _FaqTile(
-                pergunta: _faqs[i].$1,
-                resposta: _faqs[i].$2,
-                showDivider: i > 0,
-              ),
-            ),
+            child: _loading
+                ? Center(
+                    child: CircularProgressIndicator(
+                        color: FlutterFlowTheme.of(context).primary,
+                        strokeWidth: 2))
+                : ListView.builder(
+                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+                    itemCount: _faqs.length,
+                    itemBuilder: (context, i) => Padding(
+                      padding: const EdgeInsets.only(bottom: 8),
+                      child: Material(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                        clipBehavior: Clip.antiAlias,
+                        child: _FaqTile(
+                          pergunta: _faqs[i].pergunta,
+                          resposta: _faqs[i].resposta,
+                        ),
+                      ),
+                    ),
+                  ),
           ),
         ],
       ),
@@ -103,15 +169,10 @@ class AjudaMWidget extends StatelessWidget {
 }
 
 class _FaqTile extends StatefulWidget {
-  const _FaqTile({
-    required this.pergunta,
-    required this.resposta,
-    required this.showDivider,
-  });
+  const _FaqTile({required this.pergunta, required this.resposta});
 
   final String pergunta;
   final String resposta;
-  final bool showDivider;
 
   @override
   State<_FaqTile> createState() => _FaqTileState();
@@ -125,14 +186,11 @@ class _FaqTileState extends State<_FaqTile> {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        if (widget.showDivider)
-          Divider(height: 1, color: Colors.grey.shade200),
         InkWell(
           onTap: () => setState(() => _expanded = !_expanded),
-          child: Container(
-            color: Colors.white,
+          child: Padding(
             padding:
-                const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+                const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
             child: Row(
               children: [
                 Icon(
@@ -159,10 +217,8 @@ class _FaqTileState extends State<_FaqTile> {
           curve: Curves.easeInOut,
           child: _expanded
               ? Container(
-                  color: Colors.white,
                   width: double.infinity,
-                  padding:
-                      const EdgeInsets.fromLTRB(52, 0, 20, 16),
+                  padding: const EdgeInsets.fromLTRB(48, 0, 16, 16),
                   child: Text(
                     widget.resposta,
                     style: GoogleFonts.inter(

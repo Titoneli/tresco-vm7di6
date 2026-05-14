@@ -1,6 +1,8 @@
+import '/backend/supabase/supabase.dart';
 import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/index.dart';
+import '/vivan/models/vivan_models.dart';
 import '/via_van/financeiro_tab/financeiro_tab_widget.dart';
 import '/via_van/mensalidades_tab/mensalidades_tab_widget.dart';
 import '/via_van/passageiros_tab/passageiros_tab_widget.dart';
@@ -929,7 +931,7 @@ class _DashboardPassageirosMWidgetState
                       icon: Icons.description_rounded,
                       label: 'Contratos',
                       color: const Color(0xFF4B7BEC),
-                      onTap: () => context.pushNamed(ContratoListaMWidget.routeName)),
+                      onTap: () => context.pushNamed(ContratosListaMWidget.routeName)),
                   _buildMenuDivider(),
                   _buildMenuItem(context,
                       icon: Icons.chat_bubble_outline_rounded,

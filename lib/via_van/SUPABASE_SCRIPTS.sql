@@ -471,22 +471,28 @@ $$;
 -- TABELA: vivan_notificacoes
 -- Notificações por motorista exibidas na tela de Notificações do app
 -- =============================================================================
+
+-- Passo A: criar tabela (sem TABLESPACE para compatibilidade Supabase)
 CREATE TABLE IF NOT EXISTS public.vivan_notificacoes (
   "idNotificacao"  bigserial NOT NULL,
   "idMotorista"    bigint NOT NULL,
   "titulo"         text NOT NULL,
   "corpo"          text,
-  "lido"           boolean NOT NULL DEFAULT false,
-  "dtLeitura"      timestamp WITHOUT TIME ZONE,
   "dtCriacao"      timestamp WITHOUT TIME ZONE DEFAULT now(),
   CONSTRAINT vivan_notificacoes_pkey PRIMARY KEY ("idNotificacao")
-) TABLESPACE pg_default;
+);
 
+-- Passo B: adicionar colunas idempotente (seguro se tabela já existia)
+ALTER TABLE public.vivan_notificacoes
+  ADD COLUMN IF NOT EXISTS "lido"      boolean NOT NULL DEFAULT false,
+  ADD COLUMN IF NOT EXISTS "dtLeitura" timestamp WITHOUT TIME ZONE;
+
+-- Passo C: índices (sem TABLESPACE para compatibilidade Supabase)
 CREATE INDEX IF NOT EXISTS idx_vivan_notificacoes_motorista
-  ON public.vivan_notificacoes USING btree ("idMotorista") TABLESPACE pg_default;
+  ON public.vivan_notificacoes ("idMotorista");
 
-CREATE INDEX IF NOT EXISTS idx_vivan_notificacoes_lido
-  ON public.vivan_notificacoes USING btree ("lido") TABLESPACE pg_default;
+CREATE INDEX IF NOT EXISTS idx_vivan_notificacoes_dtcriacao
+  ON public.vivan_notificacoes ("dtCriacao" DESC);
 
 
 -- =============================================================================

@@ -30,9 +30,11 @@ class DashboardPassageirosMModel
     if (motoristaId == 0) { isLoadingHome = false; return; }
     isLoadingHome = true;
     hasError = false;
+
+    // ── Bloco 1: queries críticas (hasError = true se falharem) ──────────────
+    List mensRows = [];
     try {
       final mesAtual = DateFormat('MM/yyyy').format(DateTime.now());
-
       final results = await Future.wait([
         SupaFlow.client
             .from('vivan_passageiros')
@@ -50,24 +52,30 @@ class DashboardPassageirosMModel
             .eq('mesReferencia', mesAtual)
             .order('dtVencimento', ascending: true)
             .limit(50),
-        SupaFlow.client
-            .from('vivan_comunicado')
-            .select()
-            .eq('idMotorista', motoristaId)
-            .order('createdAt', ascending: false)
-            .limit(1),
       ]);
 
       totalPassageiros = (results[0] as List).length;
       totalEscolas     = (results[1] as List).length;
 
-      final mens = results[2] as List;
-      mensalidadesEmAberto = mens
+      mensRows = results[2] as List;
+      mensalidadesEmAberto = mensRows
           .map((r) => VivanMensalidade.fromJson(Map<String, dynamic>.from(r as Map)))
           .toList();
+    } catch (e) {
+      debugPrint('DashboardPassageiros.fetchHomeData/core: $e');
+      hasError = true;
+      isLoadingHome = false;
+      return;
+    }
 
-      // Aviso mais recente
-      final avisos = results[3] as List;
+    // ── Bloco 2: aviso dinâmico (falha silenciosa) ───────────────────────────
+    try {
+      final avisos = await SupaFlow.client
+          .from('vivan_comunicado')
+          .select()
+          .eq('idMotorista', motoristaId)
+          .order('createdAt', ascending: false)
+          .limit(1) as List;
       if (avisos.isNotEmpty) {
         final a = avisos.first as Map;
         avisoTitulo = a['titulo']?.toString() ?? a['assunto']?.toString();
@@ -76,9 +84,15 @@ class DashboardPassageirosMModel
         avisoTitulo = null;
         avisoTexto  = null;
       }
+    } catch (e) {
+      debugPrint('DashboardPassageiros.fetchHomeData/aviso: $e');
+      avisoTitulo = null;
+      avisoTexto  = null;
+    }
 
-      // Enriquecer nomes dos passageiros
-      final passIds = mens
+    // ── Bloco 3: enriquecer nomes + WhatsApp (falha silenciosa) ─────────────
+    try {
+      final passIds = mensRows
           .map((r) => (r as Map)['idPassageiro'] as int?)
           .whereType<int>()
           .toSet()
@@ -88,33 +102,25 @@ class DashboardPassageirosMModel
         final passRows = await SupaFlow.client
             .from('vivan_passageiros')
             .select('idPassageiro, nomePassageiro')
-            .inFilter('idPassageiro', passIds);
+            .inFilter('idPassageiro', passIds) as List;
         final Map<int, String> nomes = {};
-        for (final r in passRows as List) {
-          final id = r['idPassageiro'] as int?;
+        for (final r in passRows) {
+          final id = (r as Map)['idPassageiro'] as int?;
           final nome = r['nomePassageiro']?.toString();
           if (id != null && nome != null) nomes[id] = nome;
         }
-        for (final m in mensalidadesEmAberto) {
-          if (m.nomePassageiro == null && m.idPassageiro != null) {
-            // nomePassageiro is final, so rebuild via fromJson is not needed —
-            // the list was already built; nomes are injected before fromJson below
-          }
-        }
 
-        // Buscar WhatsApp dos responsáveis
         final respRows = await SupaFlow.client
             .from('vivan_responsaveis')
             .select('idPassageiro, whatsAppResponsavel')
-            .inFilter('idPassageiro', passIds);
+            .inFilter('idPassageiro', passIds) as List;
         wppPorPassageiro = {};
-        for (final r in respRows as List) {
-          final id = r['idPassageiro'] as int?;
+        for (final r in respRows) {
+          final id = (r as Map)['idPassageiro'] as int?;
           if (id != null) wppPorPassageiro[id] = r['whatsAppResponsavel']?.toString();
         }
 
-        // Reconstruir lista com nomes
-        mensalidadesEmAberto = mens.map((r) {
+        mensalidadesEmAberto = mensRows.map((r) {
           final row = Map<String, dynamic>.from(r as Map);
           final pid = row['idPassageiro'] as int?;
           if (pid != null && nomes.containsKey(pid)) {
@@ -124,11 +130,10 @@ class DashboardPassageirosMModel
         }).toList();
       }
     } catch (e) {
-      debugPrint('DashboardPassageiros.fetchHomeData: $e');
-      hasError = true;
-    } finally {
-      isLoadingHome = false;
+      debugPrint('DashboardPassageiros.fetchHomeData/enrich: $e');
     }
+
+    isLoadingHome = false;
   }
 
   @override

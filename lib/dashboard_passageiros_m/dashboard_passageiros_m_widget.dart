@@ -1046,48 +1046,78 @@ class _DashboardPassageirosMWidgetState
 
   Widget _buildBottomNav(BuildContext context) {
     return Container(
-      width: double.infinity, height: 70.0,
       decoration: BoxDecoration(
         color: FlutterFlowTheme.of(context).primaryBackground,
-        boxShadow: [BoxShadow(blurRadius: 4.0, color: Color(0x1A000000), offset: Offset(0.0, -1.0))],
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.max,
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          _buildNavItem(context, 0, Icons.home_rounded, 'Inicio'),
-          _buildNavItem(context, 1, Icons.people_rounded, 'Passageiros'),
-          _buildNavItem(context, 2, Icons.receipt_long_rounded, 'Mensalidades'),
-          _buildNavItem(context, 3, Icons.account_balance_wallet_rounded, 'Financeiro'),
-          _buildNavItem(context, 4, Icons.more_horiz_rounded, 'Mais'),
+        boxShadow: const [
+          BoxShadow(blurRadius: 8, color: Color(0x1A000000), offset: Offset(0, -2))
         ],
+      ),
+      child: SafeArea(
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+          child: Row(
+            children: [
+              _buildNavItem(context, 0, Icons.home_rounded, 'Inicio'),
+              _buildNavItem(context, 1, Icons.people_rounded, 'Passageiros'),
+              _buildNavItem(context, 2, Icons.receipt_long_rounded, 'Mensalidades'),
+              _buildNavItem(context, 3, Icons.account_balance_wallet_rounded, 'Financeiro'),
+              _buildNavItem(context, 4, Icons.more_horiz_rounded, 'Mais'),
+            ],
+          ),
+        ),
       ),
     );
   }
 
   Widget _buildNavItem(BuildContext context, int index, IconData icon, String label) {
     final isActive = _model.paginaAtiva == index;
-    final activeColor = FlutterFlowTheme.of(context).primary;
-    final inactiveColor = FlutterFlowTheme.of(context).secondaryText;
-    return InkWell(
-      onTap: () {
-        setState(() {
-          _model.paginaAtiva = index;
-          _model.pageViewController?.animateToPage(index,
-              duration: Duration(milliseconds: 200), curve: Curves.easeInOut);
-        });
-        if (index == 0) _refresh();
-      },
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(icon, color: isActive ? activeColor : inactiveColor, size: 24.0),
-          SizedBox(height: 4.0),
-          Text(label, style: FlutterFlowTheme.of(context).bodySmall.override(
-                font: GoogleFonts.inter(fontWeight: isActive ? FontWeight.w600 : FontWeight.normal),
-                color: isActive ? activeColor : inactiveColor, fontSize: 11.0)),
-        ],
+    final primary = FlutterFlowTheme.of(context).primary;
+    final inactive = FlutterFlowTheme.of(context).secondaryText;
+
+    return Expanded(
+      child: InkWell(
+        onTap: () {
+          setState(() {
+            _model.paginaAtiva = index;
+            _model.pageViewController?.animateToPage(index,
+                duration: const Duration(milliseconds: 250), curve: Curves.easeInOut);
+          });
+          if (index == 0) _refresh();
+        },
+        borderRadius: BorderRadius.circular(50),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Center(
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 250),
+                curve: Curves.easeInOut,
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: isActive ? primary : Colors.transparent,
+                  borderRadius: BorderRadius.circular(50),
+                ),
+                child: Icon(icon,
+                    color: isActive ? Colors.white : inactive, size: 22),
+              ),
+            ),
+            AnimatedOpacity(
+              opacity: isActive ? 1.0 : 0.0,
+              duration: const Duration(milliseconds: 200),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 250),
+                height: isActive ? 16 : 0,
+                child: Text(label,
+                    overflow: TextOverflow.ellipsis,
+                    style: GoogleFonts.inter(
+                        color: primary,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600)),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

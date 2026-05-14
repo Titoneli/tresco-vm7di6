@@ -1046,11 +1046,8 @@ class _DashboardPassageirosMWidgetState
 
   Widget _buildBottomNav(BuildContext context) {
     final primary = FlutterFlowTheme.of(context).primary;
-    final bottomInset = MediaQuery.of(context).padding.bottom;
     return Padding(
-      // iPhone: bottomInset (34px) já garante clearance da home indicator
-      // Android: 8px fixo
-      padding: EdgeInsets.fromLTRB(16, 0, 16, bottomInset > 0 ? bottomInset : 8),
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 6),
       child: Container(
         height: 72,
         decoration: BoxDecoration(
@@ -1060,13 +1057,13 @@ class _DashboardPassageirosMWidgetState
             BoxShadow(
               blurRadius: 14,
               spreadRadius: -2,
-              color: primary.withOpacity(0.35),
+              color: primary.withValues(alpha: 0.35),
               offset: const Offset(0, 6),
             ),
             BoxShadow(
               blurRadius: 28,
               spreadRadius: -6,
-              color: primary.withOpacity(0.30),
+              color: primary.withValues(alpha: 0.30),
               offset: const Offset(0, 14),
             ),
           ],

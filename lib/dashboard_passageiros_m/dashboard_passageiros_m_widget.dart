@@ -6,8 +6,10 @@ import '/vivan/models/vivan_models.dart';
 import '/via_van/financeiro_tab/financeiro_tab_widget.dart';
 import '/via_van/mensalidades_tab/mensalidades_tab_widget.dart';
 import '/via_van/passageiros_tab/passageiros_tab_widget.dart';
+import '/via_van/ajuda_m/ajuda_m_widget.dart';
 import '/via_van/aniversariantes_m/aniversariantes_m_widget.dart';
 import '/via_van/contratos_lista_m/contratos_lista_m_widget.dart';
+import '/via_van/notificacoes_m/notificacoes_m_widget.dart';
 import 'package:ff_theme/flutter_flow/flutter_flow_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -153,13 +155,15 @@ class _DashboardPassageirosMWidgetState
                   borderRadius: 20.0, buttonSize: 40.0,
                   icon: Icon(Icons.help_outline_rounded,
                       color: FlutterFlowTheme.of(context).secondaryText, size: 24.0),
-                  onPressed: () {},
+                  onPressed: () => Navigator.push(context,
+                      MaterialPageRoute(builder: (_) => const AjudaMWidget())),
                 ),
                 FlutterFlowIconButton(
                   borderRadius: 20.0, buttonSize: 40.0,
                   icon: Icon(Icons.notifications_none_rounded,
                       color: FlutterFlowTheme.of(context).secondaryText, size: 24.0),
-                  onPressed: () {},
+                  onPressed: () => Navigator.push(context,
+                      MaterialPageRoute(builder: (_) => const NotificacoesMWidget())),
                 ),
               ],
             ),

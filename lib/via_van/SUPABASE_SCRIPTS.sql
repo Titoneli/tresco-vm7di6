@@ -468,6 +468,28 @@ $$;
 
 
 -- =============================================================================
+-- TABELA: vivan_notificacoes
+-- Notificações por motorista exibidas na tela de Notificações do app
+-- =============================================================================
+CREATE TABLE IF NOT EXISTS public.vivan_notificacoes (
+  "idNotificacao"  bigserial NOT NULL,
+  "idMotorista"    bigint NOT NULL,
+  "titulo"         text NOT NULL,
+  "corpo"          text,
+  "lido"           boolean NOT NULL DEFAULT false,
+  "dtLeitura"      timestamp WITHOUT TIME ZONE,
+  "dtCriacao"      timestamp WITHOUT TIME ZONE DEFAULT now(),
+  CONSTRAINT vivan_notificacoes_pkey PRIMARY KEY ("idNotificacao")
+) TABLESPACE pg_default;
+
+CREATE INDEX IF NOT EXISTS idx_vivan_notificacoes_motorista
+  ON public.vivan_notificacoes USING btree ("idMotorista") TABLESPACE pg_default;
+
+CREATE INDEX IF NOT EXISTS idx_vivan_notificacoes_lido
+  ON public.vivan_notificacoes USING btree ("lido") TABLESPACE pg_default;
+
+
+-- =============================================================================
 -- PASSO 3 — (OPCIONAL) Atualização automática de status ATRASADO via pg_cron
 -- Verificar disponibilidade primeiro:
 --   SELECT * FROM pg_available_extensions WHERE name = 'pg_cron';

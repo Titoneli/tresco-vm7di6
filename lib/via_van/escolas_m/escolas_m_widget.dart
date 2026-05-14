@@ -46,162 +46,54 @@ class _EscolasMWidgetState extends State<EscolasMWidget> {
     if (mounted) setState(() => _loading = false);
   }
 
-  Future<void> _adicionar(String nome) async {
-    try {
-      final motoristaId = FFAppState().idUsuario;
-      await SupaFlow.client.from('vivan_escolas').insert({
-        'idMotorista': motoristaId,
-        'nomeEscola': nome.trim(),
-      });
-      await _load();
-    } catch (e) {
-      debugPrint('EscolasMWidget._adicionar: $e');
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Erro ao adicionar escola')));
-      }
-    }
-  }
-
-  Future<void> _editar(int idEscola, String novoNome) async {
-    try {
-      await SupaFlow.client
-          .from('vivan_escolas')
-          .update({'nomeEscola': novoNome.trim()})
-          .eq('idEscola', idEscola);
-      await _load();
-    } catch (e) {
-      debugPrint('EscolasMWidget._editar: $e');
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Erro ao editar escola')));
-      }
-    }
-  }
-
-  Future<void> _excluir(int idEscola) async {
-    try {
-      await SupaFlow.client
-          .from('vivan_escolas')
-          .delete()
-          .eq('idEscola', idEscola);
-      await _load();
-    } catch (e) {
-      debugPrint('EscolasMWidget._excluir: $e');
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Erro ao excluir escola')));
-      }
-    }
-  }
-
-  void _showEscolaDialog({_Escola? escola}) {
-    final ctrl = TextEditingController(text: escola?.nome ?? '');
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(
-          escola == null ? 'Nova Escola' : 'Editar Escola',
-          style: GoogleFonts.interTight(fontWeight: FontWeight.w700),
-        ),
-        content: TextField(
-          controller: ctrl,
-          autofocus: true,
-          textCapitalization: TextCapitalization.words,
-          decoration: InputDecoration(
-            hintText: 'Nome da escola',
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: Text('Cancelar',
-                style: GoogleFonts.inter(
-                    color: FlutterFlowTheme.of(context).secondaryText)),
-          ),
-          TextButton(
-            onPressed: () {
-              final nome = ctrl.text.trim();
-              if (nome.isEmpty) return;
-              Navigator.pop(ctx);
-              if (escola == null) {
-                _adicionar(nome);
-              } else {
-                _editar(escola.id, nome);
-              }
-            },
-            child: Text('Salvar',
-                style: GoogleFonts.inter(
-                    color: FlutterFlowTheme.of(context).primary,
-                    fontWeight: FontWeight.w600)),
-          ),
-        ],
-      ),
+  Future<void> _abrirForm({_Escola? escola}) async {
+    final result = await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(builder: (_) => _EscolaFormPage(escola: escola)),
     );
-  }
-
-  void _confirmarExclusao(_Escola escola) {
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text('Excluir escola',
-            style: GoogleFonts.interTight(fontWeight: FontWeight.w700)),
-        content: Text('Deseja excluir "${escola.nome}"?',
-            style: GoogleFonts.inter()),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: Text('Cancelar',
-                style: GoogleFonts.inter(
-                    color: FlutterFlowTheme.of(context).secondaryText)),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(ctx);
-              _excluir(escola.id);
-            },
-            child: Text('Excluir',
-                style: GoogleFonts.inter(
-                    color: Colors.red.shade400, fontWeight: FontWeight.w600)),
-          ),
-        ],
-      ),
-    );
+    if (result == true) _load();
   }
 
   @override
   Widget build(BuildContext context) {
     context.watch<FFAppState>();
+    final primary = FlutterFlowTheme.of(context).primary;
     return Scaffold(
-      backgroundColor: const Color(0xFFF2F2F7),
+      backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
       appBar: AppBar(
         backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
         elevation: 0,
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(1),
+          child: Divider(height: 1, color: Colors.grey.shade200),
+        ),
         leading: TextButton(
           onPressed: () => Navigator.pop(context),
           child: Text('Voltar',
               style: GoogleFonts.inter(
-                  color: FlutterFlowTheme.of(context).primary,
-                  fontWeight: FontWeight.w500)),
+                  color: primary, fontWeight: FontWeight.w500)),
         ),
         leadingWidth: 80,
         title: Text('Minhas Escolas',
             style: GoogleFonts.interTight(
                 fontSize: 17,
                 fontWeight: FontWeight.w700,
-                color: FlutterFlowTheme.of(context).primaryText)),
+                color: primary)),
         centerTitle: true,
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => _showEscolaDialog(),
-        backgroundColor: FlutterFlowTheme.of(context).primary,
-        child: const Icon(Icons.add_rounded, color: Colors.white),
+        actions: [
+          TextButton(
+            onPressed: () => _abrirForm(),
+            child: Text('+',
+                style: GoogleFonts.inter(
+                    fontSize: 24,
+                    color: primary,
+                    fontWeight: FontWeight.w400)),
+          ),
+        ],
       ),
       body: _loading
           ? Center(
-              child: CircularProgressIndicator(
-                  color: FlutterFlowTheme.of(context).primary, strokeWidth: 2))
+              child: CircularProgressIndicator(color: primary, strokeWidth: 2))
           : _escolas.isEmpty
               ? Center(
                   child: Column(
@@ -209,79 +101,50 @@ class _EscolasMWidgetState extends State<EscolasMWidget> {
                     children: [
                       Icon(Icons.school_outlined,
                           size: 52,
-                          color: FlutterFlowTheme.of(context).secondaryText),
+                          color:
+                              FlutterFlowTheme.of(context).secondaryText),
                       const SizedBox(height: 12),
                       Text('Nenhuma escola cadastrada',
                           style: GoogleFonts.inter(
-                              color: FlutterFlowTheme.of(context).secondaryText,
+                              color: FlutterFlowTheme.of(context)
+                                  .secondaryText,
                               fontSize: 15)),
                       const SizedBox(height: 6),
                       Text('Toque em + para adicionar',
                           style: GoogleFonts.inter(
-                              color: FlutterFlowTheme.of(context).secondaryText,
+                              color: FlutterFlowTheme.of(context)
+                                  .secondaryText,
                               fontSize: 13)),
                     ],
                   ),
                 )
-              : ListView.builder(
-                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 80),
+              : ListView.separated(
                   itemCount: _escolas.length,
+                  separatorBuilder: (_, __) =>
+                      Divider(height: 1, color: Colors.grey.shade200),
                   itemBuilder: (context, i) {
                     final escola = _escolas[i];
-                    return Padding(
-                      padding: const EdgeInsets.only(bottom: 8),
-                      child: Material(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(12),
-                        clipBehavior: Clip.antiAlias,
-                        child: InkWell(
-                          onTap: () => _showEscolaDialog(escola: escola),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 14),
-                            child: Row(
-                              children: [
-                                Container(
-                                  width: 36,
-                                  height: 36,
-                                  decoration: BoxDecoration(
+                    return InkWell(
+                      onTap: () => _abrirForm(escola: escola),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 14),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                escola.nome,
+                                style: GoogleFonts.inter(
+                                    fontSize: 15,
                                     color: FlutterFlowTheme.of(context)
-                                        .primary
-                                        .withOpacity(0.1),
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: Icon(Icons.school_rounded,
-                                      size: 20,
-                                      color:
-                                          FlutterFlowTheme.of(context).primary),
-                                ),
-                                const SizedBox(width: 12),
-                                Expanded(
-                                  child: Text(
-                                    escola.nome,
-                                    style: GoogleFonts.inter(
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.w500,
-                                        color: FlutterFlowTheme.of(context)
-                                            .primaryText),
-                                  ),
-                                ),
-                                IconButton(
-                                  icon: Icon(Icons.edit_outlined,
-                                      size: 18,
-                                      color: FlutterFlowTheme.of(context)
-                                          .secondaryText),
-                                  onPressed: () =>
-                                      _showEscolaDialog(escola: escola),
-                                ),
-                                IconButton(
-                                  icon: Icon(Icons.delete_outline_rounded,
-                                      size: 18, color: Colors.red.shade300),
-                                  onPressed: () => _confirmarExclusao(escola),
-                                ),
-                              ],
+                                        .primaryText),
+                              ),
                             ),
-                          ),
+                            Icon(Icons.chevron_right_rounded,
+                                size: 20,
+                                color: FlutterFlowTheme.of(context)
+                                    .secondaryText),
+                          ],
                         ),
                       ),
                     );
@@ -290,6 +153,213 @@ class _EscolasMWidgetState extends State<EscolasMWidget> {
     );
   }
 }
+
+// ── Tela de formulário (add / edit) ──────────────────────────────────────────
+
+class _EscolaFormPage extends StatefulWidget {
+  const _EscolaFormPage({this.escola});
+  final _Escola? escola;
+
+  @override
+  State<_EscolaFormPage> createState() => _EscolaFormPageState();
+}
+
+class _EscolaFormPageState extends State<_EscolaFormPage> {
+  late final TextEditingController _ctrl;
+  bool _saving = false;
+
+  bool get _isEdit => widget.escola != null;
+
+  @override
+  void initState() {
+    super.initState();
+    _ctrl = TextEditingController(text: widget.escola?.nome ?? '');
+  }
+
+  @override
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
+  }
+
+  Future<void> _salvar() async {
+    final nome = _ctrl.text.trim();
+    if (nome.isEmpty) return;
+    setState(() => _saving = true);
+    try {
+      final motoristaId = FFAppState().idUsuario;
+      if (_isEdit) {
+        await SupaFlow.client
+            .from('vivan_escolas')
+            .update({'nomeEscola': nome})
+            .eq('idEscola', widget.escola!.id);
+      } else {
+        await SupaFlow.client.from('vivan_escolas').insert({
+          'idMotorista': motoristaId,
+          'nomeEscola': nome,
+        });
+      }
+      if (mounted) Navigator.pop(context, true);
+    } catch (e) {
+      debugPrint('_EscolaFormPage._salvar: $e');
+      if (mounted) {
+        setState(() => _saving = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Erro ao salvar escola')));
+      }
+    }
+  }
+
+  void _confirmarDeletar() {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text('Deletar Escola?',
+            style: GoogleFonts.interTight(fontWeight: FontWeight.w700)),
+        content: const Text('Deseja realmente deletar essa escola?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text('Não',
+                style: GoogleFonts.inter(
+                    color: FlutterFlowTheme.of(context).primary,
+                    fontWeight: FontWeight.w600)),
+          ),
+          TextButton(
+            onPressed: () async {
+              Navigator.pop(ctx);
+              await _deletar();
+            },
+            child: Text('Sim',
+                style: GoogleFonts.inter(
+                    color: Colors.red.shade400,
+                    fontWeight: FontWeight.w600)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _deletar() async {
+    try {
+      await SupaFlow.client
+          .from('vivan_escolas')
+          .delete()
+          .eq('idEscola', widget.escola!.id);
+      if (mounted) Navigator.pop(context, true);
+    } catch (e) {
+      debugPrint('_EscolaFormPage._deletar: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Erro ao deletar escola')));
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final primary = FlutterFlowTheme.of(context).primary;
+    return Scaffold(
+      backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
+      appBar: AppBar(
+        backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
+        elevation: 0,
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(1),
+          child: Divider(height: 1, color: Colors.grey.shade200),
+        ),
+        leading: TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: Text('Voltar',
+              style: GoogleFonts.inter(
+                  color: primary, fontWeight: FontWeight.w500)),
+        ),
+        leadingWidth: 80,
+        title: Text(
+          _isEdit ? 'Editar Escola' : 'Nova Escola',
+          style: GoogleFonts.interTight(
+              fontSize: 17,
+              fontWeight: FontWeight.w700,
+              color: FlutterFlowTheme.of(context).primaryText),
+        ),
+        centerTitle: true,
+        actions: _isEdit
+            ? [
+                TextButton(
+                  onPressed: _confirmarDeletar,
+                  child: Text('Deletar',
+                      style: GoogleFonts.inter(
+                          color: Colors.red.shade400,
+                          fontWeight: FontWeight.w500)),
+                ),
+              ]
+            : [],
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Escola',
+                style: GoogleFonts.inter(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w500,
+                    color: FlutterFlowTheme.of(context).secondaryText)),
+            const SizedBox(height: 8),
+            TextField(
+              controller: _ctrl,
+              autofocus: true,
+              textCapitalization: TextCapitalization.words,
+              style: GoogleFonts.inter(fontSize: 15),
+              decoration: InputDecoration(
+                hintText: 'Nome da escola',
+                hintStyle: GoogleFonts.inter(
+                    color: FlutterFlowTheme.of(context).secondaryText),
+                border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: Colors.grey.shade300)),
+                enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: Colors.grey.shade300)),
+                focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: primary, width: 1.5)),
+                contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16, vertical: 14),
+              ),
+            ),
+            const SizedBox(height: 24),
+            SizedBox(
+              width: double.infinity,
+              height: 52,
+              child: ElevatedButton(
+                onPressed: _saving ? null : _salvar,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: primary,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30)),
+                  elevation: 0,
+                ),
+                child: _saving
+                    ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                            color: Colors.white, strokeWidth: 2))
+                    : Text('Salvar',
+                        style: GoogleFonts.inter(
+                            fontSize: 16, fontWeight: FontWeight.w600)),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ── Modelo local ──────────────────────────────────────────────────────────────
 
 class _Escola {
   final int id;

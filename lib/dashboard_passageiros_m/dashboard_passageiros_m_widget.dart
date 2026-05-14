@@ -1045,26 +1045,39 @@ class _DashboardPassageirosMWidgetState
   // ── Bottom Nav ────────────────────────────────────────────────────────────
 
   Widget _buildBottomNav(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: FlutterFlowTheme.of(context).primaryBackground,
-        boxShadow: const [
-          BoxShadow(blurRadius: 8, color: Color(0x1A000000), offset: Offset(0, -2))
-        ],
-      ),
-      child: SafeArea(
-        top: false,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
-          child: Row(
-            children: [
-              _buildNavItem(context, 0, Icons.home_rounded, 'Inicio'),
-              _buildNavItem(context, 1, Icons.people_rounded, 'Passageiros'),
-              _buildNavItem(context, 2, Icons.receipt_long_rounded, 'Mensalidades'),
-              _buildNavItem(context, 3, Icons.account_balance_wallet_rounded, 'Financeiro'),
-              _buildNavItem(context, 4, Icons.more_horiz_rounded, 'Mais'),
-            ],
-          ),
+    final primary = FlutterFlowTheme.of(context).primary;
+    final bottomInset = MediaQuery.of(context).padding.bottom;
+    return Padding(
+      padding: EdgeInsets.fromLTRB(16, 0, 16, 12 + bottomInset),
+      child: Container(
+        height: 90,
+        decoration: BoxDecoration(
+          color: primary,
+          borderRadius: BorderRadius.circular(44),
+          boxShadow: [
+            BoxShadow(
+              blurRadius: 14,
+              spreadRadius: -2,
+              color: primary.withOpacity(0.35),
+              offset: const Offset(0, 6),
+            ),
+            BoxShadow(
+              blurRadius: 28,
+              spreadRadius: -6,
+              color: primary.withOpacity(0.30),
+              offset: const Offset(0, 14),
+            ),
+          ],
+        ),
+        padding: const EdgeInsets.symmetric(horizontal: 4),
+        child: Row(
+          children: [
+            _buildNavItem(context, 0, Icons.home_rounded, 'Inicio'),
+            _buildNavItem(context, 1, Icons.people_rounded, 'Passageiros'),
+            _buildNavItem(context, 2, Icons.receipt_long_rounded, 'Mensalidades'),
+            _buildNavItem(context, 3, Icons.account_balance_wallet_rounded, 'Financeiro'),
+            _buildNavItem(context, 4, Icons.more_horiz_rounded, 'Mais'),
+          ],
         ),
       ),
     );
@@ -1073,51 +1086,83 @@ class _DashboardPassageirosMWidgetState
   Widget _buildNavItem(BuildContext context, int index, IconData icon, String label) {
     final isActive = _model.paginaAtiva == index;
     final primary = FlutterFlowTheme.of(context).primary;
-    final inactive = FlutterFlowTheme.of(context).secondaryText;
-
     return Expanded(
-      child: InkWell(
+      child: GestureDetector(
         onTap: () {
           setState(() {
             _model.paginaAtiva = index;
             _model.pageViewController?.animateToPage(index,
-                duration: const Duration(milliseconds: 250), curve: Curves.easeInOut);
+                duration: const Duration(milliseconds: 250),
+                curve: Curves.easeInOut);
           });
           if (index == 0) _refresh();
         },
-        borderRadius: BorderRadius.circular(50),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
+        child: SizedBox(
+          height: 90,
+          child: isActive
+              ? _buildActiveTab(icon, label, primary)
+              : _buildInactiveTab(icon),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildActiveTab(IconData icon, String label, Color primary) {
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        // Glow radial suave atrás do chip
+        Positioned(
+          top: 10,
+          child: Container(
+            width: 86,
+            height: 60,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(30),
+              gradient: const RadialGradient(
+                colors: [Color(0x2EFFFFFF), Color(0x00FFFFFF)],
+              ),
+            ),
+          ),
+        ),
+        Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Center(
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 250),
-                curve: Curves.easeInOut,
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: isActive ? primary : Colors.transparent,
-                  borderRadius: BorderRadius.circular(50),
-                ),
-                child: Icon(icon,
-                    color: isActive ? Colors.white : inactive, size: 22),
+            Container(
+              width: 60,
+              height: 36,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(18),
+                boxShadow: const [
+                  BoxShadow(
+                      blurRadius: 2,
+                      color: Color(0x14000000),
+                      offset: Offset(0, 1)),
+                ],
               ),
+              child: Icon(icon, color: primary, size: 28),
             ),
-            AnimatedOpacity(
-              opacity: isActive ? 1.0 : 0.0,
-              duration: const Duration(milliseconds: 200),
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 250),
-                height: isActive ? 16 : 0,
-                child: Text(label,
-                    overflow: TextOverflow.ellipsis,
-                    style: GoogleFonts.inter(
-                        color: primary,
-                        fontSize: 11,
-                        fontWeight: FontWeight.w600)),
-              ),
-            ),
+            const SizedBox(height: 6),
+            Text(label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: GoogleFonts.inter(
+                    color: Colors.white,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 0.2)),
           ],
         ),
+      ],
+    );
+  }
+
+  Widget _buildInactiveTab(IconData icon) {
+    return Center(
+      child: Opacity(
+        opacity: 0.65,
+        child: Icon(icon, color: Colors.white, size: 36),
       ),
     );
   }

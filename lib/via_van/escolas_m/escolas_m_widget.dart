@@ -210,7 +210,30 @@ class _EscolaFormPageState extends State<_EscolaFormPage> {
     }
   }
 
-  void _confirmarDeletar() {
+  Future<void> _confirmarDeletar() async {
+    // Verificar alunos vinculados antes de mostrar o modal
+    try {
+      final alunos = await SupaFlow.client
+          .from('vivan_passageiros')
+          .select('idPassageiro')
+          .eq('idEscola', widget.escola!.id)
+          .limit(1) as List;
+
+      if (alunos.isNotEmpty) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: const Text(
+                'Esta escola possui alunos vinculados e não pode ser excluída.'),
+            backgroundColor: Colors.red.shade400,
+          ));
+        }
+        return;
+      }
+    } catch (_) {
+      // falha silenciosa — deixa o modal aparecer
+    }
+
+    if (!mounted) return;
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(

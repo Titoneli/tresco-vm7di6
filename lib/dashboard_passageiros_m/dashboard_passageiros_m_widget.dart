@@ -1048,9 +1048,11 @@ class _DashboardPassageirosMWidgetState
     final primary = FlutterFlowTheme.of(context).primary;
     final bottomInset = MediaQuery.of(context).padding.bottom;
     return Padding(
-      padding: EdgeInsets.fromLTRB(16, 0, 16, 12 + bottomInset),
+      // iPhone: bottomInset (34px) já garante clearance da home indicator
+      // Android: 8px fixo
+      padding: EdgeInsets.fromLTRB(16, 0, 16, bottomInset > 0 ? bottomInset : 8),
       child: Container(
-        height: 90,
+        height: 72,
         decoration: BoxDecoration(
           color: primary,
           borderRadius: BorderRadius.circular(44),
@@ -1098,7 +1100,7 @@ class _DashboardPassageirosMWidgetState
           if (index == 0) _refresh();
         },
         child: SizedBox(
-          height: 90,
+          height: 72,
           child: isActive
               ? _buildActiveTab(icon, label, primary)
               : _buildInactiveTab(icon),
